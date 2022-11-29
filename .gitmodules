@@ -1,0 +1,15 @@
+[submodule "modules/css"]
+	path = modules/css
+	url = https://github.com/orbitalquark/textadept-css.git
+[submodule "modules/python"]
+	path = modules/python
+	url = https://github.com/orbitalquark/textadept-python.git
+[submodule "modules/html"]
+	path = modules/html
+	url = https://github.com/orbitalquark/textadept-html.git
+[submodule "modules/textredux"]
+	path = modules/textredux
+	url = git@github.com:snoopy/textredux.git
+[submodule "modules/hydra"]
+	path = modules/hydra
+	url = git@github.com:snoopy/textadept-hydra.git
