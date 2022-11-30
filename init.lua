@@ -152,6 +152,15 @@ local function clear_indicators()
   buffer:indicator_clear_range(1, buffer.length)
 end
 
+local function select_matching()
+  local target = buffer:brace_match(buffer.current_pos, 0)
+  if target < buffer.current_pos then
+    buffer:set_selection(buffer.current_pos, target + 1)
+  else
+    buffer:set_selection(buffer.current_pos + 1, target)
+  end
+end
+
 local function custom_comment()
   local comment = textadept.editing.comment_string[buffer:get_lexer(true)] or buffer.property['scintillua.comment']
   local prefix, suffix = comment:match('^([^|]+)|?([^|]*)$')
@@ -730,12 +739,7 @@ local select_hydra = hydra.create({
     key = 'm',
     help = 'matching',
     action = function()
-      local target = buffer:brace_match(buffer.current_pos, 0)
-      if target > buffer.current_pos then
-        buffer:set_sel(buffer.current_pos, target + 1)
-      else
-        buffer:set_sel(buffer.current_pos + 1, target)
-      end
+      select_matching()
     end,
   },
   { key = 'p', help = 'paragraph', action = textadept.editing.select_paragraph },
@@ -901,98 +905,110 @@ local nav_hydra = hydra.create({
     end,
   },
   {
-    key = '4',
-    help = '<>',
+    key = '1',
+    help = '}',
     action = function()
-      util.move_to('[<>]')
-    end,
-    persistent = true,
-  },
-  {
-    key = '3',
-    help = '()',
-    action = function()
-      util.move_to('[()]')
+      util.move_to('[}]')
+      select_matching()
     end,
     persistent = true,
   },
   {
     key = '2',
-    help = '[]',
+    help = ']',
     action = function()
-      util.move_to('[\\[\\]]')
+      util.move_to('[\\]]')
+      select_matching()
     end,
     persistent = true,
   },
   {
-    key = '1',
-    help = '{}',
+    key = '3',
+    help = ')',
     action = function()
-      util.move_to('[{}]')
+      util.move_to('[)]', false)
+      select_matching()
+    end,
+    persistent = true,
+  },
+  {
+    key = '4',
+    help = '>',
+    action = function()
+      util.move_to('[>]')
+      select_matching()
     end,
     persistent = true,
   },
   {
     key = 's',
-    help = "''",
+    help = "'",
     action = function()
       util.move_to("[']")
+      textadept.editing.select_enclosed("'", "'")
     end,
     persistent = true,
   },
   {
     key = 'd',
-    help = '""',
+    help = '"',
     action = function()
       util.move_to('["]')
+      textadept.editing.select_enclosed('"', '"')
     end,
     persistent = true,
   },
   {
-    key = 'alt+q',
-    help = 'rev ()',
+    key = 'alt+1',
+    help = '{',
     action = function()
-      util.move_to('[()]', true)
+      util.move_to('[{]', true)
+      select_matching()
     end,
     persistent = true,
   },
   {
-    key = 'alt+w',
-    help = 'rev []',
+    key = 'alt+2',
+    help = '[',
     action = function()
-      util.move_to('[\\[\\]]', true)
+      util.move_to('[\\[]', true)
+      select_matching()
     end,
     persistent = true,
   },
   {
-    key = 'alt+e',
-    help = 'rev {}',
+    key = 'alt+3',
+    help = '(',
     action = function()
-      util.move_to('[{}]', true)
+      util.move_to('[(]', true)
+      select_matching()
     end,
     persistent = true,
   },
   {
     key = 'alt+4',
-    help = 'rev <>',
+    help = '<',
     action = function()
-      util.move_to('[<>]', true)
+      util.move_to('[<]', true)
+      select_matching()
     end,
     persistent = true,
   },
   {
     key = 'alt+s',
-    help = "rev ''",
+    help = "prev '",
     action = function()
       util.move_to("[']", true)
+      textadept.editing.select_enclosed("'", "'")
     end,
     persistent = true,
   },
   {
     key = 'alt+d',
-    help = 'rev ""',
+    help = 'prev "',
     action = function()
       util.move_to('["]', true)
+      textadept.editing.select_enclosed('"', '"')
     end,
     persistent = true,
   },
