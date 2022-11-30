@@ -664,17 +664,10 @@ local edit_hydra = hydra.create({
 
 local select_hydra = hydra.create({
   {
-    key = '4',
-    help = '<>',
+    key = '1',
+    help = '{}',
     action = function()
-      textadept.editing.select_enclosed('<', '>')
-    end,
-  },
-  {
-    key = '3',
-    help = '()',
-    action = function()
-      textadept.editing.select_enclosed('(', ')')
+      textadept.editing.select_enclosed('{', '}')
     end,
   },
   {
@@ -685,10 +678,17 @@ local select_hydra = hydra.create({
     end,
   },
   {
-    key = '1',
-    help = '{}',
+    key = '3',
+    help = '()',
     action = function()
-      textadept.editing.select_enclosed('{', '}')
+      textadept.editing.select_enclosed('(', ')')
+    end,
+  },
+  {
+    key = '4',
+    help = '<>',
+    action = function()
+      textadept.editing.select_enclosed('<', '>')
     end,
   },
   {
