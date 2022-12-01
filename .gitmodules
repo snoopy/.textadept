@@ -9,7 +9,7 @@
 	url = https://github.com/orbitalquark/textadept-html.git
 [submodule "modules/textredux"]
 	path = modules/textredux
-	url = git@github.com:snoopy/textredux.git
+	url = https://github.com/snoopy/textredux.git
 [submodule "modules/hydra"]
 	path = modules/hydra
-	url = git@github.com:snoopy/textadept-hydra.git
+	url = https://github.com/snoopy/textadept-hydra.git
