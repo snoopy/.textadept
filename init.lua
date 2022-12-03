@@ -411,13 +411,19 @@ keys['alt+w'] = function()
   local s, e = buffer.selection_start, buffer.selection_end
   buffer:delete_range(s, e - s)
 end
+
 keys['alt+a'] = function()
-  buffer:vc_home()
-  local _, caret_pos = buffer:get_cur_line()
-  if caret_pos == 1 then
+  if buffer.selection_empty then
     buffer:vc_home()
+    local _, caret_pos = buffer:get_cur_line()
+    if caret_pos == 1 then
+      buffer:vc_home()
+    end
+    buffer:line_end_extend()
+  else
+    buffer:line_down_extend()
+    buffer:line_end_extend()
   end
-  buffer:line_end_extend()
   buffer:copy()
 end
 
