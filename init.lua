@@ -810,7 +810,7 @@ local select_hydra = hydra.create({
     action = buffer.document_start_extend,
   },
   {
-    key = 'g',
+    key = 'e',
     help = 'buffer end',
     action = buffer.document_end_extend,
   },
@@ -1041,7 +1041,7 @@ local nav_hydra = hydra.create({
     persistent = true,
   },
   {
-    key = 'g',
+    key = 'e',
     help = 'buffer end',
     action = buffer.document_end,
   },
