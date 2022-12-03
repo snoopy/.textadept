@@ -6,7 +6,7 @@ local P, S = lpeg.P, lpeg.S
 
 local lex = lexer.new(...)
 
-lex:add_rule('controlflow', lex:tag(lexer.KEYWORD .. '.ctl', lexer.word_match('break continue do else elseif for if return next last unless while foreach')))
+lex:add_rule('controlflow', lex:tag(lexer.KEYWORD .. '.ctl', lexer.word_match('break continue do else elsif for if return next last unless while foreach')))
 
 -- Keywords.
 lex:add_rule('keyword', lex:tag(lexer.KEYWORD, lex:word_match(lexer.KEYWORD)))
