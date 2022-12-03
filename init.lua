@@ -355,6 +355,8 @@ keys.f4 = util.toggle_header
 keys.f8 = buffer.undo
 keys.f5 = buffer.redo
 
+keys['ctrl+r'] = textadept.editing.paste_reindent
+
 keys.f2 = function()
   clear_indicators()
   textadept.editing.select_word()
