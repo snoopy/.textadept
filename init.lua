@@ -389,6 +389,9 @@ end
 keys['alt+d'] = function()
   enclose_or_add('"', '"')
 end
+keys['alt+l'] = function()
+  enclose_or_add('/', '/')
+end
 keys['alt+c'] = custom_comment
 keys['alt+f'] = buffer.line_delete
 keys['alt+v'] = buffer.line_duplicate
