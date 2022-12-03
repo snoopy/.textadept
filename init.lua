@@ -443,6 +443,14 @@ keys['alt+,'] = function()
   buffer:end_undo_action()
 end
 
+-- add m to end of line
+keys['alt+m'] = function()
+  buffer:begin_undo_action()
+  buffer:line_end_display()
+  buffer:add_text(',')
+  buffer:end_undo_action()
+end
+
 -- insert and go to new line
 keys['ctrl+\n'] = function()
   buffer:line_end_display()
