@@ -58,7 +58,7 @@ textadept.editing.brace_matches[string.byte('>')] = true
 textadept.editing.auto_pairs = {}
 textadept.editing.typeover_chars = {}
 
-textadept.run.compile_commands.cpp = 'g++ -std=c++17 -O2 "%f"'
+textadept.run.compile_commands.cpp = 'g++ -std=c++20 -O2 "%f"'
 
 events.connect(events.LEXER_LOADED, function(name)
   if name == 'yaml' or
@@ -1442,6 +1442,30 @@ local git_hydra = hydra.create({
   { key = 'b', help = 'blame', action = function() util.gitblame() end },
 })
 
+local run_hydra = hydra.create({
+  { key = 'r', help = 'run', action = textadept.run.run },
+  { key = 'c', help = 'compile', action = textadept.run.compile },
+  { key = 'p', help = 'project', action = function()
+    local path = io.get_project_root(buffer.filename, true)
+    local build
+    for filename in lfs.walk(path, '', 1, true) do
+      if filename:match('build') then
+        build = filename
+        goto finish
+      end
+    end
+    ::finish::
+    if not build then build = '' end
+    textadept.run.run_project(nil, 'ninja -C ' .. build)
+    end,
+  },
+  { key = 'g', help = 'goto error', action = function()
+    textadept.run.goto_error(nil, true)
+    end,
+    persistent = true,
+  },
+})
+
 local main_hydra = hydra.create({
   { key = 'o', help = 'open', action = open_hydra },
   { key = 'j', help = 'jump to', action = nav_hydra },
@@ -1454,6 +1478,7 @@ local main_hydra = hydra.create({
   { key = 'b', help = 'buffer', action = buffer_hydra },
   { key = 'm', help = 'bookmark', action = bookmark_hydra },
   { key = 'g', help = 'git', action = git_hydra },
+  { key = 'r', help = 'run', action = run_hydra },
   { key = 'n', help = 'new buffer', action = buffer.new },
   { key = 'w', help = 'close buffer', action = buffer.close },
   {
