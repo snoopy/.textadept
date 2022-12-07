@@ -866,6 +866,15 @@ local selection_hydra = hydra.create({
     persistent = true,
   },
   {
+    key = 'r',
+    help = 'reverse',
+    action = function()
+      textadept.editing.select_word()
+      local s = buffer:get_sel_text()
+      buffer:replace_sel(s:reverse())
+    end,
+  },
+  {
     key = ' ',
     help = 'enclose spaces',
     action = function()
