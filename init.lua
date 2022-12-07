@@ -519,18 +519,13 @@ keys['ctrl+ '] = function()
   end
 end
 
-keys['ctrl+pgdn'] = function()
-  view:goto_buffer(1)
-end
-keys['ctrl+pgup'] = function()
-  view:goto_buffer(-1)
-end
 keys['ctrl+up'] = function()
   buffer:line_scroll(0, -10)
 end
 keys['ctrl+down'] = function()
   buffer:line_scroll(0, 10)
 end
+
 keys['alt+home'] = buffer.scroll_to_start
 keys['alt+end'] = buffer.scroll_to_end
 
@@ -542,6 +537,15 @@ end
 keys['alt+down'] = function()
   buffer:para_down()
   buffer:vc_home()
+end
+
+keys['ctrl+pgup'] = function()
+  buffer.stuttered_page_up()
+  buffer:vertical_center_caret()
+end
+keys['ctrl+pgdn'] = function()
+  buffer.stuttered_page_down()
+  buffer:vertical_center_caret()
 end
 
 -- move cursor to start/end of visible screen
