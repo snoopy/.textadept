@@ -736,7 +736,7 @@ local select_hydra = hydra.create({
     end,
   },
   {
-    key = 'i',
+    key = 'c',
     help = '/* */',
     action = function()
       textadept.editing.select_enclosed('/*', '*/')
@@ -883,7 +883,7 @@ local selection_hydra = hydra.create({
     persistent = true,
   },
   {
-    key = 'i',
+    key = 'c',
     help = 'enclose /* */',
     action = function()
       textadept.editing.enclose('/* ', ' */')
