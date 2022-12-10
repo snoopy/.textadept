@@ -541,19 +541,18 @@ end
 
 keys['ctrl+pgup'] = function()
   buffer.stuttered_page_up()
-  buffer:vertical_center_caret()
 end
 keys['ctrl+pgdn'] = function()
   buffer.stuttered_page_down()
-  buffer:vertical_center_caret()
 end
 
--- move cursor to start/end of visible screen
 keys['pgup'] = function()
   buffer.stuttered_page_up()
+  buffer:vertical_center_caret()
 end
 keys['pgdn'] = function()
   buffer.stuttered_page_down()
+  buffer:vertical_center_caret()
 end
 
 -- center cursor
