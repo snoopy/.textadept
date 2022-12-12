@@ -15,7 +15,7 @@ local function popen(cmd)
   return result
 end
 
-function M.blame()
+function M.gitblame()
   local linenumber = buffer:line_from_position(buffer.current_pos)
   ui.print(popen('blame '))
   buffer.goto_line(linenumber)
