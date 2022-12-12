@@ -250,10 +250,10 @@ local function dispatch(case)
   -- switch['recent'] = textredux.core.filteredlist.wrap(io.open_recent_file)
   -- switch['lexer'] = textredux.core.filteredlist.wrap(m('Buffer/Select Lexer...'))
   -- switch['bookmarks'] = textredux.core.filteredlist.wrap(textadept.bookmarks.goto_mark)
-  -- switch['ctags_init'] = ctags_redux.init_ctags
-  -- switch['ctags_local'] = ctags_redux.find_local
-  -- switch['ctags_global'] = ctags_redux.find_global
-  -- switch['ctags_back'] = ctags_redux.go_back
+  switch['ctags_init'] = ctags_redux.init_ctags
+  switch['ctags_local'] = ctags_redux.find_local
+  switch['ctags_global'] = ctags_redux.find_global
+  switch['ctags_back'] = ctags_redux.go_back
 
   -- switch['open'] = io.open_file
   -- switch['switchbuffer'] = ui.switch_buffer
@@ -261,10 +261,10 @@ local function dispatch(case)
   switch['recent'] = io.open_recent_file
   switch['lexer'] = m('Buffer/Select Lexer...')
   switch['bookmarks'] = textadept.bookmarks.goto_mark
-  switch['ctags_init'] = function()end
-  switch['ctags_local'] = function()end
-  switch['ctags_global'] = function()end
-  switch['ctags_back'] = function()end
+  -- switch['ctags_init'] = function()end
+  -- switch['ctags_local'] = function()end
+  -- switch['ctags_global'] = function()end
+  -- switch['ctags_back'] = function()end
 
   return switch[case]
 end
