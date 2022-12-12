@@ -239,6 +239,7 @@ local textredux = require('textredux')
 textredux.hijack()
 local ctags_redux = require('ctags_redux')
 local util = require('util')
+local qapp = require('qapp')
 
 local function dispatch(case)
   local switch = {}
@@ -1493,6 +1494,14 @@ local main_hydra = hydra.create({
   { key = 'r', help = 'run', action = run_hydra },
   { key = 'n', help = 'new buffer', action = buffer.new },
   { key = 'w', help = 'close buffer', action = buffer.close },
+  { key = 'alt+1', help = '', action = function() qapp.set(1) end, },
+  { key = '1', help = '', action = function() qapp.go(1) end, },
+  { key = 'alt+2', help = '', action = function() qapp.set(2) end, },
+  { key = '2', help = '', action = function() qapp.go(2) end, },
+  { key = 'alt+3', help = '', action = function() qapp.set(3) end, },
+  { key = '3', help = '', action = function() qapp.go(3) end, },
+  { key = 'alt+4', help = '', action = function() qapp.set(4) end, },
+  { key = '4', help = '', action = function() qapp.go(4) end, },
   {
     key = 'W',
     help = 'force close',
