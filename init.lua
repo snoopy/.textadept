@@ -28,6 +28,7 @@ view.whitespace_size = 5
 
 textadept.editing.strip_trailing_spaces = true
 io.ensure_final_newline = true
+view.end_at_last_line = false
 
 -- highlight all search results and all selections
 ui.find.highlight_all_matches = true
