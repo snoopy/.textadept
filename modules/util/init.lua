@@ -143,20 +143,12 @@ function M.insert_namespace()
   })
   if button == 1 then
     buffer:begin_undo_action()
-    if #value > 0 then
-      buffer:add_text('namespace ' .. value)
-    else
-      buffer:add_text('namespace')
-    end
+    buffer:add_text('namespace ' .. value)
     buffer:new_line()
     buffer:add_text('{')
     buffer:new_line()
     buffer:new_line()
-    if #value > 0 then
-      buffer:add_text('} // namespace ' .. value)
-    else
-      buffer:add_text('} // anonymous namespace')
-    end
+    buffer:add_text('} // namespace ' .. value)
     buffer:line_up()
     buffer:tab()
     buffer:end_undo_action()
