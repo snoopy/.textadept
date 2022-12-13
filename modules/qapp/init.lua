@@ -18,7 +18,6 @@ end
 
 events.connect(events.INITIALIZED, function()
   local f = io.open(installdir, 'r')
-
   if not f then return end
 
   for line in f:lines() do
@@ -49,6 +48,7 @@ end)
 
 events.connect(events.QUIT, function()
   local f = io.open(installdir, 'w')
+  if not f then return end
 
   for project, slots in pairs(jumplist) do
     for k, file in pairs(slots) do
