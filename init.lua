@@ -1211,18 +1211,13 @@ local open_hydra = hydra.create({
 local run_hydra = hydra.create({
   { key = 'r', help = 'run', action = textadept.run.run },
   { key = 'c', help = 'compile', action = textadept.run.compile },
-  { key = 'p', help = 'project', action = function()
-    local path = io.get_project_root(buffer.filename, true)
-    local build
-    for filename in lfs.walk(path, '', 1, true) do
-      if filename:match('build') then
-        build = filename
-        goto finish
-      end
-    end
-    ::finish::
-    if not build then build = '' end
-    textadept.run.run_project(nil, 'ninja -C ' .. build)
+  {
+    key = 'b', help = 'build', action = function()
+      local root = io.get_project_root(buffer.filename, true)
+      local build_path = buffer.filename:match('(' .. root .. '[/\\][^/\\]+)')
+      if not build_path then build_path = root end
+      textadept.run.build_commands[root] = 'ninja -C ' .. build_path .. '/build'
+      textadept.run.build(root)
     end,
   },
   { key = 'g', help = 'goto error', action = function()
