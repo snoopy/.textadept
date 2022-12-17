@@ -344,10 +344,6 @@ end
 
 keys['shift+esc'] = quit
 
--- c++
-keys['ctrl+f1'] = dispatch('ctags_local')
-keys['ctrl+f2'] = dispatch('ctags_global')
-keys['ctrl+f8'] = dispatch('ctags_back')
 keys.f4 = util.toggle_header
 
 -- editing
@@ -1095,7 +1091,12 @@ local project_hydra = hydra.create({
       end
     end,
   },
+
   { key = 'b', help = 'blame', action = function() util.gitblame() end },
+
+  { key = 'f1', help = 'ctags: find local', action = dispatch('ctags_local'), },
+  { key = 'f2', help = 'ctags: find global', action = dispatch('ctags_global'), },
+  { key = 'f8', help = 'ctags: back', action = dispatch('ctags_back'), },
 })
 
 local view_hydra = hydra.create({
