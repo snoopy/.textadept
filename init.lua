@@ -1019,7 +1019,6 @@ local buffer_hydra = hydra.create({
   { key = 'w', help = 'whitespace', action = whitespace_hydra },
   { key = 'e', help = 'eol', action = eol_hydra },
   { key = 'c', help = 'encoding', action = encoding_hydra },
-  { key = 't', help = 'ctags init', action = dispatch('ctags_init') },
   {
     key = 'k', help = 'close all', action = function()
       local retval = ui.dialogs.message({
@@ -1072,6 +1071,7 @@ local project_hydra = hydra.create({
   { key = 'f1', help = 'ctags: find local', action = dispatch('ctags_local'), },
   { key = 'f2', help = 'ctags: find global', action = dispatch('ctags_global'), },
   { key = 'f8', help = 'ctags: back', action = dispatch('ctags_back'), },
+  { key = 'c', help = 'ctags: init', action = dispatch('ctags_init') },
 })
 
 local view_hydra = hydra.create({
