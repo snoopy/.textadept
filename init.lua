@@ -1137,7 +1137,7 @@ local bookmark_hydra = hydra.create({
     persistent = true,
   },
   {
-    key = 'N', help = 'prev', action = function()
+    key = 'p', help = 'prev', action = function()
       textadept.bookmarks.goto_mark(false)
       buffer:vertical_center_caret()
       buffer:vc_home()
