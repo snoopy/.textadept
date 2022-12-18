@@ -906,35 +906,10 @@ local nav_hydra = hydra.create({
 })
 
 local encoding_hydra = hydra.create({
-  {
-    key = '8', help = 'utf-8 encoding', action = function()
-      set_encoding('utf-8')
-    end,
-  },
-  {
-    key = 'a', help = 'ascii encoding', action = function()
-      set_encoding('ascii')
-    end,
-  },
-  {
-    key = '6', help = 'utf-16 encoding', action = function()
-      set_encoding('utf-16le')
-    end,
-  },
-  {
-    key = 'x', help = 'custom encoding', action = function()
-      local value, button = ui.dialogs.input({
-        title = 'Set encoding',
-        text = '',
-        button1 = 'OK',
-        button2 = 'Cancel',
-        return_button = true,
-      })
-      if button == 1 then
-        buffer:set_encoding(value)
-      end
-    end,
-  },
+  { key = '8', help = 'UTF-8 encoding', action = m('Buffer/Encoding/UTF-8 Encoding'), },
+  { key = '6', help = 'UTF-16 encoding', action = m('Buffer/Encoding/UTF-16 Encoding') },
+  { key = '5', help = 'CP-1252 encoding', action = m('Buffer/Encoding/CP-1252 Encoding') },
+  { key = 'a', help = 'ASCII encoding', action = m('Buffer/Encoding/ASCII Encoding') },
 })
 
 local eol_hydra = hydra.create({
