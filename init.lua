@@ -1123,6 +1123,18 @@ local view_hydra = hydra.create({
     action = m('View/Grow View'),
     persistent = true,
   },
+  {
+    key = 'n', help = 'next view', action = function()
+      ui.goto_view(1)
+    end,
+    persistent = true
+  },
+  {
+    key = 'p', help = 'next view', action = function()
+      ui.goto_view(-1)
+    end,
+    persistent = true
+  },
 })
 
 local bookmark_hydra = hydra.create({
