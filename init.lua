@@ -24,7 +24,7 @@ view.edge_color = 0xcccccc
 
 view.wrap_indent_mode = view.WRAPINDENT_DEEPINDENT
 view.indentation_guides = buffer.IV_LOOKBOTH
-view.whitespace_size = 5
+view.whitespace_size = 3
 
 textadept.editing.strip_trailing_spaces = true
 io.ensure_final_newline = true
