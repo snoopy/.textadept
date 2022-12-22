@@ -448,6 +448,15 @@ end
 
 -- movement
 
+keys['alt+h'] = function() buffer:char_left() end
+keys['alt+j'] = function() buffer:line_down() end
+keys['alt+k'] = function() buffer:line_up() end
+keys['alt+l'] = function()
+  if buffer.char_at[buffer.current_pos] ~= 0xA then
+    buffer:char_right()
+  end
+end
+
 keys.f1 = dispatch('switchbuffer')
 
 keys.f3 = function()
@@ -498,11 +507,11 @@ keys['alt+\n'] = function()
   buffer:end_undo_action()
 end
 
-keys['ctrl+ '] = function()
-  if buffer.char_at[buffer.current_pos] ~= 0xA then
-    buffer:char_right()
-  end
-end
+-- keys['ctrl+ '] = function()
+  -- if buffer.char_at[buffer.current_pos] ~= 0xA then
+    -- buffer:char_right()
+  -- end
+-- end
 
 keys['ctrl+up'] = function()
   buffer:line_scroll(0, -10)
