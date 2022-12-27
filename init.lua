@@ -120,9 +120,9 @@ local function dispatch(case)
   switch['open'] = textredux.fs.open_file
   switch['switchbuffer'] = textredux.buffer_list.show
   switch['saveas'] = textredux.fs.save_buffer_as
-  -- switch['recent'] = textredux.core.filteredlist.wrap(io.open_recent_file)
-  -- switch['lexer'] = textredux.core.filteredlist.wrap(m('Buffer/Select Lexer...'))
-  -- switch['bookmarks'] = textredux.core.filteredlist.wrap(textadept.bookmarks.goto_mark)
+  switch['recent'] = textredux.core.filteredlist.wrap(io.open_recent_file)
+  switch['lexer'] = textredux.core.filteredlist.wrap(m('Buffer/Select Lexer...'))
+  switch['bookmarks'] = textredux.core.filteredlist.wrap(textadept.bookmarks.goto_mark)
   switch['ctags_init'] = ctags_redux.init_ctags
   switch['ctags_local'] = ctags_redux.find_local
   switch['ctags_global'] = ctags_redux.find_global
@@ -131,9 +131,9 @@ local function dispatch(case)
   -- switch['open'] = io.open_file
   -- switch['switchbuffer'] = ui.switch_buffer
   -- switch['saveas'] = buffer.save_as
-  switch['recent'] = io.open_recent_file
-  switch['lexer'] = m('Buffer/Select Lexer...')
-  switch['bookmarks'] = textadept.bookmarks.goto_mark
+  -- switch['recent'] = io.open_recent_file
+  -- switch['lexer'] = m('Buffer/Select Lexer...')
+  -- switch['bookmarks'] = textadept.bookmarks.goto_mark
   -- switch['ctags_init'] = function()end
   -- switch['ctags_local'] = function()end
   -- switch['ctags_global'] = function()end
