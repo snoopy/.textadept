@@ -507,11 +507,11 @@ keys['alt+\n'] = function()
   buffer:end_undo_action()
 end
 
--- keys['ctrl+ '] = function()
-  -- if buffer.char_at[buffer.current_pos] ~= 0xA then
-    -- buffer:char_right()
-  -- end
--- end
+keys['ctrl+ '] = function()
+  if buffer.char_at[buffer.current_pos] ~= 0xA then
+    buffer:char_right()
+  end
+end
 
 keys['ctrl+up'] = function()
   buffer:line_scroll(0, -10)
