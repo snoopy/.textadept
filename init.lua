@@ -92,138 +92,11 @@ lfs.default_filter[#lfs.default_filter + 1] = '!/extern%a*$'
 
 io.quick_open_max = 10000
 
--- functions
-
 local function m(labels)
   local menu = textadept.menu.menubar
   for label in labels:gmatch('[^/]+') do menu = menu[_L[label]] end
   return menu[2]
 end
-
-local function add_braces(style, append, tab)
-  buffer:begin_undo_action()
-  if style == 'allman' then
-    buffer:line_end()
-    buffer:new_line()
-    buffer:add_text('{')
-    buffer:new_line()
-  elseif style == 'kr' then
-    buffer:line_end()
-    buffer:add_text(' {')
-    buffer:new_line()
-  end
-  buffer:new_line()
-  buffer:add_text('}' .. append)
-  buffer:line_up()
-  if tab then
-    buffer:tab()
-  end
-  buffer:end_undo_action()
-end
-
-local function enclose_or_add(left, right)
-  buffer:begin_undo_action()
-  for i = 1, buffer.selections do
-    local s, e = buffer.selection_n_start[i], buffer.selection_n_end[i]
-    buffer:set_target_range(s, e)
-    buffer:replace_target(left .. buffer.target_text .. right)
-    buffer.selection_n_start[i] = buffer.target_start + #left
-    buffer.selection_n_end[i] = buffer.target_end - #right
-  end
-  buffer:end_undo_action()
-end
-
-local function insert_text_multi(text)
-  buffer:begin_undo_action()
-  for i = 1, buffer.selections do
-    local s, e = buffer.selection_n_start[i], buffer.selection_n_end[i]
-    buffer:set_target_range(s, e)
-    buffer:replace_target(text .. buffer.target_text)
-    buffer.selection_n_start[i] = buffer.target_end
-    buffer.selection_n_end[i] = buffer.target_end
-  end
-  buffer:end_undo_action()
-end
-
-local function clear_indicators()
-  buffer.indicator_current = ui.find.INDIC_FIND
-  buffer:indicator_clear_range(1, buffer.length)
-  buffer.indicator_current = textadept.editing.INDIC_HIGHLIGHT
-  buffer:indicator_clear_range(1, buffer.length)
-end
-
-local function select_matching()
-  local target = buffer:brace_match(buffer.current_pos, 0)
-  if target < buffer.current_pos then
-    buffer:set_selection(buffer.current_pos, target + 1)
-  else
-    buffer:set_selection(buffer.current_pos + 1, target)
-  end
-end
-
-local function custom_comment()
-  local lang = buffer:get_lexer(true)
-  local comment = textadept.editing.comment_string[lang] or buffer.property['scintillua.comment.' .. lang]
-  local prefix, suffix = comment:match('^([^|]+)|?([^|]*)$')
-  if not prefix then return end
-
-  local prefix_esc = ''
-  for c in prefix:gmatch('.') do
-    prefix_esc = prefix_esc .. '%' .. c
-  end
-  prefix = prefix .. ' '
-
-  local current_line = buffer:get_line(buffer.line_from_position(buffer.current_pos))
-  if buffer.selection_empty and current_line:match('^%s*$') then
-    buffer:insert_text(buffer.current_pos, prefix)
-    buffer:goto_pos(buffer.current_pos + #prefix)
-    return
-  end
-
-  local anchor, pos = buffer.selection_start, buffer.selection_end
-  local s, e = buffer:line_from_position(anchor), buffer:line_from_position(pos)
-  local ignore_last_line = s ~= e and pos == buffer:position_from_line(e)
-  anchor, pos = buffer.line_end_position[s] - anchor, buffer.length + 1 - pos
-  local column = math.huge
-
-  buffer:begin_undo_action()
-  for line = s, not ignore_last_line and e or e - 1 do
-    local full_line = buffer:get_line(line)
-    if full_line:match('^%s*$') then goto continue end
-
-    local p = buffer.line_indent_position[line]
-
-    local uncomment = full_line:match('^%s*(' .. prefix_esc .. '%s?)')
-    if uncomment then uncomment = uncomment:gsub('\n*$', '') end
-
-    if not uncomment then
-      buffer:insert_text(p, prefix)
-      if suffix ~= '' then buffer:insert_text(buffer.line_end_position[line], suffix) end
-    else
-      buffer:delete_range(p, #uncomment)
-      if suffix ~= '' then
-        p = buffer.line_end_position[line]
-        buffer:delete_range(p - #suffix, #suffix)
-      end
-    end
-
-    if line == s then anchor = anchor + #suffix * (uncomment and -1 or 1) end
-    if line == e then pos = pos + #suffix * (uncomment and -1 or 1) end
-    ::continue::
-  end
-  buffer:end_undo_action()
-
-  anchor, pos = buffer.line_end_position[s] - anchor, buffer.length + 1 - pos
-  local start_pos = buffer:position_from_line(s)
-  anchor, pos = math.max(anchor, start_pos), math.max(pos, start_pos)
-  if s ~= e then
-    buffer:set_sel(anchor, pos)
-  else
-    buffer:goto_pos(pos)
-  end
-end
-
--- keybinds
 
 -- unbind some defaults
 keys['ctrl+alt+\\'] = nil
@@ -355,7 +228,7 @@ keys.f5 = buffer.redo
 keys['ctrl+r'] = textadept.editing.paste_reindent
 
 keys.f2 = function()
-  clear_indicators()
+  util.clear_indicators()
   textadept.editing.select_word()
   view:scroll_caret()
 end
@@ -366,29 +239,29 @@ keys['shift+f2'] = function()
 end
 
 keys['alt+f2'] = function()
-  clear_indicators()
+  util.clear_indicators()
   textadept.editing.select_word(true)
 end
 
 keys['alt+4'] = function()
-  enclose_or_add('<', '>')
+  util.enclose_or_add('<', '>')
 end
 keys['alt+3'] = function()
-  enclose_or_add('(', ')')
+  util.enclose_or_add('(', ')')
 end
 keys['alt+2'] = function()
-  enclose_or_add('[', ']')
+  util.enclose_or_add('[', ']')
 end
 keys['alt+1'] = function()
-  enclose_or_add('{', '}')
+  util.enclose_or_add('{', '}')
 end
 keys['alt+s'] = function()
-  enclose_or_add("'", "'")
+  util.enclose_or_add("'", "'")
 end
 keys['alt+d'] = function()
-  enclose_or_add('"', '"')
+  util.enclose_or_add('"', '"')
 end
-keys['alt+c'] = custom_comment
+keys['alt+c'] = util.custom_comment
 keys['alt+f'] = buffer.line_delete
 keys['alt+v'] = buffer.line_duplicate
 keys['alt+r'] = function()
@@ -461,12 +334,12 @@ end
 keys.f1 = dispatch('switchbuffer')
 
 keys.f3 = function()
-  clear_indicators()
+  util.clear_indicators()
   ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false})
 end
 
 keys['shift+f3'] = function()
-  clear_indicators()
+  util.clear_indicators()
   ui.find.focus({ in_files = true, incremental = false, regex = false, match_case = false })
 end
 
@@ -581,7 +454,7 @@ local hydra = require('hydra')
 local insert_hydra = hydra.create({
   {
     key = 'n', help = '\\n', action = function()
-      insert_text_multi('\\n')
+      util.insert_text_multi('\\n')
     end,
     persistent = true,
   },
@@ -607,18 +480,18 @@ local insert_hydra = hydra.create({
   },
   {
     key = 's', help = 'std::', action = function()
-      insert_text_multi('std::')
+      util.insert_text_multi('std::')
     end,
   },
   {
     key = 'i', help = 'include', action = function()
-      insert_text_multi('#include <>')
+      util.insert_text_multi('#include <>')
       buffer:char_left()
     end,
   },
   {
     key = 'l', help = 'include local', action = function()
-      insert_text_multi('#include ""')
+      util.insert_text_multi('#include ""')
       buffer:char_left()
     end,
   },
@@ -693,7 +566,7 @@ local edit_hydra = hydra.create({
 
   {
     key = ' ', help = 'enclose spaces', action = function()
-      enclose_or_add(' ', ' ')
+      util.enclose_or_add(' ', ' ')
     end,
     persistent = true,
   },
@@ -712,7 +585,7 @@ local selection_hydra = hydra.create({
         textadept.editing.select_enclosed('{', '}')
       else
         util.move_to('[}]')
-        select_matching()
+        util.select_matching()
       end
     end,
     persistent = true,
@@ -723,7 +596,7 @@ local selection_hydra = hydra.create({
         textadept.editing.select_enclosed('[', ']')
       else
         util.move_to('[\\]]')
-        select_matching()
+        util.select_matching()
       end
     end,
     persistent = true,
@@ -734,7 +607,7 @@ local selection_hydra = hydra.create({
         textadept.editing.select_enclosed('(', ')')
       else
         util.move_to('[)]')
-        select_matching()
+        util.select_matching()
       end
     end,
     persistent = true,
@@ -745,7 +618,7 @@ local selection_hydra = hydra.create({
         textadept.editing.select_enclosed('<', '>')
       else
         util.move_to('[>]')
-        select_matching()
+        util.select_matching()
       end
     end,
     persistent = true,
@@ -772,28 +645,28 @@ local selection_hydra = hydra.create({
   {
     key = 'alt+1', help = '{', action = function()
       util.move_to('[{]', true)
-      select_matching()
+      util.select_matching()
     end,
     persistent = true,
     },
     {
       key = 'alt+2', help = '[', action = function()
         util.move_to('[\\[]', true)
-        select_matching()
+        util.select_matching()
       end,
       persistent = true,
     },
     {
       key = 'alt+3', help = '(', action = function()
         util.move_to('[(]', true)
-        select_matching()
+        util.select_matching()
       end,
       persistent = true,
     },
     {
       key = 'alt+4', help = '<', action = function()
         util.move_to('[<]', true)
-        select_matching()
+        util.select_matching()
       end,
       persistent = true,
     },
@@ -833,7 +706,7 @@ local selection_hydra = hydra.create({
   },
   {
     key = 'm', help = 'matching', action = function()
-      select_matching()
+      util.select_matching()
     end,
   },
   { key = 'p', help = 'paragraph', action = textadept.editing.select_paragraph },
