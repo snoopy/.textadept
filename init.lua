@@ -913,9 +913,6 @@ local nav_hydra = hydra.create({
   },
   { key = 'e', help = 'buffer end', action = buffer.document_end, },
   { key = 'h', help = 'buffer start', action = buffer.document_start, },
-
-  { key = 'l', help = 'last buffer', action = util.last_buffer, persistent = true },
-
 })
 
 local encoding_hydra = hydra.create({
