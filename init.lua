@@ -162,7 +162,8 @@ local function select_matching()
 end
 
 local function custom_comment()
-  local comment = textadept.editing.comment_string[buffer:get_lexer(true)] or buffer.property['scintillua.comment']
+  local lang = buffer:get_lexer(true)
+  local comment = textadept.editing.comment_string[lang] or buffer.property['scintillua.comment.' .. lang]
   local prefix, suffix = comment:match('^([^|]+)|?([^|]*)$')
   if not prefix then return end
 
