@@ -27,6 +27,8 @@ events.connect(events.INITIALIZED, function()
       parts[#parts + 1] = str
     end
 
+    if not lfs.attributes(file) then goto next end
+
     local root = parts[1]
     local i = tonumber(parts[2])
     local file = parts[3]
@@ -41,6 +43,8 @@ events.connect(events.INITIALIZED, function()
     end
 
     jumplist[root][i] = {file, ln}
+
+    ::next::
   end
 
   f:close()
