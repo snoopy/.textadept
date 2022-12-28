@@ -951,6 +951,13 @@ local project_hydra = hydra.create({
 
   { key = 'b', help = 'blame', action = function() util.gitblame() end },
 
+  { key = 't', help = 'clang-tidy', action = function()
+    local rootpath = io.get_project_root(buffer.filename, true)
+    local filepath = buffer.filename
+    local cmd = [[clang-tidy -checks=\*,-fuchsia\*,-modernize\* -p ]]
+    textadept.run.run_project(nil, cmd .. rootpath .. '/build/compile_commands.json ' .. filepath)
+  end, },
+
   { key = 'f1', help = 'ctags: find local', action = dispatch('ctags_local'), },
   { key = 'f2', help = 'ctags: find global', action = dispatch('ctags_global'), },
   { key = 'f8', help = 'ctags: back', action = dispatch('ctags_back'), },
