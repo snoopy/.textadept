@@ -1080,9 +1080,7 @@ local run_hydra = hydra.create({
   {
     key = 'b', help = 'build', action = function()
       local root = io.get_project_root(buffer.filename, true)
-      local build_path = buffer.filename:match('(' .. root .. '[/\\][^/\\]+)')
-      if not build_path then build_path = root end
-      textadept.run.build_commands[root] = 'ninja -C ' .. build_path .. '/build'
+      textadept.run.build_commands[root] = 'ninja -C ' .. root .. '/build'
       textadept.run.build(root)
     end,
   },
