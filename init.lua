@@ -143,10 +143,7 @@ end
 
 events.connect(events.CHAR_ADDED, function(code)
   if code >= 48 and code <= 57 or code >= 65 and code <= 90 or code >= 97 and code <= 122 or code == 95 then
-    textadept.editing.autocomplete('word')
-    if buffer:auto_c_active() then
-      return
-    end
+    if textadept.editing.autocomplete('word') then return end
     textadept.editing.autocomplete(buffer:get_lexer(true))
   end
 end)
