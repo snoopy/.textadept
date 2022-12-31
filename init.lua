@@ -872,6 +872,20 @@ local whitespace_hydra = hydra.create({
     end,
     persistent = true,
   },
+  { key = 'w', help = 'width', action = function()
+      local value, button = ui.dialogs.input({
+        title = 'set tab width',
+        informative_text = '',
+        button1 = 'OK',
+        button2 = 'Cancel',
+        return_button = true,
+      })
+      if button == 1 then
+        buffer.tab_width = value
+        events.emit(events.UPDATE_UI, 1) -- for updating statusbar
+      end
+    end,
+  },
 })
 
 local buffer_hydra = hydra.create({
