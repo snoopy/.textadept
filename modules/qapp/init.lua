@@ -27,12 +27,12 @@ events.connect(events.INITIALIZED, function()
       parts[#parts + 1] = str
     end
 
-    if not lfs.attributes(file) then goto next end
-
     local root = parts[1]
     local i = tonumber(parts[2])
     local file = parts[3]
     local ln = tonumber(parts[4])
+
+    if not lfs.attributes(file) then goto next end
 
     if not jumplist[root] then
       jumplist[root] = {}
