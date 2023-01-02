@@ -84,7 +84,7 @@ function M.go(i)
   if not root then return end
   if not jumplist[root] then return end
   if not jumplist[root][i] then return end
-  ui.goto_file(jumplist[root][i][1])
+  io.open_file(jumplist[root][i][1])
   buffer.goto_line(jumplist[root][i][2])
   view:vertical_center_caret()
 end
