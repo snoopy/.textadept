@@ -456,22 +456,22 @@ local insert_hydra = hydra.create({
   },
   {
     key = 'm', help = 'allman', action = function()
-      add_braces('allman', '', true)
+      util.add_braces('allman', '', true)
     end,
   },
   {
     key = 'alt+m', help = 'allman;', action = function()
-      add_braces('allman', ';', true)
+      util.add_braces('allman', ';', true)
     end,
   },
   {
     key = 'k', help = 'kr', action = function()
-      add_braces('kr', '', true)
+      util.add_braces('kr', '', true)
     end,
   },
   {
     key = 'alt+k', help = 'kr;', action = function()
-      add_braces('kr', ';', true)
+      util.add_braces('kr', ';', true)
     end,
   },
   {
