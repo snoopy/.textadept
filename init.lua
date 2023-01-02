@@ -52,8 +52,6 @@ lexer.detect_extensions.gitconfig = 'ini'
 lexer.detect_extensions.cmake = 'cmake'
 lexer.detect_patterns.cmake = 'cmake'
 
-textadept.editing.brace_matches[string.byte('<')] = true
-textadept.editing.brace_matches[string.byte('>')] = true
 textadept.editing.auto_pairs = {}
 textadept.editing.typeover_chars = {}
 
