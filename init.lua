@@ -1092,7 +1092,7 @@ local run_hydra = hydra.create({
       textadept.run.build(root)
     end,
   },
-  { key = 'p', help = 'project', action = function()
+  { key = 'o', help = 'project', action = function()
     textadept.run.run_project()
   end, },
   { key = 'g', help = 'goto error', action = function()
