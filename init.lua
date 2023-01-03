@@ -1095,8 +1095,13 @@ local run_hydra = hydra.create({
   { key = 'o', help = 'project', action = function()
     textadept.run.run_project(nil, '')
   end, },
-  { key = 'g', help = 'goto error', action = function()
+  { key = 'n', help = 'next error', action = function()
       textadept.run.goto_error(nil, true)
+    end,
+    persistent = true,
+  },
+  { key = 'p', help = 'prev error', action = function()
+      textadept.run.goto_error(nil, false)
     end,
     persistent = true,
   },
