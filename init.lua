@@ -287,7 +287,6 @@ keys['alt+a'] = function()
     buffer:line_down_extend()
     buffer:line_end_extend()
   end
-  buffer:copy()
 end
 
 keys['alt+\b'] = function()
