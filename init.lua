@@ -338,12 +338,12 @@ end
 
 keys.f11 = function()
   util.goto_nearest_occurrence(true)
-  buffer:vertical_center_caret()
+  view:vertical_center_caret()
 end
 
 keys.f12 = function()
   util.goto_nearest_occurrence(false)
-  buffer:vertical_center_caret()
+  view:vertical_center_caret()
 end
 
 keys['alt+left'] = function()
@@ -409,11 +409,11 @@ end
 
 keys['pgup'] = function()
   buffer.stuttered_page_up()
-  buffer:vertical_center_caret()
+  view:vertical_center_caret()
 end
 keys['pgdn'] = function()
   buffer.stuttered_page_down()
-  buffer:vertical_center_caret()
+  view:vertical_center_caret()
 end
 
 keys['ins'] = function()
@@ -756,7 +756,7 @@ local nav_hydra = hydra.create({
   {
     key = 'n', help = 'line number', action = function()
       textadept.editing.goto_line()
-      buffer:vertical_center_caret()
+      view:vertical_center_caret()
       buffer:vc_home()
     end,
   },
@@ -972,7 +972,7 @@ local project_hydra = hydra.create({
 })
 
 local view_hydra = hydra.create({
-  { key = 'c', help = 'center', action = buffer.vertical_center_caret, },
+  { key = 'c', help = 'center', action = view.vertical_center_caret, },
   {
     key = 'h', help = 'split h', action = function()
       view:split()
@@ -1025,7 +1025,7 @@ local bookmark_hydra = hydra.create({
   {
     key = 'n', help = 'next', action = function()
       textadept.bookmarks.goto_mark(true)
-      buffer:vertical_center_caret()
+      view:vertical_center_caret()
       buffer:vc_home()
     end,
     persistent = true,
@@ -1033,7 +1033,7 @@ local bookmark_hydra = hydra.create({
   {
     key = 'p', help = 'prev', action = function()
       textadept.bookmarks.goto_mark(false)
-      buffer:vertical_center_caret()
+      view:vertical_center_caret()
       buffer:vc_home()
     end,
     persistent = true,
