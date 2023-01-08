@@ -84,10 +84,7 @@ events.connect(events.FILE_CHANGED, function()
 end, 1)
 
 events.connect(events.FILE_AFTER_SAVE, function(filename)
-  if buffer:get_lexer() == 'cpp' then
-    os.spawn('clang-format -i -style=file -fallback-style=none "' .. filename .. '"'):wait()
-    buffer:reload()
-  end
+  util.format_buffer({'cpp'}, filename)
 end)
 
 lfs.default_filter[#lfs.default_filter + 1] = '!/build.*$'
