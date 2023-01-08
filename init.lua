@@ -1,3 +1,10 @@
+local hydra = require('hydra')
+local qapp = require('qapp')
+local util = require('util')
+local ctags_redux = require('ctags_redux')
+local textredux = require('textredux')
+textredux.hijack()
+
 view:set_theme('solarbox', { font = 'JetBrains Mono NL Medium', size = 15 })
 
 buffer.use_tabs = false
@@ -104,12 +111,6 @@ keys['ctrl+p'] = nil
 keys['ctrl+o'] = nil
 keys['ctrl+d'] = nil
 keys['ctrl+u'] = nil
-
-local textredux = require('textredux')
-textredux.hijack()
-local ctags_redux = require('ctags_redux')
-local util = require('util')
-local qapp = require('qapp')
 
 local function dispatch(case)
   local switch = {}
@@ -441,8 +442,6 @@ end
 keys['end'] = function()
   buffer.line_end_wrap()
 end
-
-local hydra = require('hydra')
 
 local insert_hydra = hydra.create({
   {
