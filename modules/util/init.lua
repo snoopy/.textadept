@@ -291,13 +291,14 @@ function M.custom_comment()
   end
 end
 
-function M.format_buffer(lang, filename)
+function M.format_buffer()
   buffer:begin_undo_action()
-  for i in ipairs(lang) do
-    if lang[i] == 'cpp' then
-      os.spawn('clang-format -i -style=file -fallback-style=none "' .. filename .. '"'):wait()
-      buffer:reload()
-    end
+  filename = buffer.filename
+  lang = buffer:get_lexer(true)
+  if not filename or not lang then return end
+  if lang == 'cpp' then
+    os.spawn('clang-format -i -style=file -fallback-style=none "' .. filename .. '"'):wait()
+    buffer:reload()
   end
   buffer:end_undo_action()
 end

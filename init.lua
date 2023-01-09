@@ -84,7 +84,7 @@ events.connect(events.FILE_CHANGED, function()
 end, 1)
 
 events.connect(events.FILE_AFTER_SAVE, function(filename)
-  util.format_buffer({'cpp'}, filename)
+  util.format_buffer()
 end)
 
 lfs.default_filter[#lfs.default_filter + 1] = '!/build.*$'
@@ -905,7 +905,7 @@ local buffer_hydra = hydra.create({
   { key = 'w', help = 'whitespace', action = whitespace_hydra },
   { key = 'e', help = 'eol', action = eol_hydra },
   { key = 'f', help = 'format', action = function()
-      util.format_buffer({buffer:get_lexer(true)}, buffer.filename)
+      util.format_buffer()
     end,
   },
   { key = 'c', help = 'encoding', action = encoding_hydra },
