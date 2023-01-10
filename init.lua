@@ -408,11 +408,11 @@ keys['ctrl+pgdn'] = function()
 end
 
 keys['pgup'] = function()
-  buffer.stuttered_page_up()
+  buffer:goto_line(buffer.first_visible_line)
   view:vertical_center_caret()
 end
 keys['pgdn'] = function()
-  buffer.stuttered_page_down()
+  buffer:goto_line(buffer.first_visible_line + buffer.lines_on_screen)
   view:vertical_center_caret()
 end
 
