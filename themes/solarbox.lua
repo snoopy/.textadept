@@ -53,14 +53,14 @@ colors.purple = 0x990099
 colors.magenta = magenta
 
 colors.bg = dark0_hard
-colors.current_line_bg = dark3
+colors.current_line_bg = 0x454950
 colors.selection_bg = ghselbg
 colors.selection_fg = grey3
 colors.comment = dark3
-colors.linenumbers_fg = dark4
+colors.linenumbers_fg = 0x545c66
 colors.linenumbers_bg = dark0_medium
 colors.operator = base0
-colors.caret = lightgrey
+colors.caret = 0x888545
 colors.highlight = base0
 colors.regex = orange
 colors.label = red
@@ -141,7 +141,7 @@ styles.error_indent = {back = colors.red}
 
 -- Caret and Selection Styles.
 view.element_color[view.ELEMENT_CARET] = colors.caret
-view.element_color[view.ELEMENT_CARET_ADDITIONAL] = colors.operator
+view.element_color[view.ELEMENT_CARET_ADDITIONAL] = 0x587b42
 view.element_color[view.ELEMENT_SELECTION_BACK] = colors.selection_bg
 view.element_color[view.ELEMENT_SELECTION_TEXT] = colors.selection_fg
 view.element_color[view.ELEMENT_SELECTION_INACTIVE_BACK] = dark1
