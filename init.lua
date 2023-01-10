@@ -103,6 +103,7 @@ end
 
 -- unbind some defaults
 keys['ctrl+alt+\\'] = nil
+keys['ctrl+alt+|'] = nil
 keys['ctrl+r'] = nil
 keys['ctrl+q'] = nil
 keys['ctrl+f'] = nil
