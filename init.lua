@@ -25,6 +25,8 @@ view.margin_width_n[3] = 0
 view.caret_period = 0
 view.caret_style = view.CARETSTYLE_BLOCK
 view.caret_line_frame = 1
+-- keep caret 8 lines away from top/bottom
+view:set_y_caret_policy(view.CARET_SLOP | view.CARET_STRICT | view.CARET_EVEN, 8)
 
 view.edge_column = 100
 view.edge_color = 0xcccccc
