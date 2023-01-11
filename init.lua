@@ -72,7 +72,8 @@ events.connect(events.LEXER_LOADED, function(name)
       name == 'html' then
     buffer.use_tabs = false
     buffer.tab_width = 2
-  elseif name == 'python' then
+  end
+  if name == 'python' then
     buffer.use_tabs = false
     buffer.tab_width = 4
   end
