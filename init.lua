@@ -413,7 +413,7 @@ keys['pgup'] = function()
   view:vertical_center_caret()
 end
 keys['pgdn'] = function()
-  buffer:goto_line(buffer.first_visible_line + buffer.lines_on_screen)
+  buffer:goto_line(buffer.first_visible_line + buffer.lines_on_screen - 1)
   view:vertical_center_caret()
 end
 
