@@ -1,46 +1,21 @@
 local M = {}
 
--- git
-
-local git_path = 'git'
-
-local function popen(cmd)
-  local rootpath = io.get_project_root(buffer.filename, true)
+function M.gitblame()
+  local rootpath = io.get_project_root(true)
+  if not rootpath then
+    ui.statusbar_text = 'Not a git directory'
+    return
+  end
   local filepath = buffer.filename
+  local linenumber = buffer:line_from_position(buffer.current_pos)
 
-  local file = assert(io.popen(git_path .. ' -C ' .. rootpath .. ' ' .. cmd .. ' ' .. filepath, 'r'))
+  local file = assert(io.popen('git -C ' .. rootpath .. ' blame ' .. filepath, 'r'))
   local result = assert(file:read('*a'))
   file:close()
 
-  return result
-end
-
-function M.gitblame()
-  local linenumber = buffer:line_from_position(buffer.current_pos)
-  ui.print(popen('blame '))
+  ui.print(result)
   buffer.goto_line(linenumber)
-  view:vertical_center_caret()
-  view:unsplit()
 end
-
-function M.current_line_log()
-  local linenumber = buffer:line_from_position(buffer.current_pos)
-  local cmd = 'log -L ' .. linenumber .. ',+1:'
-  ui.print(popen(cmd))
-  buffer:set_lexer('diff')
-  buffer:document_start()
-  view:unsplit()
-end
-
-function M.log()
-  local cmd = 'log '
-  ui.print(popen(cmd))
-  buffer:set_lexer('makefile')
-  buffer:document_start()
-  view:unsplit()
-end
-
--- nav
 
 function M.goto_nearest_occurrence(reverse)
   --local buffer = buffer
