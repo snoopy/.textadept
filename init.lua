@@ -1034,7 +1034,7 @@ local bookmark_hydra = hydra.create({
     persistent = true,
   },
   {
-    key = 'p', help = 'prev', action = function()
+    key = 'N', help = 'prev', action = function()
       textadept.bookmarks.goto_mark(false)
       view:vertical_center_caret()
       buffer:vc_home()
@@ -1094,7 +1094,7 @@ local run_hydra = hydra.create({
       textadept.run.build(root)
     end,
   },
-  { key = 'o', help = 'project', action = function()
+  { key = 'p', help = 'project', action = function()
     textadept.run.run_project(nil, '')
   end, },
   { key = 'n', help = 'next error', action = function()
@@ -1102,7 +1102,7 @@ local run_hydra = hydra.create({
     end,
     persistent = true,
   },
-  { key = 'p', help = 'prev error', action = function()
+  { key = 'N', help = 'prev error', action = function()
       textadept.run.goto_error(nil, false)
     end,
     persistent = true,
