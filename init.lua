@@ -5,7 +5,7 @@ local ctags_redux = require('ctags_redux')
 local textredux = require('textredux')
 textredux.hijack()
 
-view:set_theme('solarbox', { font = 'JetBrains Mono NL Medium', size = 15 })
+view:set_theme('goofbox_m', { font = 'JetBrains Mono NL Medium', size = 16 })
 
 buffer.use_tabs = false
 buffer.tab_width = 4
