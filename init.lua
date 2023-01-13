@@ -185,7 +185,6 @@ keys.f5 = buffer.redo
 keys['ctrl+r'] = textadept.editing.paste_reindent
 
 keys.f2 = function()
-  util.clear_indicators()
   textadept.editing.select_word()
   view:scroll_caret()
 end
@@ -196,7 +195,6 @@ keys['shift+f2'] = function()
 end
 
 keys['alt+f2'] = function()
-  util.clear_indicators()
   textadept.editing.select_word(true)
 end
 
@@ -290,12 +288,10 @@ end
 keys.f1 = dispatch('switchbuffer')
 
 keys.f3 = function()
-  util.clear_indicators()
   ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false})
 end
 
 keys['shift+f3'] = function()
-  util.clear_indicators()
   ui.find.focus({ in_files = true, incremental = false, regex = false, match_case = false })
 end
 

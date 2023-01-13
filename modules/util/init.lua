@@ -168,13 +168,6 @@ function M.insert_text_multi(text)
   buffer:end_undo_action()
 end
 
-function M.clear_indicators()
-  buffer.indicator_current = ui.find.INDIC_FIND
-  buffer:indicator_clear_range(1, buffer.length)
-  buffer.indicator_current = textadept.editing.INDIC_HIGHLIGHT
-  buffer:indicator_clear_range(1, buffer.length)
-end
-
 function M.select_matching()
   local target = buffer:brace_match(buffer.current_pos, 0)
   if target < buffer.current_pos then
