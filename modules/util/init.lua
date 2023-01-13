@@ -17,41 +17,21 @@ function M.gitblame()
   buffer.goto_line(linenumber)
 end
 
-function M.goto_nearest_occurrence(reverse)
-  --local buffer = buffer
-
+function M.find_word_under_cursor(prev)
   if buffer.selection_empty then
-    textadept.editing.select_word(false)
+    textadept.editing.select_word()
   end
-
-  local s, e = buffer.selection_start, buffer.selection_end
-  if s == e then
-    s, e = buffer:word_start_position(s), buffer:word_end_position(s)
-  end
-  local word = buffer:text_range(s, e)
-  if word == '' then
-    return
-  end
-
-  buffer.search_flags = buffer.FIND_WHOLEWORD + buffer.FIND_MATCHCASE
-  if reverse then
-    buffer.target_start = s - 1
-    buffer.target_end = 0
+  ui.find.find_entry_text = buffer:get_sel_text()
+  ui.find.whole_word = true
+  ui.find.incremental = false
+  ui.find.regex = false
+  ui.find.find_in_files = false
+  ui.find.match_case = false
+  if prev then
+    ui.find.find_prev()
   else
-    buffer.target_start = e + 1
-    buffer.target_end = buffer.length
+    ui.find.find_next()
   end
-  if buffer:search_in_target(word) == -1 then
-    if reverse then
-      buffer.target_start = buffer.length
-      buffer.target_end = e + 1
-    else
-      buffer.target_start = 0
-      buffer.target_end = s - 1
-    end
-    if buffer:search_in_target(word) == -1 then return end
-  end
-  buffer:set_sel(buffer.target_start, buffer.target_end)
 end
 
 function M.goto_space(reverse)

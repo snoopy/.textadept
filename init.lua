@@ -300,13 +300,11 @@ keys['shift+f3'] = function()
 end
 
 keys.f11 = function()
-  util.goto_nearest_occurrence(true)
-  view:vertical_center_caret()
+  util.find_word_under_cursor(true)
 end
 
 keys.f12 = function()
-  util.goto_nearest_occurrence(false)
-  view:vertical_center_caret()
+  util.find_word_under_cursor(false)
 end
 
 keys['alt+left'] = function()
