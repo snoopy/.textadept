@@ -142,57 +142,19 @@ local function dispatch(case)
 end
 
 events.connect(events.CHAR_ADDED, function(code)
-  if code >= 48 and code <= 57 or code >= 65 and code <= 90 or code >= 97 and code <= 122 or code == 95 then
-    if textadept.editing.autocomplete('word') then return end
-    textadept.editing.autocomplete(buffer:get_lexer(true))
-  end
+  if buffer.current_pos - buffer:word_start_position(buffer.current_pos, true) < 2 then return end
+  if textadept.editing.autocomplete('word') then return end
+  textadept.editing.autocomplete(buffer:get_lexer(true))
 end)
 
 events.connect(events.KEYPRESS, function(code)
-  if buffer:auto_c_active() and code ~= 65505 then
+  if code:match('alt.*')
+      or code:match('up')
+      or code:match('down')
+      then
     buffer:auto_c_cancel()
   end
-end)
-
-keys['\n'] = function()
-  if buffer:auto_c_active() then
-    buffer:auto_c_complete()
-    return true
-  end
-  return false
-end
-
-keys.up = function()
-  if buffer:auto_c_active() then
-    buffer:auto_c_cancel()
-    return false
-  end
-  return false
-end
-
-keys.down = function()
-  if buffer:auto_c_active() then
-    buffer:auto_c_cancel()
-    return false
-  end
-  return false
-end
-
-keys['home'] = function()
-  if buffer:auto_c_active() then
-    buffer:auto_c_cancel()
-    return false
-  end
-  return false
-end
-
-keys['end'] = function()
-  if buffer:auto_c_active() then
-    buffer:auto_c_cancel()
-    return false
-  end
-  return false
-end
+end, 1)
 
 -- select next autosuggestion with TAB
 keys['\t'] = function()
