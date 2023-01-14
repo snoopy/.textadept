@@ -288,11 +288,11 @@ end
 keys.f1 = dispatch('switchbuffer')
 
 keys.f3 = function()
-  ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false})
+  ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false, whole_word = false})
 end
 
 keys['shift+f3'] = function()
-  ui.find.focus({ in_files = true, incremental = false, regex = false, match_case = false })
+  ui.find.focus({ in_files = true, incremental = false, regex = false, match_case = false, whole_word = false})
 end
 
 keys.f11 = function()
