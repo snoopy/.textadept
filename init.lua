@@ -723,6 +723,17 @@ local nav_hydra = hydra.create({
     end,
     persistent = true,
   },
+
+  { key = '1', help = '{}', action = function() util.move_to('[{}]') end, persistent = true },
+  { key = '2', help = '[]', action = function() util.move_to('[\\[\\]]') end, persistent = true },
+  { key = '3', help = '()', action = function() util.move_to('[\\(\\)]') end, persistent = true },
+  { key = '4', help = '<>', action = function() util.move_to('[<>]') end, persistent = true },
+
+  { key = 'alt+1', help = '{}', action = function() util.move_to('[{}]', true) end, persistent = true },
+  { key = 'alt+2', help = '[]', action = function() util.move_to('[\\[\\]]', true) end, persistent = true },
+  { key = 'alt+3', help = '()', action = function() util.move_to('[\\(\\)]', true) end, persistent = true },
+  { key = 'alt+4', help = '<>', action = function() util.move_to('[<>]', true) end, persistent = true },
+
   { key = 'e', help = 'buffer end', action = buffer.document_end, },
   { key = 'h', help = 'buffer start', action = buffer.document_start, },
 })
