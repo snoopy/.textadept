@@ -716,15 +716,6 @@ local nav_hydra = hydra.create({
     end,
   },
 
-  { key = '1', help = 'qapp 1', action = function() qapp.go(1) end, },
-  { key = '2', help = 'qapp 2', action = function() qapp.go(2) end, },
-  { key = '3', help = 'qapp 3', action = function() qapp.go(3) end, },
-  { key = '4', help = 'qapp 4', action = function() qapp.go(4) end, },
-  { key = 'alt+1', help = 'set qapp 1', action = function() qapp.set(1) end, },
-  { key = 'alt+2', help = 'set qapp 2', action = function() qapp.set(2) end, },
-  { key = 'alt+3', help = 'set qapp 3', action = function() qapp.set(3) end, },
-  { key = 'alt+4', help = 'set qapp 4', action = function() qapp.set(4) end, },
-
   {
     key = 'm', help = 'matching', action = function()
       local pos = buffer:brace_match(buffer.current_pos, 0)
@@ -999,6 +990,17 @@ local bookmark_hydra = hydra.create({
   },
 })
 
+local qapp_hydra = hydra.create({
+  { key = '1', help = 'qapp 1', action = function() qapp.go(1) end, },
+  { key = '2', help = 'qapp 2', action = function() qapp.go(2) end, },
+  { key = '3', help = 'qapp 3', action = function() qapp.go(3) end, },
+  { key = '4', help = 'qapp 4', action = function() qapp.go(4) end, },
+  { key = 'alt+1', help = 'set qapp 1', action = function() qapp.set(1) end, },
+  { key = 'alt+2', help = 'set qapp 2', action = function() qapp.set(2) end, },
+  { key = 'alt+3', help = 'set qapp 3', action = function() qapp.set(3) end, },
+  { key = 'alt+4', help = 'set qapp 4', action = function() qapp.set(4) end, },
+})
+
 local open_hydra = hydra.create({
   { key = 'o', help = 'open', action = dispatch('open'), },
   {
@@ -1075,6 +1077,7 @@ local main_hydra = hydra.create({
   { key = 'p', help = 'project', action = project_hydra },
   { key = 'b', help = 'buffer', action = buffer_hydra },
   { key = 'm', help = 'bookmark', action = bookmark_hydra },
+  { key = 'q', help = 'quick access', action = qapp_hydra },
   { key = 'r', help = 'run', action = run_hydra },
   { key = 'n', help = 'new buffer', action = buffer.new },
   { key = 'w', help = 'close buffer', action = buffer.close },
