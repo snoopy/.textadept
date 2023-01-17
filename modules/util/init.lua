@@ -27,6 +27,7 @@ function M.find_word_under_cursor(prev)
   ui.find.regex = false
   ui.find.find_in_files = false
   ui.find.match_case = false
+  buffer:search_anchor()
   if prev then
     ui.find.find_prev()
   else
