@@ -716,6 +716,11 @@ local nav_hydra = hydra.create({
     end,
   },
 
+  { key = 'd', help = 'definition', action = function()
+      util.goto_definition()
+    end,
+  },
+
   {
     key = 'm', help = 'matching', action = function()
       local pos = buffer:brace_match(buffer.current_pos, 0)

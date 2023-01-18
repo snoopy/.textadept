@@ -266,4 +266,19 @@ function M.find_zero_indent(prev)
   end
 end
 
+function M.goto_definition()
+  if buffer.selection_empty then
+    textadept.editing.select_word()
+  end
+  ui.find.find_entry_text = buffer:get_sel_text()
+  ui.find.whole_word = true
+  ui.find.match_case = true
+  ui.find.incremental = false
+  ui.find.regex = false
+  ui.find.find_in_files = false
+  buffer:document_start()
+  buffer:search_anchor()
+  ui.find.find_next()
+end
+
 return M
