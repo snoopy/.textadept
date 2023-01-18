@@ -933,19 +933,19 @@ local project_hydra = hydra.create({
 })
 
 local view_hydra = hydra.create({
-  { key = 'c', help = 'center', action = view.vertical_center_caret, },
+  { key = 'v', help = 'center', action = view.vertical_center_caret, },
   {
-    key = 'h', help = 'split h', action = function()
+    key = '2', help = 'split h', action = function()
       view:split()
     end,
   },
   {
-    key = 'v', help = 'split v', action = function()
+    key = '1', help = 'split v', action = function()
       view:split(true)
     end,
   },
   {
-    key = 'u', help = 'unsplit', action = function()
+    key = 'c', help = 'unsplit', action = function()
       view:unsplit()
     end,
   },
