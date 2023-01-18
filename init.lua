@@ -337,13 +337,6 @@ keys['ctrl+ '] = function()
   end
 end
 
-keys['ctrl+up'] = function()
-  buffer:line_scroll(0, -10)
-end
-keys['ctrl+down'] = function()
-  buffer:line_scroll(0, 10)
-end
-
 keys['alt+home'] = buffer.scroll_to_start
 keys['alt+end'] = buffer.scroll_to_end
 
