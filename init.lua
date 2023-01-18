@@ -337,6 +337,13 @@ keys['ctrl+ '] = function()
   end
 end
 
+keys['ctrl+up'] = function()
+  buffer:goto_line(util.find_zero_indent(true))
+end
+keys['ctrl+down'] = function()
+  buffer:goto_line(util.find_zero_indent(false))
+end
+
 keys['alt+home'] = buffer.scroll_to_start
 keys['alt+end'] = buffer.scroll_to_end
 
