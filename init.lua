@@ -65,7 +65,7 @@ textadept.editing.typeover_chars = {}
 
 textadept.run.compile_commands.cpp = 'g++ -std=c++20 -O2 "%f"'
 
-events.connect(events.LEXER_LOADED, function(name)
+local function set_buffer_options(name)
   if name == 'yaml' or
       name == 'lua' or
       name == 'html' then
@@ -77,7 +77,11 @@ events.connect(events.LEXER_LOADED, function(name)
     buffer.tab_width = 4
   end
   textadept.editing.strip_trailing_spaces = lexer ~= 'markdown'
-end)
+end
+
+events.connect(events.LEXER_LOADED, function(name) set_buffer_options(name) end)
+events.connect(events.BUFFER_AFTER_SWITCH, function(name) set_buffer_options(name) end)
+events.connect(events.VIEW_AFTER_SWITCH, function(name) set_buffer_options(name) end)
 
 events.connect(events.FILE_CHANGED, function()
   buffer:reload()
