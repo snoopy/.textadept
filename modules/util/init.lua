@@ -23,10 +23,10 @@ function M.find_word_under_cursor(prev)
   end
   ui.find.find_entry_text = buffer:get_sel_text()
   ui.find.whole_word = true
+  ui.find.match_case = true
   ui.find.incremental = false
   ui.find.regex = false
   ui.find.find_in_files = false
-  ui.find.match_case = false
   buffer:search_anchor()
   if prev then
     ui.find.find_prev()
