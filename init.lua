@@ -721,7 +721,7 @@ local nav_hydra = hydra.create({
     end,
   },
 
-  { key = 'd', help = 'definition', action = function()
+  { key = 'f', help = 'first in file', action = function()
       util.goto_definition()
     end,
   },
