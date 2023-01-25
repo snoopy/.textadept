@@ -87,6 +87,7 @@ function M.go(i)
   io.open_file(jumplist[root][i][1])
   buffer.goto_line(jumplist[root][i][2])
   view:vertical_center_caret()
+  buffer:vc_home()
 end
 
 return M
