@@ -178,7 +178,7 @@ function M.select_matching()
   end
 end
 
-function M.custom_comment()
+function M.custom_comment(force)
   local lang = buffer:get_lexer(true)
   local comment = textadept.editing.comment_string[lang] or buffer.property['scintillua.comment.' .. lang]
   local prefix, suffix = comment:match('^([^|]+)|?([^|]*)$')
@@ -213,10 +213,12 @@ function M.custom_comment()
     local uncomment = full_line:match('^%s*(' .. prefix_esc .. '%s?)')
     if uncomment then uncomment = uncomment:gsub('\n*$', '') end
 
-    if not uncomment then
+    if not uncomment or force then
       buffer:insert_text(p, prefix)
       if suffix ~= '' then buffer:insert_text(buffer.line_end_position[line], suffix) end
-    else
+    end
+
+    if uncomment then
       buffer:delete_range(p, #uncomment)
       if suffix ~= '' then
         p = buffer.line_end_position[line]

@@ -223,7 +223,7 @@ end
 keys['alt+d'] = function()
   util.enclose_or_add('"', '"')
 end
-keys['alt+c'] = util.custom_comment
+keys['alt+c'] = function() util.custom_comment(false) end
 keys['alt+f'] = buffer.line_delete
 keys['alt+v'] = buffer.line_duplicate
 keys['alt+r'] = function()
@@ -526,8 +526,13 @@ local edit_hydra = hydra.create({
     persistent = true,
   },
 
+  { key = 'c', help = 'comment all', action = function()
+      util.custom_comment(true)
+    end,
+  },
+
   {
-    key = 'c', help = 'enclose /* */', action = function()
+    key = '*', help = 'enclose /* */', action = function()
       textadept.editing.enclose('/* ', ' */')
     end,
   },
