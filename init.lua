@@ -759,6 +759,9 @@ local nav_hydra = hydra.create({
   { key = 'e', help = 'buffer end', action = buffer.document_end, },
   { key = 'h', help = 'buffer start', action = buffer.document_start, },
 
+  { key = 'i', help = 'indent down', action = function() util.goto_matching_indent(false) end, persistent = true, },
+  { key = 'I', help = 'indent up', action = function() util.goto_matching_indent(true) end, persistent = true, },
+
   { key = 'o', help = 'origin', action = origin.set, persistent = true, },
 })
 

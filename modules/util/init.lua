@@ -254,6 +254,27 @@ function M.format_buffer()
   buffer:end_undo_action()
 end
 
+function M.goto_matching_indent(prev)
+  local origin = buffer:line_from_position(buffer.current_pos)
+  local target = buffer.line_indentation[origin]
+  local line = origin
+  local function search()
+    while true do
+      line = prev and line - 1 or line + 1
+      if line < 1 or line > buffer.line_count then
+        return origin
+      end
+      if buffer.line_indentation[line] == target and buffer:get_line(line):match('[^%s]+') then
+        ui.statusbar_text = line
+        return line
+      end
+    end
+  end
+  buffer:goto_line(search())
+  view:vertical_center_caret()
+  buffer:vc_home()
+end
+
 function M.find_zero_indent(prev)
   local origin = buffer:line_from_position(buffer.current_pos)
   local line = origin
