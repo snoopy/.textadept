@@ -254,9 +254,8 @@ function M.format_buffer()
   buffer:end_undo_action()
 end
 
-function M.goto_matching_indent(prev)
+local function find_indent(target, prev)
   local origin = buffer:line_from_position(buffer.current_pos)
-  local target = buffer.line_indentation[origin]
   local line = origin
   local function search()
     while true do
@@ -275,18 +274,13 @@ function M.goto_matching_indent(prev)
   buffer:vc_home()
 end
 
-function M.find_zero_indent(prev)
-  local origin = buffer:line_from_position(buffer.current_pos)
-  local line = origin
-  while true do
-    line = prev and line - 1 or line + 1
-    if line < 1 or line > buffer.line_count then
-      return origin
-    end
-    if buffer.line_indentation[line] == 0 and buffer:get_line(line):match('[^%s]+') then
-      return line
-    end
-  end
+function M.goto_matching_indent(prev)
+  local line = buffer:line_from_position(buffer.current_pos)
+  find_indent(buffer.line_indentation[line], prev)
+end
+
+function M.goto_zero_indent(prev)
+  find_indent(0, prev)
 end
 
 function M.goto_definition()
