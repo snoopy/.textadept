@@ -1,6 +1,7 @@
 local hydra = require('hydra')
 local qapp = require('qapp')
 local util = require('util')
+local origin = require('origin')
 local ctags_redux = require('ctags_redux')
 local textredux = require('textredux')
 textredux.hijack()
@@ -757,6 +758,8 @@ local nav_hydra = hydra.create({
 
   { key = 'e', help = 'buffer end', action = buffer.document_end, },
   { key = 'h', help = 'buffer start', action = buffer.document_start, },
+
+  { key = 'o', help = 'origin', action = origin.set, persistent = true, },
 })
 
 local encoding_hydra = hydra.create({
