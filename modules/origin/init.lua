@@ -1,6 +1,8 @@
 local M = {}
 
 local jump_history = {}
+local last_line = buffer.line_from_position(buffer.current_pos)
+M.min_line_difference = 1
 
 events.connect(events.INITIALIZED, function()
   jump_history = {}
@@ -18,18 +20,22 @@ events.connect(events.UPDATE_UI, function(updated)
   end
 
   local line = buffer.line_from_position(buffer.current_pos)
+  if not line then return end
 
   local i = #jump_history[file]
-  if jump_history[file][i] == line then return end
+    if math.abs(last_line - line) > M.min_line_difference then
+      jump_history[file][i + 1] = last_line
+      last_line = line
+    end
 
-  jump_history[file][i + 1] = line
+  last_line = line
 end)
 
 function M.set()
   local file = buffer.filename
-  table.remove(jump_history[file], #jump_history[file])
   local i = #jump_history[file]
   local line = jump_history[file][i]
+  table.remove(jump_history[file], #jump_history[file])
 
   if not line then return end
   buffer:goto_line(line)
