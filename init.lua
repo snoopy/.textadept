@@ -1,6 +1,7 @@
 local hydra = require('hydra')
 local qapp = require('qapp')
 local util = require('util')
+local origin = require('origin')
 local ctags_redux = require('ctags_redux')
 local textredux = require('textredux')
 textredux.hijack()
@@ -760,6 +761,9 @@ local nav_hydra = hydra.create({
 
   { key = 'n', help = 'indent down', action = function() util.goto_matching_indent(false) end, persistent = true, },
   { key = 'N', help = 'indent up', action = function() util.goto_matching_indent(true) end, persistent = true, },
+
+  { key = 'o', help = 'back', action = origin.back, persistent = true, },
+  { key = 'i', help = 'forward', action = origin.forward, persistent = true, },
 })
 
 local encoding_hydra = hydra.create({
