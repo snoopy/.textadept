@@ -923,6 +923,7 @@ local project_hydra = hydra.create({
         ui.statusbar_text = 'not a project'
         return
       end
+      path = path:gsub('%-', '%%-')
 
       local retval = ui.dialogs.message({
         title = 'Close all project buffers?',
