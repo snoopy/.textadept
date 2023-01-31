@@ -946,6 +946,7 @@ local project_hydra = hydra.create({
   },
 
   { key = 'b', help = 'blame', action = function() util.gitblame() end },
+  { key = 's', help = 'show file at revision', action = util.gitshowrev, },
 
   { key = 't', help = 'clang-tidy', action = function()
     local rootpath = io.get_project_root(buffer.filename, true)

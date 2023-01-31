@@ -17,6 +17,24 @@ function M.gitblame()
   buffer.goto_line(linenumber)
 end
 
+function M.gitshowrev()
+  local project = io.get_project_root(true)
+  local file = buffer.filename
+  if not project then return end
+  project = project:gsub('%-', '%%-')
+  file = file:gsub(project, '')
+  file = file:gsub('^[/\\]', '')
+  file = file:gsub('[\\]', '/')
+
+  local revision, button = ui.dialogs.input({
+    title = 'Enter git revision',
+    return_button = true,
+  })
+  if button ~= 1 then return end
+
+  textadept.run.run_project(nil, 'git show ' .. revision .. ':' .. file)
+end
+
 function M.find_word_under_cursor(prev)
   if buffer.selection_empty then
     textadept.editing.select_word()
