@@ -722,7 +722,7 @@ local selection_hydra = hydra.create({
 
 local nav_hydra = hydra.create({
   {
-    key = 'n', help = 'line number', action = function()
+    key = 'j', help = 'line number', action = function()
       textadept.editing.goto_line()
       view:vertical_center_caret()
       buffer:vc_home()
@@ -759,10 +759,10 @@ local nav_hydra = hydra.create({
   { key = 'e', help = 'buffer end', action = buffer.document_end, },
   { key = 'h', help = 'buffer start', action = buffer.document_start, },
 
-  { key = 'i', help = 'indent down', action = function() util.goto_matching_indent(false) end, persistent = true, },
-  { key = 'I', help = 'indent up', action = function() util.goto_matching_indent(true) end, persistent = true, },
+  { key = 'n', help = 'indent down', action = function() util.goto_matching_indent(false) end, persistent = true, },
+  { key = 'N', help = 'indent up', action = function() util.goto_matching_indent(true) end, persistent = true, },
 
-  { key = 'o', help = 'origin', action = origin.set, persistent = true, },
+  { key = 'l', help = 'origin', action = origin.set, persistent = true, },
 })
 
 local encoding_hydra = hydra.create({
