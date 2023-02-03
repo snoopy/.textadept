@@ -267,8 +267,10 @@ function M.format_buffer()
   if not filename or not lang then return end
   if lang == 'cpp' then
     os.spawn('clang-format -i -style=file -fallback-style=none "' .. filename .. '"'):wait()
-    buffer:reload()
+  elseif lang == 'html' then
+    os.spawn('perl ' .. _USERHOME .. '/modules/util/simple_html_indent_tool.pl "' .. filename .. '"'):wait()
   end
+  buffer:reload()
   buffer:end_undo_action()
 end
 
