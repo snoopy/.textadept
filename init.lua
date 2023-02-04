@@ -345,13 +345,6 @@ keys['ctrl+ '] = function()
   end
 end
 
-keys['ctrl+up'] = function()
-  util.goto_zero_indent(true)
-end
-keys['ctrl+down'] = function()
-  util.goto_zero_indent(false)
-end
-
 keys['alt+home'] = buffer.scroll_to_start
 keys['alt+end'] = buffer.scroll_to_end
 
@@ -759,11 +752,20 @@ local nav_hydra = hydra.create({
   { key = 'e', help = 'buffer end', action = buffer.document_end, },
   { key = 'h', help = 'buffer start', action = buffer.document_start, },
 
-  { key = 'n', help = 'indent down', action = function() util.goto_matching_indent(false) end, persistent = true, },
-  { key = 'N', help = 'indent up', action = function() util.goto_matching_indent(true) end, persistent = true, },
-
   { key = 'o', help = 'back', action = origin.back, persistent = true, },
   { key = 'i', help = 'forward', action = origin.forward, persistent = true, },
+
+  { key = 'n', help = 'next same indent', action = function() util.goto_matching_indent(false) end, persistent = true, },
+  { key = 'N', help = 'next same indent up', action = function() util.goto_matching_indent(true) end, persistent = true, },
+
+  { key = 'z', help = 'zero indent', action = function() util.goto_zero_indent(false) end, persistent = true, },
+  { key = 'Z', help = 'zero indent up', action = function() util.goto_zero_indent(true) end, persistent = true, },
+
+  { key = 'l', help = 'lesser indent', action = function() util.goto_diff_indent(false, false) end, persistent = true, },
+  { key = 'L', help = 'lesser indent up', action = function() util.goto_diff_indent(false, true) end, persistent = true, },
+
+  { key = 'k', help = 'greater indent', action = function() util.goto_diff_indent(true, false) end, persistent = true, },
+  { key = 'K', help = 'greater indent up', action = function() util.goto_diff_indent(true, true) end, persistent = true, },
 })
 
 local encoding_hydra = hydra.create({

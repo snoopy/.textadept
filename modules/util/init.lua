@@ -274,7 +274,7 @@ function M.format_buffer()
   buffer:end_undo_action()
 end
 
-local function find_indent(target, prev)
+local function find_indent(target, prev, operation)
   local origin = buffer:line_from_position(buffer.current_pos)
   local line = origin
   local function search()
@@ -283,9 +283,18 @@ local function find_indent(target, prev)
       if line < 1 or line > buffer.line_count then
         return origin
       end
-      if buffer.line_indentation[line] == target and buffer:get_line(line):match('[^%s]+') then
-        ui.statusbar_text = line
-        return line
+      if operation == 'eq' then
+        if buffer.line_indentation[line] == target and buffer:get_line(line):match('[^%s]+') then
+          return line
+        end
+      elseif operation == 'gt' then
+        if buffer.line_indentation[line] > target and buffer:get_line(line):match('[^%s]+') then
+          return line
+        end
+      elseif operation == 'lt' then
+        if buffer.line_indentation[line] < target and buffer:get_line(line):match('[^%s]+') then
+          return line
+        end
       end
     end
   end
@@ -294,13 +303,23 @@ local function find_indent(target, prev)
   buffer:vc_home()
 end
 
+function M.goto_diff_indent(gt, prev)
+  local line = buffer:line_from_position(buffer.current_pos)
+  local indent = buffer.line_indentation[line]
+  if gt then
+    find_indent(indent, prev, 'gt')
+  else
+    find_indent(indent, prev, 'lt')
+  end
+end
+
 function M.goto_matching_indent(prev)
   local line = buffer:line_from_position(buffer.current_pos)
-  find_indent(buffer.line_indentation[line], prev)
+  find_indent(buffer.line_indentation[line], prev, 'eq')
 end
 
 function M.goto_zero_indent(prev)
-  find_indent(0, prev)
+  find_indent(0, prev, 'eq')
 end
 
 function M.goto_definition()
