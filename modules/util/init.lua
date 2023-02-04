@@ -1,5 +1,13 @@
 local M = {}
 
+M.auto_format = {}
+
+events.connect(events.FILE_AFTER_SAVE, function(filename)
+  if M.auto_format[buffer.lexer_language] then
+    M.format_buffer()
+  end
+end)
+
 function M.gitblame()
   local rootpath = io.get_project_root(true)
   if not rootpath then

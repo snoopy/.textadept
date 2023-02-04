@@ -93,9 +93,8 @@ events.connect(events.FILE_CHANGED, function()
   return true
 end, 1)
 
-events.connect(events.FILE_AFTER_SAVE, function(filename)
-  util.format_buffer()
-end)
+util.auto_format['cpp'] = true
+util.auto_format['html'] = true
 
 lfs.default_filter[#lfs.default_filter + 1] = '!/build.*$'
 lfs.default_filter[#lfs.default_filter + 1] = '!/extern%a*$'
