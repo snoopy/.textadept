@@ -534,108 +534,39 @@ local edit_hydra = hydra.create({
 local selection_hydra = hydra.create({
   {
     key = '1', help = '{}', action = function()
-      if buffer.selection_empty then
-        textadept.editing.select_enclosed('{', '}')
-      else
-        util.move_to('[}]')
-        util.select_matching()
-      end
+      textadept.editing.select_enclosed('{', '}')
     end,
     persistent = true,
   },
   {
     key = '2', help = '[]', action = function()
-      if buffer.selection_empty then
-        textadept.editing.select_enclosed('[', ']')
-      else
-        util.move_to('[\\]]')
-        util.select_matching()
-      end
+      textadept.editing.select_enclosed('[', ']')
     end,
     persistent = true,
   },
   {
     key = '3', help = '()', action = function()
-      if buffer.selection_empty then
-        textadept.editing.select_enclosed('(', ')')
-      else
-        util.move_to('[)]')
-        util.select_matching()
-      end
+      textadept.editing.select_enclosed('(', ')')
     end,
     persistent = true,
   },
   {
     key = '4', help = '<>', action = function()
-      if buffer.selection_empty then
-        textadept.editing.select_enclosed('<', '>')
-      else
-        util.move_to('[>]')
-        util.select_matching()
-      end
+      textadept.editing.select_enclosed('<', '>')
     end,
     persistent = true,
   },
   {
     key = 's', help = "''", action = function()
-      if not buffer.selection_empty then
-        util.move_to("[']")
-      end
       textadept.editing.select_enclosed("'", "'")
     end,
     persistent = true,
   },
   {
     key = 'd', help = '""', action = function()
-      if not buffer.selection_empty then
-        util.move_to('["]')
-      end
       textadept.editing.select_enclosed('"', '"')
     end,
     persistent = true,
-  },
-
-  {
-    key = 'alt+1', help = '{', action = function()
-      util.move_to('[{]', true)
-      util.select_matching()
-    end,
-    persistent = true,
-    },
-    {
-      key = 'alt+2', help = '[', action = function()
-        util.move_to('[\\[]', true)
-        util.select_matching()
-      end,
-      persistent = true,
-    },
-    {
-      key = 'alt+3', help = '(', action = function()
-        util.move_to('[(]', true)
-        util.select_matching()
-      end,
-      persistent = true,
-    },
-    {
-      key = 'alt+4', help = '<', action = function()
-        util.move_to('[<]', true)
-        util.select_matching()
-      end,
-      persistent = true,
-    },
-    {
-      key = 'alt+s', help = "rev '", action = function()
-        util.move_to("[']", true)
-        textadept.editing.select_enclosed("'", "'")
-      end,
-      persistent = true,
-    },
-    {
-      key = 'alt+d', help = 'rev "', action = function()
-        util.move_to('["]', true)
-        textadept.editing.select_enclosed('"', '"')
-      end,
-      persistent = true,
   },
 
   {
