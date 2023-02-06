@@ -743,7 +743,6 @@ local eol_hydra = hydra.create({
     key = 'l', help = 'set edge column limit', action = function()
       local value, button = ui.dialogs.input({
         title = 'Change linelimit',
-        informative_text = 'Change linelimit',
         text = buffer.edge_column,
         button1 = 'OK',
         button2 = 'Cancel',
@@ -789,7 +788,6 @@ local whitespace_hydra = hydra.create({
   { key = 'w', help = 'width', action = function()
       local value, button = ui.dialogs.input({
         title = 'set tab width',
-        informative_text = '',
         button1 = 'OK',
         button2 = 'Cancel',
         return_button = true,
@@ -1003,7 +1001,6 @@ local open_hydra = hydra.create({
     key = 'f', help = 'filepath', action = function()
       local value, button = ui.dialogs.input({
         title = 'Open file',
-        informative_text = 'Path to file',
         button1 = 'OK',
         button2 = 'Cancel',
         return_button = true,
