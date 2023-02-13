@@ -61,7 +61,7 @@ styles[view.STYLE_DEFAULT] = {
   font = font, size = size, fore = 0x6a6a6a, back = bg0
 }
 styles[view.STYLE_LINENUMBER] = {fore = bg2, back = bg0}
-styles[view.STYLE_BRACELIGHT] = {fore = red}
+styles[view.STYLE_BRACELIGHT] = {fore = fg1}
 styles[view.STYLE_BRACEBAD] = {fore = colors.red}
 styles[view.STYLE_INDENTGUIDE] = {fore = 0x757575}
 styles[view.STYLE_CALLTIP] = {fore = colors.light_grey, back = colors.light_black}
