@@ -1,23 +1,31 @@
-use HTML::TreeBuilder;
-use HTML::PrettyPrinter;
+my $indent = 2;
+my $level = -2;
+my $ignore = 0;
+my $was_end = 0;
+my@html;
 
-my $hpp = new HTML::PrettyPrinter(
-    'linelength' => 130,
-    'quote_attr' => 1,
-    'allow_forced_nl' => 1,
-    'tabify' => 0,
-);
+open(my $fh, '<', "$ARGV[0]") or die;
 
-$hpp->set_nl_before(1, 'all!');
-$hpp->set_nl_after(1, 'all!');
-$hpp->set_force_nl(1, 'all!');
+while (<$fh>) {
+    chomp;
+    s/^\s*//;
+    while (m,(<(/)?.+>)|([^<>]+),g) {
+        $level += defined $2 ? -$indent : $indent;
+        # $tag = substr($1, 0, 2) if (defined $1);
+        $ignore = substr($1, 0, 2) eq '<!' or $1 eq '<br>' or $1 eq '<meta>';
+        $level -= $indent if ($skip == 1 && $ignore == 1);
+        $skip = $ignore > 0 ? 1 : 0;
+        $level -= $indent if ($was_end == 1 && not defined $2);
+        $was_end = defined $2 ? 1 : 0;
+        my $line = ' ' x $level;
+        $line .= "$1" if (defined $1);
+        $line .= "$3" if (defined $3);
+        push(@html, $line);
+    }
+}
 
-my $tree = new HTML::TreeBuilder;
-$tree->parse_file("$ARGV[0]");
-my $linearray_ref = $hpp->format($tree);
-
-open(my $fh, ">", "$ARGV[0]") or die;
-print $fh @$linearray_ref;
 close($fh);
 
-exit(0);
+open(my $fh, '>', "$ARGV[0]") or die;
+print $fh "$_\n" for (@html);
+close($fh);
