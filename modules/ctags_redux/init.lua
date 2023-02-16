@@ -222,7 +222,7 @@ end
 
 function M.init_ctags()
   local rootpath = io.get_project_root(buffer.filename, true)
-  local proc = os.spawn('ctags -f ' .. rootpath .. '/tags -R --fields=+ain --extra=+fq --c++-kinds=+p --language-force=c++ --exclude="build" ' .. rootpath)
+  local proc = os.spawn('ctags -f ' .. rootpath .. '/tags -R --fields=+ain --extra=+fq --c++-kinds=+p --exclude="build" ' .. rootpath)
   proc:wait()
   ui.statusbar_text = 'CTAGS initialized'
 end
