@@ -624,8 +624,8 @@ local selection_hydra = hydra.create({
     key = 'pgdn', help = 'para down', action = buffer.para_down_extend,
     persistent = true,
   },
-  { key = 'h', help = 'buffer start', action = buffer.document_start_extend, },
-  { key = 'e', help = 'buffer end', action = buffer.document_end_extend, },
+  { key = 'b', help = 'buffer end', action = buffer.document_end_extend, },
+  { key = 'B', help = 'buffer start', action = buffer.document_start_extend, },
 
   {
     key = 'c', help = 'crop', action = function()
@@ -679,8 +679,8 @@ local nav_hydra = hydra.create({
   { key = 'alt+s', help = "'", action = function() util.move_to("[']", true) end, persistent = true },
   { key = 'alt+d', help = '"', action = function() util.move_to('["]', true) end, persistent = true },
 
-  { key = 'e', help = 'buffer end', action = buffer.document_end, },
-  { key = 'h', help = 'buffer start', action = buffer.document_start, },
+  { key = 'b', help = 'buffer start', action = buffer.document_start, },
+  { key = 'B', help = 'buffer end', action = buffer.document_end, },
 
   { key = 'o', help = 'back', action = origin.back, persistent = true, },
   { key = 'i', help = 'forward', action = origin.forward, persistent = true, },
