@@ -696,6 +696,9 @@ local nav_hydra = hydra.create({
 
   { key = 'k', help = 'greater indent', action = function() util.goto_diff_indent(true, false) end, persistent = true, },
   { key = 'K', help = 'greater indent up', action = function() util.goto_diff_indent(true, true) end, persistent = true, },
+
+  { key = 'c', help = 'ctags: find', action = dispatch('ctags_global'), },
+  { key = 'C', help = 'ctags: back', action = dispatch('ctags_back'), },
 })
 
 local encoding_hydra = hydra.create({
@@ -886,9 +889,6 @@ local project_hydra = hydra.create({
     textadept.run.run_project(nil, cmd .. '/build/compile_commands.json ' .. filepath)
   end, },
 
-  { key = 'f1', help = 'ctags: find local', action = dispatch('ctags_local'), },
-  { key = 'f2', help = 'ctags: find global', action = dispatch('ctags_global'), },
-  { key = 'f8', help = 'ctags: back', action = dispatch('ctags_back'), },
   { key = 'c', help = 'ctags: init', action = dispatch('ctags_init') },
 })
 
