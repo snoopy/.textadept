@@ -122,6 +122,7 @@ styles.environment_math = styles[lexer.NUMBER]
 styles.error_indent = {back = colors.red}
 
 -- Caret and Selection Styles.
+ui.command_entry.element_color[view.ELEMENT_CARET] = fg4
 view.element_color[view.ELEMENT_CARET] = fg4
 view.element_color[view.ELEMENT_CARET_ADDITIONAL] = bg4
 view.element_color[view.ELEMENT_SELECTION_BACK] = gray8
