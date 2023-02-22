@@ -187,7 +187,7 @@ function M.find_local()
   local filename_noext = buffer.filename:match("[/\\]([^/\\]+)%.[^.]+$")
 
   -- match any line containing both tag and the current buffer's name
-  local pattern = '^(' .. tag .. ')\t(%S*' .. filename_noext  .. '%.[^.\t]*)\t(.+);"\t(%l)\tline:(%d+).*$'
+  local pattern = '^.*(' .. tag .. ')\t(%S*' .. filename_noext  .. '%.[^.\t]*)\t(.+);"\t(%l)\tline:(%d+).*$'
 
   result_list("Go to local symbol: " .. tag, search_in_files(pattern, false))
 end
@@ -199,7 +199,7 @@ textadept.editing.autocompleters.ctags = function()
   local tag = buffer:text_range(s, e)
 
   -- match anything including the (partial) tag
-  local tags = search_in_files('^('.. tag .. '%S*)\t([^\t]+)\t(.-);"\t?(.*)$', false)
+  local tags = search_in_files('^.*('.. tag .. '%S*)\t([^\t]+)\t(.-);"\t?(.*)$', false)
   if #tags == 0 then
     ui.statusbar_text = "CTAGS: No autocompletions found."
     return
