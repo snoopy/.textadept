@@ -174,7 +174,7 @@ function M.find_global()
   local tag = buffer:text_range(s, e)
 
   -- match any line containing the full tag
-  local pattern = '^(' .. tag .. ')\t(%S+)\t(.+);"\t(%l)\tline:(%d+).*$'
+  local pattern = '^.*(' .. tag .. ')\t(%S+)\t(.+);"\t(%l)\tline:(%d+).*$'
 
   result_list("Go to global symbol: " .. tag, search_in_files(pattern, false))
 end
