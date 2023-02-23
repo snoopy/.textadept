@@ -691,11 +691,11 @@ local nav_hydra = hydra.create({
   { key = 'z', help = 'zero indent', action = function() util.goto_zero_indent(false) end, persistent = true, },
   { key = 'Z', help = 'zero indent up', action = function() util.goto_zero_indent(true) end, persistent = true, },
 
-  { key = 'l', help = 'lesser indent', action = function() util.goto_diff_indent(false, false) end, persistent = true, },
-  { key = 'L', help = 'lesser indent up', action = function() util.goto_diff_indent(false, true) end, persistent = true, },
+  { key = 'l', help = '< indent', action = function() util.goto_diff_indent(false, false) end, persistent = true, },
+  { key = 'L', help = '< indent up', action = function() util.goto_diff_indent(false, true) end, persistent = true, },
 
-  { key = 'k', help = 'greater indent', action = function() util.goto_diff_indent(true, false) end, persistent = true, },
-  { key = 'K', help = 'greater indent up', action = function() util.goto_diff_indent(true, true) end, persistent = true, },
+  { key = 'k', help = '> indent', action = function() util.goto_diff_indent(true, false) end, persistent = true, },
+  { key = 'K', help = '> indent up', action = function() util.goto_diff_indent(true, true) end, persistent = true, },
 
   { key = 'c', help = 'ctags: find', action = dispatch('ctags_global'), },
   { key = 'C', help = 'ctags: back', action = dispatch('ctags_back'), },
