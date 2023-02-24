@@ -15,7 +15,7 @@ function M.go_back()
     jump_list[jump_list.pos] = nil
     jump_list.pos = jump_list.pos - 1
   else
-    ui.statusbar_text = "CTAGS: No more history."
+    ui.statusbar_text = "ctags: No more history."
   end
 end
 
@@ -36,7 +36,7 @@ end
 
 local function result_list(title, tags)
   if #tags == 0 then
-    ui.statusbar_text = "CTAGS: No results."
+    ui.statusbar_text = "ctags: No results."
     return
   end
 
@@ -126,7 +126,6 @@ local function search_in_files(pattern, function_list)
       local tag, file_path, ex_cmd, ext_fields, linenr = line:match(pattern)
       if tag then
         if not file_path:find('^%a?:?[/\\]') then file_path = dir .. file_path end
-        if ex_cmd:find('^/') then ex_cmd = ex_cmd:match('^/^%s*(.-)%s?{?%$/$') end
 
         if function_list then
           local buffer_fn_trim = buffer.filename:match("^(.+)%.[^/\\]+$")
@@ -140,7 +139,6 @@ local function search_in_files(pattern, function_list)
         end
 
         local file_name = file_path:match('/([^/]+)$')
-        ex_cmd = ex_cmd:sub(1, 40)
         tags[#tags + 1] = {file_name, lookup_id(ext_fields), ex_cmd, file_path, linenr}
 
         if not function_list then
@@ -160,12 +158,15 @@ local function search_in_files(pattern, function_list)
 end
 
 function M.function_list()
-  local filename_noext = buffer.filename:match("[/\\]([^/\\]+)%.[^.]+$")
-
-  -- only match lines containing the current buffer's name
-  local tags = search_in_files('^(%S+)\t(%S*[\\/]' .. filename_noext .. '%.%S*)\t(.+);"\t([fp])\tline:(%d+).*$', true)
-
-  result_list("Function list: " .. buffer.filename, tags)
+  local tag_regex = '^(.*)\t'
+  local filename = buffer.filename:match("[/\\]([^/\\]+)%.[^.]+$")
+  local path_regex = '(.*' .. filename .. '.*)\t'
+  local snippet_regex = '/^%s*(.+)$/;"\t'
+  local type_regex = '([fpm])\t'
+  local line_regex = 'line:(%d+).*$'
+  local pattern = tag_regex .. path_regex .. snippet_regex .. type_regex .. line_regex
+  local results = search_in_files(pattern, true)
+  result_list("Function list: " .. buffer.filename, results)
 end
 
 function M.find_global()
@@ -173,10 +174,16 @@ function M.find_global()
   local e = buffer:word_end_position(buffer.current_pos, true)
   local tag = buffer:text_range(s, e)
 
-  -- match any line containing the full tag
-  local pattern = '^.*(' .. tag .. ')\t(%S+)\t(.+);"\t(%l)\tline:(%d+).*$'
+  local tag_regex = '^.*(' .. tag .. ')\t'
+  local filename = buffer.filename:match("[/\\]([^/\\]+)%.[^.]+$")
+  local path_regex = '(.*)\t'
+  local snippet_regex = '/^%s*(.+)$/;"\t'
+  local type_regex = '(%l)\t'
+  local line_regex = 'line:(%d+).*$'
 
-  result_list("Go to global symbol: " .. tag, search_in_files(pattern, false))
+  local pattern = tag_regex .. path_regex .. snippet_regex .. type_regex .. line_regex
+  local results = search_in_files(pattern, false)
+  result_list("Go to global symbol: " .. tag, results)
 end
 
 function M.find_local()
@@ -184,12 +191,15 @@ function M.find_local()
   local e = buffer:word_end_position(buffer.current_pos, true)
   local tag = buffer:text_range(s, e)
 
-  local filename_noext = buffer.filename:match("[/\\]([^/\\]+)%.[^.]+$")
-
-  -- match any line containing both tag and the current buffer's name
-  local pattern = '^.*(' .. tag .. ')\t(%S*' .. filename_noext  .. '%.[^.\t]*)\t(.+);"\t(%l)\tline:(%d+).*$'
-
-  result_list("Go to local symbol: " .. tag, search_in_files(pattern, false))
+  local tag_regex = '^(.*)\t'
+  local filename = buffer.filename:match("[/\\]([^/\\]+)%.[^.]+$")
+  local path_regex = '(.*' .. filename .. '.*)\t'
+  local snippet_regex = '/^%s*(.+)$/;"\t'
+  local type_regex = '(%l)\t'
+  local line_regex = 'line:(%d+).*$'
+  local pattern = tag_regex .. path_regex .. snippet_regex .. type_regex .. line_regex
+  local results = search_in_files(pattern, true)
+  result_list("Go to local symbol: " .. tag, results)
 end
 
 -- Autocompleter function for ctags.
@@ -201,7 +211,7 @@ textadept.editing.autocompleters.ctags = function()
   -- match anything including the (partial) tag
   local tags = search_in_files('^.*('.. tag .. '%S*)\t([^\t]+)\t(.-);"\t?(.*)$', false)
   if #tags == 0 then
-    ui.statusbar_text = "CTAGS: No autocompletions found."
+    ui.statusbar_text = "ctags: No autocompletions found."
     return
   end
 
@@ -222,9 +232,16 @@ end
 
 function M.init_ctags()
   local rootpath = io.get_project_root(buffer.filename, true)
-  local proc = os.spawn('ctags -f ' .. rootpath .. '/tags -R --fields=+ain --extra=+fq --c++-kinds=+p --exclude="build" ' .. rootpath)
-  proc:wait()
-  ui.statusbar_text = 'CTAGS initialized'
+  if not rootpath then
+    ui.statusbar_text = 'ctags: not a project'
+    return
+  end
+  local proc = os.spawn('ctags -f ' .. rootpath .. '/tags -R --fields=+ain --extra=+fq --c++-kinds=+p --exclude="build" ' .. rootpath):wait()
+  if proc == nil then
+    ui.statusbar_text = 'ctags: init failed'
+  else
+    ui.statusbar_text = 'ctags: initialized'
+  end
 end
 
 return M

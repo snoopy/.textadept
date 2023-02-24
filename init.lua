@@ -132,6 +132,7 @@ local function dispatch(case)
   switch['ctags_local'] = ctags_redux.find_local
   switch['ctags_global'] = ctags_redux.find_global
   switch['ctags_back'] = ctags_redux.go_back
+  switch['ctags_functions'] = ctags_redux.function_list
 
   -- switch['open'] = io.open_file
   -- switch['switchbuffer'] = ui.switch_buffer
@@ -143,6 +144,7 @@ local function dispatch(case)
   -- switch['ctags_local'] = function()end
   -- switch['ctags_global'] = function()end
   -- switch['ctags_back'] = function()end
+  -- switch['ctags_functions'] = function()end
 
   return switch[case]
 end
@@ -699,6 +701,7 @@ local nav_hydra = hydra.create({
 
   { key = 'c', help = 'ctags: find', action = dispatch('ctags_global'), },
   { key = 'C', help = 'ctags: back', action = dispatch('ctags_back'), },
+  { key = 'u', help = 'ctags: functions', action = dispatch('ctags_functions'), },
 })
 
 local encoding_hydra = hydra.create({
