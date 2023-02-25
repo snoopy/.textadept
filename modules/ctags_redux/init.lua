@@ -127,17 +127,6 @@ local function search_in_files(pattern, function_list)
       if tag then
         if not file_path:find('^%a?:?[/\\]') then file_path = dir .. file_path end
 
-        if function_list then
-          local buffer_fn_trim = buffer.filename:match("^(.+)%.[^/\\]+$")
-          buffer_fn_trim = buffer_fn_trim:gsub("[/\\]", "/")
-          local list_fn_trim = file_path:match("^(.+)%.[^/\\]+$")
-          list_fn_trim = list_fn_trim:gsub("[/\\]", "/")
-          -- prevent different files with the same name from being shown
-          if buffer_fn_trim ~= list_fn_trim then
-            goto next_line
-          end
-        end
-
         local file_name = file_path:match('/([^/]+)$')
         tags[#tags + 1] = {file_name, lookup_id(ext_fields), ex_cmd, file_path, linenr}
 
@@ -160,7 +149,7 @@ end
 function M.function_list()
   local tag_regex = '^(.*)\t'
   local filename = buffer.filename:match("[/\\]([^/\\]+)%.[^.]+$")
-  local path_regex = '(.*' .. filename .. '.*)\t'
+  local path_regex = '(.*' .. filename .. '[.]?[^.]*)\t'
   local snippet_regex = '/^%s*(.+)$/;"\t'
   local type_regex = buffer.lexer_language == 'python' and '([fpm])\t' or '([fp])\t'
   local line_regex = 'line:(%d+).*$'
