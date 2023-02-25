@@ -681,9 +681,6 @@ local nav_hydra = hydra.create({
   { key = 'alt+s', help = "'", action = function() util.move_to("[']", true) end, persistent = true },
   { key = 'alt+d', help = '"', action = function() util.move_to('["]', true) end, persistent = true },
 
-  { key = 'b', help = 'buffer start', action = buffer.document_start, },
-  { key = 'B', help = 'buffer end', action = buffer.document_end, },
-
   { key = 'o', help = 'back', action = origin.back, persistent = true, },
   { key = 'i', help = 'forward', action = origin.forward, persistent = true, },
 
