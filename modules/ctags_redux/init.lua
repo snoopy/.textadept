@@ -107,36 +107,25 @@ local function find_tag_files()
 end
 
 local function search_in_files(pattern, function_list)
-  if not pattern then
-    return
-  end
+  if not pattern then return end
 
   -- Search all tags files for matches.
   local tags = {}
   local tag_files = find_tag_files()
   for i = 1, #tag_files do
     local dir = tag_files[i]:match('^.+[/\\]')
-    local tag_found = false
+
     local f = io.open(tag_files[i])
-    if not f then
-      goto next_file
-    end
+    if not f then goto next_file end
 
     for line in f:lines() do
       local tag, file_path, snippet, type, linenr = line:match(pattern)
       if tag then
         if not file_path:find('^%a?:?[/\\]') then file_path = dir .. file_path end
-
-        local file_name = file_path:match('/([^/]+)$')
+        local file_name = file_path:match('[/\\]([^/\\]+)$')
         tags[#tags + 1] = {file_name, type_lookup(type), snippet, file_path, linenr}
-
-        if not function_list then
-          tag_found = true
-        end
-      elseif tag_found then
-        break
+        if not function_list then break end
       end
-      ::next_line::
     end
 
     ::next_file::
