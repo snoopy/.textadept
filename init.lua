@@ -654,7 +654,7 @@ local nav_hydra = hydra.create({
     end,
   },
 
-  { key = 'f', help = 'first in file', action = function()
+  { key = 't', help = 'find top most', action = function()
       util.goto_definition()
     end,
   },
