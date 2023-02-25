@@ -54,26 +54,26 @@ local function result_list(title, tags)
   list:show()
 end
 
-local function lookup_id(id)
-  local lookup_table = {}
-  lookup_table['c'] = "Class"
-  lookup_table['d'] = "Macro"
-  lookup_table['e'] = "Enumerators"
-  lookup_table['f'] = "Function"
-  lookup_table['g'] = "Enumeration"
-  lookup_table['l'] = "Local"
-  lookup_table['m'] = "Member"
-  lookup_table['n'] = "Namespace"
-  lookup_table['p'] = "Prototype"
-  lookup_table['s'] = "Struct"
-  lookup_table['t'] = "Typedef"
-  lookup_table['u'] = "Union"
-  lookup_table['v'] = "Variable"
-  lookup_table['x'] = "External"
-  if lookup_table[id] then
-    return lookup_table[id]
+local function type_lookup(type)
+  local ctags_types = {}
+  ctags_types['c'] = "Class"
+  ctags_types['d'] = "Macro"
+  ctags_types['e'] = "Enumerators"
+  ctags_types['f'] = "Function"
+  ctags_types['g'] = "Enumeration"
+  ctags_types['l'] = "Local"
+  ctags_types['m'] = "Member"
+  ctags_types['n'] = "Namespace"
+  ctags_types['p'] = "Prototype"
+  ctags_types['s'] = "Struct"
+  ctags_types['t'] = "Typedef"
+  ctags_types['u'] = "Union"
+  ctags_types['v'] = "Variable"
+  ctags_types['x'] = "External"
+  if ctags_types[type] then
+    return ctags_types[type]
   end
-  return id
+  return type
 end
 
 -- Determine the tag files to search in.
@@ -123,12 +123,12 @@ local function search_in_files(pattern, function_list)
     end
 
     for line in f:lines() do
-      local tag, file_path, ex_cmd, ext_fields, linenr = line:match(pattern)
+      local tag, file_path, snippet, type, linenr = line:match(pattern)
       if tag then
         if not file_path:find('^%a?:?[/\\]') then file_path = dir .. file_path end
 
         local file_name = file_path:match('/([^/]+)$')
-        tags[#tags + 1] = {file_name, lookup_id(ext_fields), ex_cmd, file_path, linenr}
+        tags[#tags + 1] = {file_name, type_lookup(type), snippet, file_path, linenr}
 
         if not function_list then
           tag_found = true
