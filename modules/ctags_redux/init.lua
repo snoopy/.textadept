@@ -212,7 +212,8 @@ function M.init_ctags()
     ui.statusbar_text = 'ctags: not a project'
     return
   end
-  local proc = os.spawn('ctags -f ' .. rootpath .. '/tags -R --fields=+ain --extra=+fq --c++-kinds=+p --exclude="build" ' .. rootpath):wait()
+  local ctags_options = '/tags -R --exclude=".git" --exclude="build" --exclude="extern*" --fields=+ain --extra=+fq --c++-kinds=+p '
+  local proc = os.spawn('ctags -f ' .. rootpath .. ctags_options .. rootpath):wait()
   if proc == nil then
     ui.statusbar_text = 'ctags: init failed'
     return
