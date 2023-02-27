@@ -106,7 +106,7 @@ local function find_tag_files()
   return tag_files
 end
 
-local function search_in_files(pattern)
+local function search_in_files(pattern, function_list)
   if not pattern then return end
 
   local tags = {}
@@ -116,6 +116,7 @@ local function search_in_files(pattern)
   local file = io.open(project_root)
   if not file then return end
 
+  local found = false
   for line in file:lines() do
     local tag, file_path, snippet, type, linenr = line:match(pattern)
     if tag then
@@ -125,6 +126,9 @@ local function search_in_files(pattern)
       end
       local file_name = file_path:match('[/\\]([^/\\]+)$')
       tags[#tags + 1] = {file_name, type_lookup(type), snippet, file_path, linenr}
+      found = true
+    elseif found and not function_list then
+      break
     end
   end
 
@@ -141,7 +145,7 @@ function M.function_list()
   local type_regex = buffer.lexer_language == 'python' and '([fpm])\t' or '([fp])\t'
   local line_regex = 'line:(%d+).*$'
   local pattern = tag_regex .. path_regex .. snippet_regex .. type_regex .. line_regex
-  local results = search_in_files(pattern)
+  local results = search_in_files(pattern, true)
   result_list("Function list: " .. buffer.filename, results)
 end
 
@@ -158,7 +162,7 @@ function M.find_global()
   local line_regex = 'line:(%d+).*$'
 
   local pattern = tag_regex .. path_regex .. snippet_regex .. type_regex .. line_regex
-  local results = search_in_files(pattern)
+  local results = search_in_files(pattern, true)
   result_list("Go to global symbol: " .. tag, results)
 end
 
