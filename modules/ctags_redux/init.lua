@@ -139,8 +139,8 @@ end
 
 function M.function_list()
   local tag_regex = '^(.*)\t'
-  local filename = buffer.filename:match("[/\\]([^/\\]+)%.[^.]+$")
-  local path_regex = '(.*' .. filename .. '[.]?[^.]*)\t'
+  local filename = buffer.filename:match("[/\\]([^/\\]+)$")
+  local path_regex = '(.*' .. filename .. ')\t'
   local snippet_regex = '/^%s*(.+)$/;"\t'
   local type_regex = buffer.lexer_language == 'python' and '([fpm])\t' or '([fp])\t'
   local line_regex = 'line:(%d+).*$'
