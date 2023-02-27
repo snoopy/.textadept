@@ -215,6 +215,7 @@ function M.init_ctags()
   local proc = os.spawn('ctags -f ' .. rootpath .. '/tags -R --fields=+ain --extra=+fq --c++-kinds=+p --exclude="build" ' .. rootpath):wait()
   if proc == nil then
     ui.statusbar_text = 'ctags: init failed'
+    return
   else
     ui.statusbar_text = 'ctags: initialized'
   end
