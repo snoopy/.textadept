@@ -63,7 +63,6 @@ lexer.detect_extensions.cmake = 'cmake'
 lexer.detect_patterns.cmake = 'cmake'
 
 textadept.editing.auto_pairs = {}
-textadept.editing.typeover_chars = {}
 
 textadept.run.compile_commands.cpp = 'g++ -std=c++20 -O2 "%f"'
 
@@ -82,7 +81,10 @@ local function set_buffer_options()
   textadept.editing.strip_trailing_spaces = name ~= 'markdown'
 end
 
-events.connect(events.LEXER_LOADED, set_buffer_options)
+events.connect(events.LEXER_LOADED, function(name)
+  set_buffer_options()
+  if package.searchpath(name, package.path) then require(name) end
+end)
 events.connect(events.BUFFER_AFTER_SWITCH, set_buffer_options)
 events.connect(events.VIEW_AFTER_SWITCH, set_buffer_options)
 events.connect(events.VIEW_NEW, set_buffer_options)
