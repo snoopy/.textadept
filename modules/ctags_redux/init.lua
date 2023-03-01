@@ -155,7 +155,6 @@ function M.find_global()
   local tag = buffer:text_range(s, e)
 
   local tag_regex = '^.*(' .. tag .. ')\t'
-  local filename = buffer.filename:match("[/\\]([^/\\]+)%.[^.]+$")
   local path_regex = '(.*)\t'
   local snippet_regex = '/^%s*(.+)$/;"\t'
   local type_regex = '(%l)\t'
