@@ -35,7 +35,7 @@ local function on_selection(list, item)
 end
 
 local function result_list(title, tags)
-  if #tags == 0 then
+  if not tags then
     ui.statusbar_text = "ctags: No results."
     return
   end
