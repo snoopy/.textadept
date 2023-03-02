@@ -15,7 +15,7 @@ function M.go_back()
     jump_list[jump_list.pos] = nil
     jump_list.pos = jump_list.pos - 1
   else
-    ui.statusbar_text = "ctags: No more history."
+    ui.statusbar_text = "ctags: no more history."
   end
 end
 
@@ -36,7 +36,7 @@ end
 
 local function result_list(title, tags)
   if not tags then
-    ui.statusbar_text = "ctags: No results."
+    ui.statusbar_text = "ctags: no results."
     return
   end
 
@@ -111,6 +111,10 @@ local function search_in_files(pattern, function_list)
 
   local tags = {}
   local project_root = io.get_project_root(buffer.filename, true)
+  if not project_root then
+    ui.statusbar_text = 'ctags: not a project'
+    return
+  end
   project_root = project_root .. '/tags'
 
   local file = io.open(project_root)
