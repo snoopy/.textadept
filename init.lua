@@ -22,6 +22,7 @@ view.v_scroll_bar = false
 -- disable folding and fold margin
 view.property['fold'] = 0
 view.margin_width_n[3] = 0
+view.idle_styling = view.IDLESTYLING_ALL
 
 ui.command_entry.caret_period = 0
 ui.command_entry.caret_style = view.CARETSTYLE_BLOCK
