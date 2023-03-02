@@ -162,7 +162,7 @@ function M.find_global()
   local line_regex = 'line:(%d+).*$'
 
   local pattern = tag_regex .. path_regex .. snippet_regex .. type_regex .. line_regex
-  local results = search_in_files(pattern, true)
+  local results = search_in_files(pattern, false)
   result_list("Go to global symbol: " .. tag, results)
 end
 
