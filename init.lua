@@ -162,6 +162,7 @@ events.connect(events.KEYPRESS, function(code)
   if code:match('alt.*')
       or code:match('up')
       or code:match('down')
+      or code:match('[.]')
       then
     buffer:auto_c_cancel()
   end
