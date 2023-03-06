@@ -2,9 +2,12 @@ local hydra = require('hydra')
 local qapp = require('qapp')
 local util = require('util')
 local origin = require('origin')
-local ctags_redux = require('ctags_redux')
 local textredux = require('textredux')
+local reduxstyle = textredux.core.style
+reduxstyle.list_match_highlight.fore = 'd79921'
+reduxstyle.fs_directory.fore = '458588'
 textredux.hijack()
+local ctags_redux = require('ctags_redux')
 
 view:set_theme('goofbox_m', { font = 'JetBrains Mono NL Medium', size = 16 })
 
