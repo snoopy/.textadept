@@ -155,7 +155,7 @@ local function dispatch(case)
 end
 
 events.connect(events.CHAR_ADDED, function(code)
-  if buffer.current_pos - buffer:word_start_position(buffer.current_pos, true) < 3 then return end
+  if buffer.current_pos - buffer:word_start_position(buffer.current_pos, true) < 2 then return end
   if textadept.editing.autocomplete('word') then return end
   textadept.editing.autocomplete(buffer:get_lexer(true))
 end)
