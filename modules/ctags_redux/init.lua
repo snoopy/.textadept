@@ -146,7 +146,7 @@ function M.function_list()
   local path_regex = '(' .. buffer.filename .. ')\t'
   path_regex = path_regex:gsub('%-', '%%-')
   path_regex = path_regex:gsub('\\', '/')
-  local snippet_regex = '/^%s*(.+)$/;"\t'
+  local snippet_regex = '/%^%s*(.+)%$?/;"\t'
   local type_regex = buffer.lexer_language == 'python' and '([fpm])\t' or '([fp])\t'
   local line_regex = 'line:(%d+).*$'
   local pattern = tag_regex .. path_regex .. snippet_regex .. type_regex .. line_regex
@@ -161,7 +161,7 @@ function M.find_global()
 
   local tag_regex = '^.*(' .. tag .. ')\t'
   local path_regex = '(.*)\t'
-  local snippet_regex = '/^%s*(.+)$/;"\t'
+  local snippet_regex = '/%^%s*(.+)%$?/;"\t'
   local type_regex = '(%l)\t'
   local line_regex = 'line:(%d+).*$'
 
