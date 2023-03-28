@@ -9,7 +9,7 @@ reduxstyle.fs_directory.fore = '458588'
 textredux.hijack()
 local ctags_redux = require('ctags_redux')
 
-view:set_theme('goofbox_m', { font = 'JetBrains Mono NL Medium', size = 16 })
+view:set_theme({ font = 'JetBrains Mono NL Medium', size = 16 })
 
 buffer.use_tabs = false
 buffer.tab_width = 4
@@ -26,9 +26,10 @@ view.v_scroll_bar = false
 view.property['fold'] = 0
 view.margin_width_n[3] = 0
 
+-- applies to view and command_entry
 ui.command_entry.caret_period = 0
 ui.command_entry.caret_style = view.CARETSTYLE_BLOCK
-view.caret_line_frame = 1
+ui.command_entry.caret_line_frame = 1
 -- keep caret 8 lines away from top/bottom
 view:set_y_caret_policy(view.CARET_SLOP | view.CARET_STRICT | view.CARET_EVEN, 8)
 
