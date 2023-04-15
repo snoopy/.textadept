@@ -357,16 +357,6 @@ end
 keys['alt+home'] = buffer.scroll_to_start
 keys['alt+end'] = buffer.scroll_to_end
 
-keys['alt+up'] = function()
-  buffer:para_up()
-  buffer:vc_home()
-end
-
-keys['alt+down'] = function()
-  buffer:para_down()
-  buffer:vc_home()
-end
-
 keys['ctrl+pgup'] = function()
   buffer:page_up()
 end
