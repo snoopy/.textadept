@@ -1024,12 +1024,12 @@ local run_hydra = hydra.create({
     textadept.run.run_project(nil, '')
   end, },
   { key = 'n', help = 'next error', action = function()
-      textadept.run.goto_error(nil, true)
+      textadept.run.goto_error(true)
     end,
     persistent = true,
   },
   { key = 'N', help = 'prev error', action = function()
-      textadept.run.goto_error(nil, false)
+      textadept.run.goto_error(false)
     end,
     persistent = true,
   },
