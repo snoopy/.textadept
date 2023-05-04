@@ -277,6 +277,8 @@ function M.format_buffer()
     os.spawn('clang-format -i -style=file -fallback-style=none "' .. filename .. '"'):wait()
   elseif lang == 'html' then
     os.spawn('tidy -i -m "' .. filename .. '"'):wait()
+  elseif lang == 'python' then
+    os.spawn('black -l 120 "' .. filename .. '"'):wait()
   end
   buffer:reload()
   buffer:end_undo_action()
