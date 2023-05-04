@@ -102,7 +102,6 @@ events.connect(events.FILE_CHANGED, function()
 end, 1)
 
 util.auto_format['cpp'] = true
-util.auto_format['html'] = true
 
 lfs.default_filter[#lfs.default_filter + 1] = '!.JPG'
 lfs.default_filter[#lfs.default_filter + 1] = '!/build$'
