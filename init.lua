@@ -108,8 +108,6 @@ lfs.default_filter[#lfs.default_filter + 1] = '!/build$'
 lfs.default_filter[#lfs.default_filter + 1] = '!/extern%a*$'
 lfs.default_filter[#lfs.default_filter + 1] = '!/[.]git$'
 
-io.quick_open_max = 10000
-
 local function m(labels)
   local menu = textadept.menu.menubar
   for label in labels:gmatch('[^/]+') do menu = menu[_L[label]] end
