@@ -118,7 +118,6 @@ end
 keys['ctrl+alt+\\'] = nil
 keys['ctrl+alt+|'] = nil
 keys['ctrl+r'] = nil
-keys['ctrl+q'] = nil
 keys['ctrl+f'] = nil
 keys['ctrl+p'] = nil
 keys['ctrl+o'] = nil
