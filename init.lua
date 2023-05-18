@@ -9,7 +9,7 @@ reduxstyle.fs_directory.fore = '458588'
 textredux.hijack()
 local ctags_redux = require('ctags_redux')
 
-view:set_theme({ font = 'JetBrains Mono NL Medium', size = 16 })
+view:set_theme({ font = 'JetBrains Mono NL', size = 16 })
 
 buffer.use_tabs = false
 buffer.tab_width = 4
