@@ -70,17 +70,17 @@ styles[view.STYLE_CALLTIP] = {fore = colors.light_grey, back = colors.light_blac
 styles[lexer.ANNOTATION] = {fore = purple}
 styles[lexer.ATTRIBUTE] = {fore = bg4}
 styles[lexer.BOLD] = {bold = true}
-styles[lexer.CLASS] = {fore = green}
+styles[lexer.CLASS] = {fore = yellow}
 styles[lexer.CODE] = {fore = gray7, eolfilled = true}
 styles[lexer.COMMENT] = {fore = bg3}
-styles[lexer.CONSTANT] = {fore = red, underline = true}
+styles[lexer.CONSTANT] = {fore = aqua}
 styles[lexer.EMBEDDED] = {fore = bg4}
 styles[lexer.ERROR] = {fore = red}
 styles[lexer.FUNCTION] = {fore = blue}
 -- styles[lexer.FUNCTION_BUILTIN] = {fore = blue}
 styles[lexer.HEADING] = {fore = purple}
 styles[lexer.ITALIC] = {italic = true}
-styles[lexer.KEYWORD] = {fore = green}
+styles[lexer.KEYWORD] = {fore = orange}
 styles[lexer.LABEL] = {fore = fg3}
 styles[lexer.LINK] = {underline = true}
 styles[lexer.LIST] = {fore = colors.teal}
@@ -88,10 +88,10 @@ styles[lexer.NUMBER] = {fore = aqua}
 styles[lexer.OPERATOR] = {fore = bg4}
 styles[lexer.PREPROCESSOR] = {fore = blue, underline = true}
 styles[lexer.REFERENCE] = {underline = true}
-styles[lexer.REGEX] = {fore = orange}
-styles[lexer.STRING] = {fore = yellow}
+styles[lexer.REGEX] = {fore = yellow}
+styles[lexer.STRING] = {fore = green}
 styles[lexer.TAG] = {fore = blue}
-styles[lexer.TYPE] = {fore = orange}
+styles[lexer.TYPE] = {fore = yellow}
 styles[lexer.UNDERLINE] = {underline = true}
 styles[lexer.VARIABLE_BUILTIN] = {fore = red}
 styles[lexer.KEYWORD .. '.ctl'] = {fore = purple}
