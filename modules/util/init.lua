@@ -280,7 +280,7 @@ function M.format_buffer()
   elseif lang == 'python' then
     os.spawn('black -l 120 "' .. filename .. '"'):wait()
   end
-  buffer:reload()
+  events.emit(events.FILE_CHANGED)
   buffer:end_undo_action()
 end
 
