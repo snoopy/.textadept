@@ -97,7 +97,7 @@ events.connect(events.VIEW_NEW, set_buffer_options)
 
 events.connect(events.FILE_CHANGED, function()
   buffer:reload()
-  ui.statusbar_text = 'WARNING: Buffer was modified externally and has been reloaded!'
+  ui.statusbar_text = 'buffer reloaded'
   return true
 end, 1)
 
