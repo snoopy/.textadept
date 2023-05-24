@@ -103,10 +103,8 @@ end, 1)
 
 util.auto_format['cpp'] = true
 
-lfs.default_filter[#lfs.default_filter + 1] = '!.JPG'
-lfs.default_filter[#lfs.default_filter + 1] = '!/build$'
-lfs.default_filter[#lfs.default_filter + 1] = '!/extern%a*$'
-lfs.default_filter[#lfs.default_filter + 1] = '!/[.]git$'
+lfs.default_filter[#lfs.default_filter + 1] = '!/build'
+lfs.default_filter[#lfs.default_filter + 1] = '!/extern%a*'
 
 local function m(labels)
   local menu = textadept.menu.menubar
