@@ -986,7 +986,12 @@ local open_hydra = hydra.create({
   { key = 'r', help = 'recent', action = dispatch('recent') },
   {
     key = 'p', help = 'project', action = function()
-      io.quick_open(io.get_project_root(buffer.filename, true))
+      path = io.get_project_root(buffer.filename)
+      if not path then
+        ui.statusbar_text = 'not a project'
+        return
+      end
+      io.quick_open(path, true)
     end,
   },
   { key = 'l', help = 'lexer', action = dispatch('lexer') },
