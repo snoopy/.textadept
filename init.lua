@@ -886,8 +886,14 @@ local project_hydra = hydra.create({
   { key = 'c', help = 'ctags: init', action = dispatch('ctags_init') },
 })
 
-local view_hydra = hydra.create({
-  { key = 'v', help = 'center', action = view.vertical_center_caret, },
+local window_hydra = hydra.create({
+  { key = 'w', help = 'close buffer', action = buffer.close },
+  {
+    key = 'x', help = 'force close', action = function()
+      buffer:close(true)
+    end,
+  },
+  { key = 'c', help = 'center', action = view.vertical_center_caret, },
   {
     key = '2', help = 'split h', action = function()
       view:split()
@@ -899,12 +905,12 @@ local view_hydra = hydra.create({
     end,
   },
   {
-    key = 'c', help = 'unsplit', action = function()
+    key = 'e', help = 'unsplit', action = function()
       view:unsplit()
     end,
   },
   {
-    key = 'w', help = 'unsplit&close', action = function()
+    key = 'q', help = 'unsplit&close', action = function()
       buffer:close()
       view:unsplit()
     end,
@@ -969,7 +975,7 @@ local qapp_hydra = hydra.create({
 local open_hydra = hydra.create({
   { key = 'o', help = 'open', action = dispatch('open'), },
   {
-    key = 'q', help = 'quick open', action = function()
+    key = 'f', help = 'flat open', action = function()
       io.quick_open(buffer.filename:match('^(.+)[/\\]'))
     end,
   },
@@ -997,9 +1003,9 @@ local open_hydra = hydra.create({
   { key = 'l', help = 'lexer', action = dispatch('lexer') },
   { key = 'm', help = 'bookmarks', action = dispatch('bookmarks') },
   {
-    key = 'f', help = 'filepath', action = function()
+    key = 'e', help = 'enter filepath', action = function()
       local value, button = ui.dialogs.input({
-        title = 'Open file',
+        title = 'Enter filepath',
         button1 = 'OK',
         button2 = 'Cancel',
         return_button = true,
@@ -1009,6 +1015,7 @@ local open_hydra = hydra.create({
       end
     end,
   },
+  { key = 'n', help = 'new buffer', action = buffer.new },
 })
 
 local run_hydra = hydra.create({
@@ -1042,19 +1049,12 @@ local main_hydra = hydra.create({
   { key = 'e', help = 'edit', action = edit_hydra },
   { key = 's', help = 'select', action = selection_hydra },
   { key = 'i', help = 'insert', action = insert_hydra },
-  { key = 'v', help = 'view', action = view_hydra },
+  { key = 'w', help = 'window', action = window_hydra },
   { key = 'p', help = 'project', action = project_hydra },
   { key = 'b', help = 'buffer', action = buffer_hydra },
   { key = 'm', help = 'bookmark', action = bookmark_hydra },
   { key = 'q', help = 'quick access', action = qapp_hydra },
   { key = 'r', help = 'run', action = run_hydra },
-  { key = 'n', help = 'new buffer', action = buffer.new },
-  { key = 'w', help = 'close buffer', action = buffer.close },
-  {
-    key = 'W', help = 'force close', action = function()
-      buffer:close(true)
-    end,
-  },
 })
 
 -- map f10/triggerkey to capslock
