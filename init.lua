@@ -71,6 +71,7 @@ lexer.detect_patterns.cmake = 'cmake'
 textadept.editing.auto_pairs = {}
 
 textadept.run.compile_commands.cpp = 'g++ -std=c++20 -O2 "%f"'
+textadept.run.run_commands.python = 'python3 -u "%f"'
 
 local function set_buffer_options()
   name = buffer.lexer_language
@@ -102,9 +103,11 @@ events.connect(events.FILE_CHANGED, function()
 end, 1)
 
 util.auto_format['cpp'] = true
+util.auto_format['python'] = true
 
 lfs.default_filter[#lfs.default_filter + 1] = '!/build'
 lfs.default_filter[#lfs.default_filter + 1] = '!/extern%a*'
+lfs.default_filter[#lfs.default_filter + 1] = '!.pyc'
 
 local function m(labels)
   local menu = textadept.menu.menubar
