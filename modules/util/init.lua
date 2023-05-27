@@ -269,17 +269,17 @@ function M.custom_comment(force)
 end
 
 function M.format_buffer()
-  buffer:begin_undo_action()
   filename = buffer.filename
   lang = buffer:get_lexer(true)
   if not filename or not lang then return end
-  if lang == 'cpp' then
-    os.spawn('clang-format -i -style=file -fallback-style=none "' .. filename .. '"'):wait()
-  elseif lang == 'html' then
-    os.spawn('tidy -i -m "' .. filename .. '"'):wait()
-  elseif lang == 'python' then
-    os.spawn('black -l 120 "' .. filename .. '"'):wait()
-  end
+
+  local formatters = {}
+  formatters['cpp'] = 'clang-format -i -style=file -fallback-style=none'
+  formatters['html'] = 'tidy -i -m'
+  formatters['python'] = 'black -l 120'
+
+  buffer:begin_undo_action()
+  os.spawn(formatters[lang] .. ' "' .. filename .. '"'):wait()
   events.emit(events.FILE_CHANGED)
   buffer:end_undo_action()
 end
