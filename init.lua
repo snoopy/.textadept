@@ -65,8 +65,6 @@ buffer.multi_paste = buffer.MULTIPASTE_EACH
 lexer.detect_extensions.conf = 'ini'
 lexer.detect_extensions.csv = 'ini'
 lexer.detect_extensions.gitconfig = 'ini'
-lexer.detect_extensions.cmake = 'cmake'
-lexer.detect_patterns.cmake = 'cmake'
 
 textadept.editing.auto_pairs = {}
 
