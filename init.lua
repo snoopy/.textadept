@@ -74,7 +74,7 @@ textadept.run.compile_commands.cpp = 'g++ -std=c++20 -O2 "%f"'
 textadept.run.run_commands.python = 'python3 -u "%f"'
 
 local function set_buffer_options()
-  name = buffer.lexer_language
+  local name = buffer.lexer_language
   if name == 'yaml' or
       name == 'lua' or
       name == 'html' then

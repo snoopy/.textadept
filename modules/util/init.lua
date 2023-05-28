@@ -269,8 +269,8 @@ function M.custom_comment(force)
 end
 
 function M.format_buffer()
-  filename = buffer.filename
-  lang = buffer:get_lexer(true)
+  local filename = buffer.filename
+  local lang = buffer:get_lexer(true)
   if not filename or not lang then return end
 
   local formatters = {}
