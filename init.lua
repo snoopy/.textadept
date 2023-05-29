@@ -187,8 +187,6 @@ keys['shift+\t'] = function()
   return false -- def
 end
 
-keys['shift+esc'] = quit
-
 keys.f4 = util.toggle_header
 
 -- editing
