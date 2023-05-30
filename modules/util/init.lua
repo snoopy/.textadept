@@ -8,6 +8,23 @@ events.connect(events.FILE_AFTER_SAVE, function(filename)
   end
 end)
 
+function M.gitlinediff()
+  local rootpath = io.get_project_root(true)
+  if not rootpath then
+    ui.statusbar_text = 'Not a git directory'
+    return
+  end
+  local filename = buffer.filename
+  local linenumber = buffer:line_from_position(buffer.current_pos)
+  local cmd = 'git -C ' .. rootpath .. ' log -p -L' .. linenumber .. ',' .. linenumber .. ':' .. filename
+  local file = assert(io.popen(cmd, 'r'))
+  local result = assert(file:read('*a'))
+  file:close()
+  ui.print(result)
+  buffer.document_start()
+  buffer:set_lexer('diff')
+end
+
 function M.gitblame()
   local rootpath = io.get_project_root(true)
   if not rootpath then

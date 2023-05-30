@@ -873,6 +873,7 @@ local project_hydra = hydra.create({
   },
 
   { key = 'b', help = 'blame', action = function() util.gitblame() end },
+  { key = 'l', help = 'diff of current line', action = util.gitlinediff, },
   { key = 's', help = 'show file at revision', action = util.gitshowrev, },
 
   { key = 't', help = 'clang-tidy', action = function()
