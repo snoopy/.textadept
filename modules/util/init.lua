@@ -1,6 +1,7 @@
 local M = {}
 
 M.auto_format = {}
+last_buffer = nil
 
 events.connect(events.FILE_AFTER_SAVE, function(filename)
   if M.auto_format[buffer.lexer_language] then
@@ -115,16 +116,16 @@ end
 
 -- Save the buffer index before switching.
 events.connect(events.BUFFER_BEFORE_SWITCH, function()
-    for _, b in ipairs(_BUFFERS) do
-      if b == buffer then
-        last_buffer = b
-        break
-      end
+  for _, b in ipairs(_BUFFERS) do
+    if b == buffer then
+      last_buffer = b
+      break
     end
-  end)
+  end
+end)
 
 -- Switch to last buffer.
-function M.last_buffer()
+function M.goto_last_buffer()
   if last_buffer and _BUFFERS[last_buffer] then
     view:goto_buffer(last_buffer)
   end
@@ -244,7 +245,6 @@ function M.custom_comment(force)
   local s, e = buffer:line_from_position(anchor), buffer:line_from_position(pos)
   local ignore_last_line = s ~= e and pos == buffer:position_from_line(e)
   anchor, pos = buffer.line_end_position[s] - anchor, buffer.length + 1 - pos
-  local column = math.huge
 
   buffer:begin_undo_action()
   for line = s, not ignore_last_line and e or e - 1 do

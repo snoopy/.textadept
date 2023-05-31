@@ -376,7 +376,7 @@ keys['ins'] = function()
   end
 end
 
-keys.f6 = util.last_buffer
+keys.f6 = util.goto_last_buffer
 
 keys.f7 = function()
   ui.goto_view(1)
@@ -992,7 +992,7 @@ local open_hydra = hydra.create({
   { key = 'r', help = 'recent', action = dispatch('recent') },
   {
     key = 'p', help = 'project', action = function()
-      path = io.get_project_root(buffer.filename)
+      local path = io.get_project_root(buffer.filename)
       if not path then
         ui.statusbar_text = 'not a project'
         return
