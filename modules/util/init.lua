@@ -5,7 +5,7 @@ last_buffer = nil
 
 events.connect(events.FILE_AFTER_SAVE, function(filename)
   if M.auto_format[buffer.lexer_language] then
-    M.format_buffer()
+    M.format_buffer(filename)
   end
 end)
 
@@ -285,8 +285,7 @@ function M.custom_comment(force)
   end
 end
 
-function M.format_buffer()
-  local filename = buffer.filename
+function M.format_buffer(filename)
   local lang = buffer:get_lexer(true)
   if not filename or not lang then return end
 

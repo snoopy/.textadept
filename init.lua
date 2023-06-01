@@ -820,7 +820,7 @@ local buffer_hydra = hydra.create({
   { key = 'w', help = 'whitespace', action = whitespace_hydra },
   { key = 'e', help = 'eol', action = eol_hydra },
   { key = 'f', help = 'format', action = function()
-      util.format_buffer()
+      util.format_buffer(buffer.filename)
     end,
   },
   { key = 'c', help = 'encoding', action = encoding_hydra },
