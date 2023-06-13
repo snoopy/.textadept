@@ -61,22 +61,17 @@ function M.gitshowrev()
   textadept.run.run_project(nil, 'git show ' .. revision .. ':' .. file)
 end
 
-function M.find_word_under_cursor(prev)
+function M.find_word_under_cursor(next)
   if buffer.selection_empty then
     textadept.editing.select_word()
   end
-  ui.find.find_entry_text = buffer:get_sel_text()
+  target = buffer:get_sel_text()
   ui.find.whole_word = true
   ui.find.match_case = true
   ui.find.incremental = false
   ui.find.regex = false
   ui.find.find_in_files = false
-  buffer:search_anchor()
-  if prev then
-    ui.find.find_prev()
-  else
-    ui.find.find_next()
-  end
+  events.emit(events.FIND, target, next)
 end
 
 function M.goto_space(reverse)

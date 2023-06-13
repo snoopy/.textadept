@@ -308,11 +308,11 @@ keys['shift+f3'] = function()
 end
 
 keys.f11 = function()
-  util.find_word_under_cursor(true)
+  util.find_word_under_cursor(false)
 end
 
 keys.f12 = function()
-  util.find_word_under_cursor(false)
+  util.find_word_under_cursor(true)
 end
 
 keys['alt+left'] = function()
