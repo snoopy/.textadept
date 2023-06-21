@@ -887,25 +887,20 @@ local project_hydra = hydra.create({
 })
 
 local window_hydra = hydra.create({
+  { key = 's', help = 'spawn buffer', action = buffer.new },
   { key = 'w', help = 'close buffer', action = buffer.close },
   {
-    key = 'x', help = 'force close', action = function()
-      buffer:close(true)
-    end,
-  },
-  { key = 'c', help = 'center', action = view.vertical_center_caret, },
-  {
-    key = '2', help = 'split h', action = function()
-      view:split()
-    end,
-  },
-  {
-    key = '1', help = 'split v', action = function()
+    key = '1', help = 'split |', action = function()
       view:split(true)
     end,
   },
   {
-    key = 'e', help = 'unsplit', action = function()
+    key = '2', help = 'split -', action = function()
+      view:split()
+    end,
+  },
+  {
+    key = '3', help = 'unsplit', action = function()
       view:unsplit()
     end,
   },
@@ -915,6 +910,12 @@ local window_hydra = hydra.create({
       view:unsplit()
     end,
   },
+  {
+    key = 'x', help = 'force close', action = function()
+      buffer:close(true)
+    end,
+  },
+  { key = 'c', help = 'center', action = view.vertical_center_caret, },
   {
     key = 'k', help = 'unsplit all', action = function()
       while view:unsplit() do
@@ -1015,7 +1016,6 @@ local open_hydra = hydra.create({
       end
     end,
   },
-  { key = 'n', help = 'new buffer', action = buffer.new },
 })
 
 local run_hydra = hydra.create({
