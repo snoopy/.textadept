@@ -3,6 +3,15 @@ local M = {}
 M.auto_format = {}
 last_buffer = nil
 
+function M.get_project_root()
+  local rootpath = io.get_project_root(true)
+  if not rootpath then
+    ui.statusbar_text = 'Not a project'
+    return nil
+  end
+  return rootpath
+end
+
 events.connect(events.FILE_AFTER_SAVE, function(filename)
   if M.auto_format[buffer.lexer_language] then
     M.format_buffer(filename)
@@ -10,11 +19,8 @@ events.connect(events.FILE_AFTER_SAVE, function(filename)
 end)
 
 function M.gitlinediff()
-  local rootpath = io.get_project_root(true)
-  if not rootpath then
-    ui.statusbar_text = 'Not a git directory'
-    return
-  end
+  local rootpath = M.get_project_root()
+  if not rootpath then return end
   local filename = buffer.filename
   local linenumber = buffer:line_from_position(buffer.current_pos)
   local cmd = 'git -C ' .. rootpath .. ' log -p -L' .. linenumber .. ',' .. linenumber .. ':' .. filename
@@ -27,11 +33,8 @@ function M.gitlinediff()
 end
 
 function M.gitblame()
-  local rootpath = io.get_project_root(true)
-  if not rootpath then
-    ui.statusbar_text = 'Not a git directory'
-    return
-  end
+  local rootpath = M.get_project_root()
+  if not rootpath then return end
   local filepath = buffer.filename
   local linenumber = buffer:line_from_position(buffer.current_pos)
 
@@ -44,11 +47,12 @@ function M.gitblame()
 end
 
 function M.gitshowrev()
-  local project = io.get_project_root(true)
+  local rootpath = M.get_project_root()
+  if not rootpath then return end
   local file = buffer.filename
-  if not project then return end
-  project = project:gsub('%-', '%%-')
-  file = file:gsub(project, '')
+  if not rootpath then return end
+  rootpath = rootpath:gsub('%-', '%%-')
+  file = file:gsub(rootpath, '')
   file = file:gsub('^[/\\]', '')
   file = file:gsub('[\\]', '/')
 

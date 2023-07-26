@@ -844,12 +844,9 @@ local buffer_hydra = hydra.create({
 local project_hydra = hydra.create({
   {
     key = 'k', help = 'close all', action = function()
-      local path = io.get_project_root(filename, true)
-      if not path then
-        ui.statusbar_text = 'not a project'
-        return
-      end
-      path = path:gsub('%-', '%%-')
+      local rootpath = util.get_project_root()
+      if not rootpath then return end
+      rootpath = rootpath:gsub('%-', '%%-')
 
       local retval = ui.dialogs.message({
         title = 'Close all project buffers?',
@@ -864,7 +861,7 @@ local project_hydra = hydra.create({
 
       for _, b in ipairs(_G._BUFFERS) do
         if b.filename then
-          if b.filename:match(path) then
+          if b.filename:match(rootpath) then
             b:close()
           end
         end
@@ -877,7 +874,8 @@ local project_hydra = hydra.create({
   { key = 's', help = 'show file at revision', action = util.gitshowrev, },
 
   { key = 't', help = 'clang-tidy', action = function()
-    local rootpath = io.get_project_root(buffer.filename, true)
+    local rootpath = util.get_project_root()
+    if not rootpath then return end
     local filepath = buffer.filename
     local cmd = 'clang-tidy -checks=*,-fuchsia*,-llvm* -p ' .. rootpath
     textadept.run.run_project(nil, cmd .. '/build/compile_commands.json ' .. filepath)
@@ -993,12 +991,9 @@ local open_hydra = hydra.create({
   { key = 'r', help = 'recent', action = dispatch('recent') },
   {
     key = 'p', help = 'project', action = function()
-      local path = io.get_project_root(buffer.filename)
-      if not path then
-        ui.statusbar_text = 'not a project'
-        return
-      end
-      io.quick_open(path, true)
+      local rootpath = util.get_project_root()
+      if not rootpath then return end
+      io.quick_open(rootpath, true)
     end,
   },
   { key = 'l', help = 'lexer', action = dispatch('lexer') },
@@ -1023,9 +1018,10 @@ local run_hydra = hydra.create({
   { key = 'c', help = 'compile', action = textadept.run.compile },
   {
     key = 'b', help = 'build', action = function()
-      local root = io.get_project_root(buffer.filename, true)
-      textadept.run.build_commands[root] = 'ninja -C ' .. root .. '/build'
-      textadept.run.build(root)
+      local rootpath = util.get_project_root()
+      if not rootpath then return end
+      textadept.run.build_commands[rootpath] = 'ninja -C ' .. rootpath .. '/build'
+      textadept.run.build(rootpath)
     end,
   },
   { key = 'p', help = 'project', action = function()
