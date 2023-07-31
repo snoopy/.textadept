@@ -295,7 +295,7 @@ function M.format_buffer(filename)
 
   buffer:begin_undo_action()
   os.spawn(formatters[lang] .. ' "' .. filename .. '"'):wait()
-  events.emit(events.FILE_CHANGED)
+  buffer:reload()
   buffer:end_undo_action()
 end
 
