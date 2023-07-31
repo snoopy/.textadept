@@ -58,6 +58,7 @@ buffer.auto_c_choose_single = false
 buffer.auto_c_ignore_case = true
 buffer.auto_c_max_height = 15
 buffer.auto_c_multi = buffer.MULTIAUTOC_EACH
+textadept.editing.autocomplete_all_words = true
 
 -- paste into every selection when multiple selections are active
 buffer.multi_paste = buffer.MULTIPASTE_EACH
