@@ -154,10 +154,11 @@ function M.function_list()
   result_list("Function list: " .. buffer.filename, results)
 end
 
-function M.find_global()
+local function find()
   local s = buffer:word_start_position(buffer.current_pos, true)
   local e = buffer:word_end_position(buffer.current_pos, true)
   local tag = buffer:text_range(s, e)
+  if not tag or type(tag) ~= 'string' then return end
 
   local tag_regex = '^.*(' .. tag .. ')\t'
   local path_regex = '(.*)\t'
@@ -166,8 +167,22 @@ function M.find_global()
   local line_regex = 'line:(%d+).*$'
 
   local pattern = tag_regex .. path_regex .. snippet_regex .. type_regex .. line_regex
-  local results = search_in_files(pattern, false)
-  result_list("Go to global symbol: " .. tag, results)
+  return search_in_files(pattern, false)
+end
+
+function M.find_global()
+  result_list("CTAGS results", find())
+end
+
+function M.function_hint()
+  buffer:annotation_clear_all()
+  local hint = ''
+  local results = find()
+  if not results then
+    ui.statusbar_text = 'ctags: no results'
+    return
+  end
+  buffer.annotation_text[buffer:line_from_position(buffer.current_pos)] = results[1][3]
 end
 
 function M.find_local()

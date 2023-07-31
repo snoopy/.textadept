@@ -192,6 +192,10 @@ keys.f4 = util.toggle_header
 
 -- editing
 
+keys.f9 = function()
+  ctags_redux.function_hint()
+end
+
 keys.f8 = buffer.undo
 keys.f5 = buffer.redo
 
@@ -840,6 +844,8 @@ local buffer_hydra = hydra.create({
       io.close_all_buffers()
     end,
   },
+
+  { key = 'a', help = 'reset annotations', action = function() buffer:annotation_clear_all() end, },
 })
 
 local project_hydra = hydra.create({
