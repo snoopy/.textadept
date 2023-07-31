@@ -185,22 +185,6 @@ function M.function_hint()
   buffer.annotation_text[buffer:line_from_position(buffer.current_pos)] = results[1][3]
 end
 
-function M.find_local()
-  local s = buffer:word_start_position(buffer.current_pos, true)
-  local e = buffer:word_end_position(buffer.current_pos, true)
-  local tag = buffer:text_range(s, e)
-
-  local tag_regex = '^(.*)\t'
-  local filename = buffer.filename:match("[/\\]([^/\\]+)%.[^.]+$")
-  local path_regex = '(.*' .. filename .. '.*)\t'
-  local snippet_regex = '/^%s*(.+)$/;"\t'
-  local type_regex = '(%l)\t'
-  local line_regex = 'line:(%d+).*$'
-  local pattern = tag_regex .. path_regex .. snippet_regex .. type_regex .. line_regex
-  local results = search_in_files(pattern, true)
-  result_list("Go to local symbol: " .. tag, results)
-end
-
 -- Autocompleter function for ctags.
 textadept.editing.autocompleters.ctags = function()
   local s = buffer:word_start_position(buffer.current_pos, true)
