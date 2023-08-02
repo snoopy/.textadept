@@ -155,9 +155,9 @@ function M.function_list()
 end
 
 local function find()
-  local s = buffer:word_start_position(buffer.current_pos, true)
-  local e = buffer:word_end_position(buffer.current_pos, true)
-  local tag = buffer:text_range(s, e)
+  textadept.editing.select_word()
+  tag = buffer:get_sel_text()
+  buffer:char_right()
   if not tag or type(tag) ~= 'string' then return end
 
   local tag_regex = '^.*(' .. tag .. ')\t'
