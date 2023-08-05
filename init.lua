@@ -831,16 +831,15 @@ local buffer_hydra = hydra.create({
   { key = 'c', help = 'encoding', action = encoding_hydra },
   {
     key = 'k', help = 'close all', action = function()
-      local retval = ui.dialogs.message({
+      local button = ui.dialogs.message
+      {
         title = 'Close all buffers?',
         text = 'Do you want to close ALL buffers?',
         icon = 'dialog-question',
-        button1 = 'No',
-        button2 = 'Yes',
-      })
-      if retval ~= 2 then
-        return
-      end
+        button1 = 'Yes',
+        button2 = 'No',
+      }
+      if button == 2 then return end
       io.close_all_buffers()
     end,
   },
@@ -855,16 +854,15 @@ local project_hydra = hydra.create({
       if not rootpath then return end
       rootpath = rootpath:gsub('%-', '%%-')
 
-      local retval = ui.dialogs.message({
+      local button = ui.dialogs.message
+      {
         title = 'Close all project buffers?',
         text = 'Do you want to close ALL project buffers?',
         icon = 'dialog-question',
-        button1 = 'No',
-        button2 = 'Yes',
-      })
-      if retval ~= 2 then
-        return
-      end
+        button1 = 'Yes',
+        button2 = 'No',
+      }
+      if button == 2 then return end
 
       for _, b in ipairs(_G._BUFFERS) do
         if b.filename then
