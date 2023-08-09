@@ -35,11 +35,6 @@ local function on_selection(list, item)
 end
 
 local function result_list(title, tags)
-  if not tags then
-    ui.statusbar_text = "ctags: no results."
-    return
-  end
-
   local list = reduxlist.new(title)
   list.column_styles = {
     reduxstyle['string'],
@@ -138,6 +133,11 @@ local function search_in_files(pattern, function_list)
 
   file:close()
 
+  if #tags == 0 then
+    ui.statusbar_text = "ctags: no results."
+    return nil
+  end
+
   return tags
 end
 
@@ -157,7 +157,6 @@ end
 local function find()
   textadept.editing.select_word()
   tag = buffer:get_sel_text()
-  buffer:char_right()
   if not tag or type(tag) ~= 'string' then return end
 
   local tag_regex = '^.*(' .. tag .. ')\t'
@@ -171,18 +170,18 @@ local function find()
 end
 
 function M.find_global()
-  result_list("CTAGS results", find())
+  tags = find()
+  if not tags then return end
+  result_list("CTAGS results", tags)
 end
 
 function M.function_hint()
   buffer:annotation_clear_all()
   local hint = ''
   local results = find()
-  if not results then
-    ui.statusbar_text = 'ctags: no results'
-    return
-  end
+  if not tags then return end
   buffer.annotation_text[buffer:line_from_position(buffer.current_pos)] = results[1][3]
+  buffer:char_right()
 end
 
 -- Autocompleter function for ctags.
