@@ -574,6 +574,13 @@ local selection_hydra = hydra.create({
   },
 
   {
+    key = '<', help = '><', action = function()
+      textadept.editing.select_enclosed('>', '<')
+    end,
+    persistent = true,
+  },
+
+  {
     key = ' ', help = 'spaces', action = function()
       textadept.editing.select_enclosed(' ', ' ')
     end,
