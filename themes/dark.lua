@@ -71,7 +71,7 @@ styles[lexer.ANNOTATION] = {fore = purple}
 styles[lexer.ATTRIBUTE] = {fore = bg4}
 styles[lexer.BOLD] = {bold = true}
 styles[lexer.CLASS] = {fore = yellow}
-styles[lexer.CODE] = {fore = gray7, eolfilled = true}
+styles[lexer.CODE] = {fore = gray7, eol_filled = true}
 styles[lexer.COMMENT] = {fore = bg3}
 styles[lexer.CONSTANT] = {fore = aqua}
 styles[lexer.EMBEDDED] = {fore = bg4}
@@ -105,8 +105,8 @@ styles.addition = {fore = colors.green}
 styles.deletion = {fore = colors.red}
 styles.change = {fore = colors.yellow}
 -- HTML.
-styles.tag_unknown = styles.tag .. {italics = true}
-styles.attribute_unknown = styles.attribute .. {italics = true}
+styles.tag_unknown = styles.tag .. {italic = true}
+styles.attribute_unknown = styles.attribute .. {italic = true}
 -- Latex, TeX, and Texinfo.
 styles.command = styles[lexer.KEYWORD]
 styles.command_section = styles[lexer.HEADING]
@@ -116,6 +116,8 @@ styles.environment_math = styles[lexer.NUMBER]
 -- styles.target = {}
 -- Markdown.
 -- styles.hr = {}
+-- Python.
+styles.keyword_soft = {}
 -- XML.
 -- styles.cdata = {}
 -- YAML.
@@ -143,7 +145,7 @@ view.marker_back[textadept.bookmarks.MARK_BOOKMARK] = colors.blue
 view.marker_back[textadept.run.MARK_WARNING] = colors.yellow
 -- view.marker_fore[textadept.run.MARK_ERROR] = colors.black
 view.marker_back[textadept.run.MARK_ERROR] = colors.red
-for i = buffer.MARKNUM_FOLDEREND, buffer.MARKNUM_FOLDEROPEN do -- fold margin
+for i = view.MARKNUM_FOLDEREND, view.MARKNUM_FOLDEROPEN do -- fold margin
   view.marker_fore[i] = colors.black
   view.marker_back[i] = colors.dark_grey
   view.marker_back_selected[i] = colors.light_grey

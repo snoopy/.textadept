@@ -1,3 +1,5 @@
+view:set_theme({ font = 'JetBrains Mono NL', size = 16 })
+
 local hydra = require('hydra')
 local qapp = require('qapp')
 local util = require('util')
@@ -8,8 +10,6 @@ reduxstyle.list_match_highlight.fore = 'd79921'
 reduxstyle.fs_directory.fore = '458588'
 textredux.hijack()
 local ctags_redux = require('ctags_redux')
-
-view:set_theme({ font = 'JetBrains Mono NL', size = 16 })
 
 buffer.use_tabs = false
 buffer.tab_width = 4
@@ -66,6 +66,7 @@ buffer.multi_paste = buffer.MULTIPASTE_EACH
 lexer.detect_extensions.conf = 'ini'
 lexer.detect_extensions.csv = 'ini'
 lexer.detect_extensions.gitconfig = 'ini'
+lexer.detect_extensions.ep = 'html'
 
 textadept.editing.auto_pairs = {}
 
