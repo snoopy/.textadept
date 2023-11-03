@@ -707,7 +707,7 @@ local nav_hydra = hydra.create({
   { key = 'K', help = '> indent up', action = function() util.goto_diff_indent(true, true) end, persistent = true, },
 
   { key = 'c', help = 'ctags: find', action = dispatch('ctags_global'), },
-  { key = 'C', help = 'ctags: back', action = dispatch('ctags_back'), },
+  { key = 'C', help = 'ctags: back', action = dispatch('ctags_back'), persistent = true, },
   { key = 'u', help = 'ctags: functions', action = dispatch('ctags_functions'), },
 })
 
