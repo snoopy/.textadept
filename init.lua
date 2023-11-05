@@ -161,34 +161,6 @@ events.connect(events.CHAR_ADDED, function(code)
   textadept.editing.autocomplete(buffer:get_lexer(true))
 end)
 
-events.connect(events.KEYPRESS, function(code)
-  if code:match('alt.*')
-      or code:match('up')
-      or code:match('down')
-      or code:match('[.]')
-      then
-    buffer:auto_c_cancel()
-  end
-end, 1)
-
--- select next autosuggestion with TAB
-keys['\t'] = function()
-  if buffer:auto_c_active() then
-    buffer:line_down()
-    return
-  end
-  return false -- def
-end
-
--- select prev autosuggestion with shift+TAB
-keys['shift+\t'] = function()
-  if buffer:auto_c_active() then
-    buffer:line_up()
-    return
-  end
-  return false -- def
-end
-
 keys.f4 = util.toggle_header
 
 -- editing
@@ -406,12 +378,6 @@ end
 
 local insert_hydra = hydra.create({
   {
-    key = 'n', help = '\\n', action = function()
-      util.insert_text_multi('\\n')
-    end,
-    persistent = true,
-  },
-  {
     key = 'm', help = 'allman', action = function()
       util.add_braces('allman', '', true)
     end,
@@ -432,23 +398,11 @@ local insert_hydra = hydra.create({
     end,
   },
   {
-    key = 's', help = 'std::', action = function()
-      util.insert_text_multi('std::')
+    key = 'n', help = '\\n', action = function()
+      util.insert_text_multi('\\n')
     end,
+    persistent = true,
   },
-  {
-    key = 'i', help = 'include', action = function()
-      util.insert_text_multi('#include <>')
-      buffer:char_left()
-    end,
-  },
-  {
-    key = 'l', help = 'include local', action = function()
-      util.insert_text_multi('#include ""')
-      buffer:char_left()
-    end,
-  },
-  { key = 'p', help = 'namespace', action = util.insert_namespace },
 })
 
 local edit_hydra = hydra.create({
@@ -1058,6 +1012,7 @@ local main_hydra = hydra.create({
   { key = 'e', help = 'edit', action = edit_hydra },
   { key = 's', help = 'select', action = selection_hydra },
   { key = 'i', help = 'insert', action = insert_hydra },
+  { key = 'n', help = 'snippets', action = textadept.snippets.select },
   { key = 'w', help = 'window', action = window_hydra },
   { key = 'p', help = 'project', action = project_hydra },
   { key = 'b', help = 'buffer', action = buffer_hydra },
@@ -1076,3 +1031,48 @@ local main_hydra = hydra.create({
 hydra.keys = hydra.create({
   { key = 'f10', help = 'Hydra', action = main_hydra },
 })
+
+snippets.cpp.cl = 'class $1\n{\npublic:\n\t$1();\n\t~$1();\n\nprivate:\n\t$0\n};'
+snippets.cpp.st = 'struct $1\n{\n\t$0\n};'
+snippets.cpp.ec = 'enum class $1 {\n\t$0\n};'
+snippets.cpp.pr = 'std::cout << $1 << ${0:std::endl};'
+snippets.cpp.lmd = '[${1:&}]($2){\n\t$3\n}'
+snippets.cpp.ug = '#include <$1>\n'
+snippets.cpp.ul = '#include "$1"\n'
+snippets.cpp.uc = '#include <cstddef>\n#include <cstdint>\n#include <fstream>\n#include <iostream>\n#include <string>\n#include <map>\n#include <vector>\n'
+snippets.cpp.ns = 'namespace $1 {\n\t$0\n} // $1'
+snippets.cpp.sd = 'std::'
+snippets.cpp.fli = 'for ($1; $2; $3) {\n\t$0\n}'
+snippets.cpp.fl = 'for (${1:auto}${2: const&} $3: $4) {\n\t$0\n}'
+snippets.cpp.vc = 'std::vector<$1>'
+snippets.cpp.mp = 'std::map<$1, $2>'
+snippets.cpp.sr = 'std::string'
+
+snippets.rust.vc = 'let ${1:mut }$2 = vec![$0];'
+snippets.rust.vcn = 'let ${1:mut }$0 = Vec::new();'
+snippets.rust.fl = 'for $1 in $2 {\n\t$0\n}'
+snippets.rust.fn = 'fn $1($2) -> ${3:()} {\n\t$0\n}'
+snippets.rust.pr = 'println!("{}$1", $0);'
+snippets.rust.sw = 'match $1 {\n\t$0\n\t_ => (),\n}'
+
+snippets.perl.flh = 'for my $$1 (sort keys %$2) {\n\t$0\n}'
+snippets.perl.pah = 'push($$1{$$2}->@*, $$0);'
+snippets.perl.lah = 'for my $$1 ($$2{$$3}->@*){\n\t$0\n}'
+snippets.perl.dra = '->@*'
+snippets.perl.drh = '->%*'
+snippets.perl.uc = 'use strict;\nuse warnings;\n\n'
+snippets.perl.wd = 'while (<DATA>) {\n\t$0\n}'
+snippets.perl.ds = '__DATA__\n'
+snippets.perl.fn = 'sub $1 {\n\t$0\n}'
+snippets.perl.fli = 'for my $$1 ($2) {\n\t$0\n}'
+snippets.perl.re = 'm/$2/$0;'
+snippets.perl.rs = '${1:|s,y|}/$2/$3/$0;'
+
+snippets.python.pr = 'print(f"$0")'
+snippets.python.fn = 'def $1($2):\n\t$0'
+snippets.python.fl = 'for $1 in $2:\n\t$0\n'
+snippets.python['if'] = 'if $1:\n\t$0'
+
+snippets.lua.fn = 'function${1:()}\n\t$0\nend'
+snippets.lua['if'] = 'if $1 then\n\t$0\nend'
+snippets.lua.fl = 'for $1 do\n\t$0\nend'
