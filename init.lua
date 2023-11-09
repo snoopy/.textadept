@@ -1105,6 +1105,6 @@ snippets.python.fn = 'def $1($2):\n\t$0'
 snippets.python.fl = 'for $1 in $2:\n\t$0\n'
 snippets.python['if'] = 'if $1:\n\t$0'
 
-snippets.lua.fn = 'function${1:()}\n\t$0\nend'
+snippets.lua.fn = '${1:local }function${2:()}\n\t$0\nend'
 snippets.lua['if'] = 'if $1 then\n\t$0\nend'
 snippets.lua.fl = 'for $1 do\n\t$0\nend'
