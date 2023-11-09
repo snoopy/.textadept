@@ -161,6 +161,38 @@ events.connect(events.CHAR_ADDED, function(code)
   textadept.editing.autocomplete(buffer:get_lexer(true))
 end)
 
+events.connect(events.KEYPRESS, function(code)
+  if code:match('alt.*')
+      or code:match('up')
+      or code:match('down')
+      or code:match('[.]')
+      then
+    buffer:auto_c_cancel()
+  end
+end, 1)
+
+local function handle_tab(next)
+  if textadept.snippets.active then
+    buffer:auto_c_cancel()
+    snippet = next and textadept.snippets.insert or textadept.snippets.previous
+    snippet()
+    return
+  end
+  if buffer:auto_c_active() then
+    (next and buffer.line_down or buffer.line_up)()
+    return
+  end
+  return false
+end
+
+keys['\t'] = function()
+  return handle_tab(true)
+end
+
+keys['shift+\t'] = function()
+  return handle_tab(false)
+end
+
 keys.f4 = util.toggle_header
 
 -- editing
