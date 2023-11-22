@@ -871,15 +871,6 @@ local project_hydra = hydra.create({
   { key = 'b', help = 'blame', action = function() util.gitblame() end },
   { key = 'l', help = 'diff of current line', action = util.gitlinediff, },
   { key = 's', help = 'show file at revision', action = util.gitshowrev, },
-
-  { key = 't', help = 'clang-tidy', action = function()
-    local rootpath = util.get_project_root()
-    if not rootpath then return end
-    local filepath = buffer.filename
-    local cmd = 'clang-tidy -checks=*,-fuchsia*,-llvm* -p ' .. rootpath
-    textadept.run.run_project(nil, cmd .. '/build/compile_commands.json ' .. filepath)
-  end, },
-
   { key = 'c', help = 'ctags: init', action = dispatch('ctags_init') },
 })
 
@@ -1013,10 +1004,18 @@ local open_hydra = hydra.create({
 })
 
 local run_hydra = hydra.create({
+  { key = 'l', help = 'lint', action = function()
+      util.run('lint')
+    end
+  },
+  { key = 'b', help = 'build', action = function()
+      util.run('build')
+    end
+  },
   { key = 'r', help = 'run', action = textadept.run.run },
   { key = 'c', help = 'compile', action = textadept.run.compile },
   {
-    key = 'b', help = 'build', action = function()
+    key = 'o', help = 'original build', action = function()
       local rootpath = util.get_project_root()
       if not rootpath then return end
       textadept.run.build_commands[rootpath] = 'ninja -C ' .. rootpath .. '/build'
@@ -1026,13 +1025,13 @@ local run_hydra = hydra.create({
   { key = 'p', help = 'project', action = function()
     textadept.run.run_project(nil, '')
   end, },
-  { key = 'n', help = 'next error', action = function()
-      textadept.run.goto_error(true)
+  { key = 'n', help = 'next', action = function()
+      util.next_error(true)
     end,
     persistent = true,
   },
-  { key = 'N', help = 'prev error', action = function()
-      textadept.run.goto_error(false)
+  { key = 'N', help = 'prev', action = function()
+      util.next_error(false)
     end,
     persistent = true,
   },
