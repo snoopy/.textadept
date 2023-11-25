@@ -1,4 +1,4 @@
-view:set_theme('goofbox', { font = 'JetBrains Mono NL', size = 16 })
+view:set_theme('goofbox', { font = 'JetBrains Mono NL Light', size = 16 })
 
 local hydra = require('hydra')
 local qapp = require('qapp')
