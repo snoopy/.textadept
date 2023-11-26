@@ -290,7 +290,6 @@ function M.format_buffer(filename)
 
   local formatters = {}
   formatters['cpp'] = 'clang-format -i -style=file -fallback-style=none'
-  formatters['html'] = 'tidy -i -m'
   formatters['python'] = 'black -l 120'
 
   buffer:begin_undo_action()
