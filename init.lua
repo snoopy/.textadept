@@ -124,6 +124,8 @@ keys['ctrl+p'] = nil
 keys['ctrl+o'] = nil
 keys['ctrl+d'] = nil
 keys['ctrl+u'] = nil
+keys['ctrl+\t'] = nil
+keys['shift+ctrl+\t'] = nil
 
 local function dispatch(case)
   local switch = {}
@@ -172,12 +174,6 @@ events.connect(events.KEYPRESS, function(code)
 end, 1)
 
 local function handle_tab(next)
-  if textadept.snippets.active then
-    buffer:auto_c_cancel()
-    snippet = next and textadept.snippets.insert or textadept.snippets.previous
-    snippet()
-    return
-  end
   if buffer:auto_c_active() then
     (next and buffer.line_down or buffer.line_up)()
     return
@@ -191,6 +187,20 @@ end
 
 keys['shift+\t'] = function()
   return handle_tab(false)
+end
+
+keys['ctrl+\t'] = function()
+  if textadept.snippets.active then
+    buffer:auto_c_cancel()
+    textadept.snippets.insert()
+  end
+end
+
+keys['shift+ctrl+\t'] = function()
+  if textadept.snippets.active then
+    buffer:auto_c_cancel()
+    textadept.snippets.previous()
+  end
 end
 
 keys.f4 = util.toggle_header
