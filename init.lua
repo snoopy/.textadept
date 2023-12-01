@@ -1,4 +1,4 @@
-view:set_theme('goofbox', { font = 'JetBrains Mono NL Light', size = 16 })
+view:set_theme('flatbox', { font = 'JetBrains Mono NL Light', size = 16 })
 
 local hydra = require('hydra')
 local qapp = require('qapp')
@@ -6,8 +6,8 @@ local util = require('util')
 local origin = require('origin')
 local textredux = require('textredux')
 local reduxstyle = textredux.core.style
-reduxstyle.list_match_highlight.fore = 'd79921'
-reduxstyle.fs_directory.fore = '458588'
+reduxstyle.list_match_highlight.fore = 'b57614'
+reduxstyle.fs_directory.fore = '076678'
 textredux.hijack()
 local ctags_redux = require('ctags_redux')
 
