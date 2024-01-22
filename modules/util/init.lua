@@ -74,7 +74,7 @@ function M.find_word_under_cursor(next)
   ui.find.match_case = true
   ui.find.incremental = false
   ui.find.regex = false
-  ui.find.find_in_files = false
+  ui.find.in_files = false
   events.emit(events.FIND, target, next)
 end
 
@@ -355,7 +355,7 @@ function M.goto_definition()
   ui.find.match_case = true
   ui.find.incremental = false
   ui.find.regex = false
-  ui.find.find_in_files = false
+  ui.find.in_files = false
   buffer:document_start()
   buffer:search_anchor()
   ui.find.find_next()
