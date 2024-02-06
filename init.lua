@@ -10,7 +10,6 @@ reduxstyle.list_match_highlight.fore = 'b57614'
 reduxstyle.fs_directory.fore = '076678'
 textredux.hijack()
 local ctags_redux = require('ctags_redux')
-require('scratch')
 
 buffer.use_tabs = false
 buffer.tab_width = 4
