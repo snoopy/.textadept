@@ -814,7 +814,7 @@ local buffer_hydra = hydra.create({
   { key = 'r', help = 'reload', action = buffer.reload, },
   { key = 's', help = 'save as', action = dispatch('saveas'), },
   {
-    key = 'p', help = 'word wrap', action = function()
+    key = 'v', help = 'word wrap', action = function()
       if view.wrap_mode == view.WRAP_NONE then
         view.wrap_mode = view.WRAP_WORD
         ui.statusbar_text = 'Word wrap ON'
@@ -850,6 +850,20 @@ local buffer_hydra = hydra.create({
       }
       if button == 2 then return end
       io.close_all_buffers()
+    end,
+  },
+  {
+    key = 'p', help = 'purge', action = function()
+      local button = ui.dialogs.message
+      {
+        title = 'Confirm Purge',
+        text = buffer.filename,
+        icon = 'dialog-question',
+        button1 = 'Yes',
+        button2 = 'No',
+      }
+      if button == 2 then return end
+        os.remove(buffer.filename)
     end,
   },
 })
