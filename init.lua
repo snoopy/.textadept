@@ -520,7 +520,7 @@ local edit_hydra = hydra.create({
     persistent = true,
   },
 
-  { key = 'c', help = 'comment all', action = function()
+  { key = 'm', help = 'comment all', action = function()
       util.custom_comment(true)
     end,
   },
@@ -530,6 +530,21 @@ local edit_hydra = hydra.create({
       textadept.editing.enclose('/* ', ' */')
     end,
   },
+
+  {
+    key = 'c', help = 'crop', action = function()
+      if buffer.selection_empty then textadept.editing.select_word() end
+      buffer:begin_undo_action()
+      for i = 1, buffer.selections do
+        local s, e = buffer.selection_n_start[i], buffer.selection_n_end[i]
+        buffer:delete_range(s - 1, 1)
+        buffer:delete_range(e - 1, 1)
+      end
+      buffer:end_undo_action()
+    end,
+    persistent = true,
+  },
+
 })
 
 local selection_hydra = hydra.create({
@@ -634,21 +649,11 @@ local selection_hydra = hydra.create({
   },
   { key = 'b', help = 'buffer end', action = buffer.document_end_extend, },
   { key = 'B', help = 'buffer start', action = buffer.document_start_extend, },
-
   {
-    key = 'c', help = 'crop', action = function()
-      if buffer.selection_empty then textadept.editing.select_word() end
-      buffer:begin_undo_action()
-      for i = 1, buffer.selections do
-        local s, e = buffer.selection_n_start[i], buffer.selection_n_end[i]
-        buffer:delete_range(s - 1, 1)
-        buffer:delete_range(e - 1, 1)
-      end
-      buffer:end_undo_action()
-    end,
-    persistent = true,
+    key = 'e',
+    help = 'edit',
+    action = edit_hydra,
   },
-
 })
 
 local nav_hydra = hydra.create({
