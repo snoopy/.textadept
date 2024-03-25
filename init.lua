@@ -444,6 +444,11 @@ local insert_hydra = hydra.create({
     end,
     persistent = true,
   },
+  {
+    key = 's', help = 'std::', action = function()
+      util.insert_text_multi('std::')
+    end,
+  },
 })
 
 local edit_hydra = hydra.create({
