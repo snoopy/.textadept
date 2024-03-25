@@ -38,7 +38,6 @@ view:set_y_caret_policy(view.CARET_SLOP | view.CARET_STRICT | view.CARET_EVEN, 8
 view.edge_column = 100
 view.edge_color = 0xcccccc
 
-view.wrap_indent_mode = view.WRAPINDENT_DEEPINDENT
 view.indentation_guides = buffer.IV_LOOKBOTH
 view.whitespace_size = 3
 
