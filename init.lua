@@ -383,11 +383,11 @@ keys['ctrl+pgdn'] = function()
 end
 
 keys['pgup'] = function()
-  buffer:goto_line(buffer.first_visible_line)
+  buffer:goto_line(view:doc_line_from_visible(view.first_visible_line))
   view:vertical_center_caret()
 end
 keys['pgdn'] = function()
-  buffer:goto_line(buffer.first_visible_line + buffer.lines_on_screen - 1)
+  buffer:goto_line(view:doc_line_from_visible(view.first_visible_line) + view.lines_on_screen - 1)
   view:vertical_center_caret()
 end
 
