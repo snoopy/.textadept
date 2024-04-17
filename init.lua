@@ -964,7 +964,7 @@ local window_hydra = hydra.create({
 
 local bookmark_hydra = hydra.create({
   { key = 'm', help = 'toggle', action = textadept.bookmarks.toggle, persistent = true },
-  { key = 'k', help = 'clear', action = textadept.bookmarks.clear },
+  { key = 'c', help = 'clear', action = textadept.bookmarks.clear },
   {
     key = 'n', help = 'next', action = function()
       textadept.bookmarks.goto_mark(true)
