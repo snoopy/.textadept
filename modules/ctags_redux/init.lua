@@ -110,13 +110,15 @@ local function search_in_files(pattern, function_list)
     ui.statusbar_text = 'ctags: not a project'
     return
   end
-  project_root = project_root .. '/tags'
-
-  local file = io.open(project_root)
-  if not file then return end
+  local tags_path = project_root .. '/tags'
+  if not lfs.attributes(tags_path) then
+    M.init_ctags()
+  end
+  local tags_file = io.open(tags_path)
+  if not tags_file then return end
 
   local found = false
-  for line in file:lines() do
+  for line in tags_file:lines() do
     local tag, file_path, snippet, type, linenr = line:match(pattern)
     if tag then
       if not file_path:find('^%a?:?[/\\]') then
@@ -131,7 +133,7 @@ local function search_in_files(pattern, function_list)
     end
   end
 
-  file:close()
+  tags_file:close()
 
   if #tags == 0 then
     ui.statusbar_text = "ctags: no results."
