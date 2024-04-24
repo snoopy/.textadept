@@ -161,6 +161,7 @@ function M.function_list()
 end
 
 local function find()
+  buffer:set_empty_selection(buffer.current_pos)
   textadept.editing.select_word()
   tag = buffer:get_sel_text()
   if not tag or type(tag) ~= 'string' then return end
