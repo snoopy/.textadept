@@ -153,6 +153,10 @@ function M.function_list()
   local line_regex = 'line:(%d+).*$'
   local pattern = tag_regex .. path_regex .. snippet_regex .. type_regex .. line_regex
   local results = search_in_files(pattern, true)
+  if not results then
+    ui.statusbar_text = "ctags: no results."
+    return
+  end
   result_list("Function list: " .. buffer.filename, results)
 end
 
