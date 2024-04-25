@@ -71,36 +71,6 @@ local function type_lookup(type)
   return type
 end
 
--- Determine the tag files to search in.
-local function find_tag_files()
-  local tag_files = {}
-  -- current directory's tags
-  local tag_file = ((buffer.filename or ''):match('^.+[/\\]') or lfs.currentdir() .. '/') .. 'tags'
-  if lfs.attributes(tag_file) then tag_files[#tag_files + 1] = tag_file end
-  if buffer.filename then
-    local root = io.get_project_root(buffer.filename, true)
-    if root then
-      -- project's tags
-      tag_file = root .. '/tags'
-      if lfs.attributes(tag_file) then tag_files[#tag_files + 1] = tag_file end
-      -- project's specified tags
-      tag_file = M[root]
-      if type(tag_file) == 'string' then
-        tag_files[#tag_files + 1] = tag_file
-      elseif type(tag_file) == 'table' then
-        for i = 1, #tag_file do tag_files[#tag_files + 1] = tag_file[i] end
-      end
-    end
-  end
-
-  -- global tags
-  for i = 1, #M do
-    tag_files[#tag_files + 1] = M[i]
-  end
-
-  return tag_files
-end
-
 local function search_in_files(pattern, function_list)
   if not pattern then return end
 
