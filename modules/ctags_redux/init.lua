@@ -1,7 +1,6 @@
 local M = {}
 
 local reduxlist = require 'textredux.core.list'
-local reduxstyle = require 'textredux.core.style'
 
 -- List of jump positions comprising a jump history.
 local jump_list = {pos = 0}
@@ -36,13 +35,6 @@ end
 
 local function result_list(title, tags)
   local list = reduxlist.new(title)
-  list.column_styles = {
-    reduxstyle['string'],
-    reduxstyle.keyword,
-    reduxstyle.default,
-    reduxstyle.comment,
-    reduxstyle.number,
-  }
   list.headers = {'File', 'Type', 'Snippet', 'Path', 'Line'}
   list.items = tags
   list.on_selection = on_selection
