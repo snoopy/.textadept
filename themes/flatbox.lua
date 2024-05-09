@@ -42,49 +42,48 @@ colors.lime = 0x00CC99
 colors.green = green
 colors.teal = 0x808000
 colors.blue = blue
-colors.violet = violet
 colors.purple = purple
-colors.magenta = magenta
 
 -- Predefined styles.
 styles[view.STYLE_DEFAULT] = {
   font = font, size = size, fore = 0x70645d, back = bg0
 }
 styles[view.STYLE_LINENUMBER] = {fore = bg2, back = bg0}
-styles[view.STYLE_BRACELIGHT] = {fore = fg4}
+styles[view.STYLE_BRACELIGHT] = {fore = red}
 styles[view.STYLE_BRACEBAD] = {fore = colors.red}
 styles[view.STYLE_INDENTGUIDE] = {fore = 0x757575}
 styles[view.STYLE_CALLTIP] = {fore = colors.light_grey, back = colors.light_black}
 
 -- Tag styles.
 styles[lexer.ANNOTATION] = {fore = purple}
-styles[lexer.ATTRIBUTE] = {fore = bg4}
+styles[lexer.ATTRIBUTE] = {fore = aqua}
 styles[lexer.BOLD] = {bold = true}
 styles[lexer.CLASS] = {fore = yellow}
 styles[lexer.CODE] = {fore = gray7, eol_filled = true}
-styles[lexer.COMMENT] = {fore = 0x505050}
-styles[lexer.CONSTANT] = {fore = aqua}
-styles[lexer.EMBEDDED] = {fore = bg4}
+styles[lexer.COMMENT] = {fore = bg3}
+styles[lexer.CONSTANT] = {fore = orange}
+styles[lexer.EMBEDDED] = {fore = aqua}
 styles[lexer.ERROR] = {fore = red}
 styles[lexer.FUNCTION] = {fore = blue}
 -- styles[lexer.FUNCTION_BUILTIN] = {fore = blue}
 styles[lexer.HEADING] = {fore = purple}
 styles[lexer.ITALIC] = {italic = true}
 styles[lexer.KEYWORD] = {fore = purple}
-styles[lexer.LABEL] = {fore = fg3}
+styles[lexer.LABEL] = {fore = yellow}
 styles[lexer.LINK] = {underline = true}
 styles[lexer.LIST] = {fore = colors.teal}
-styles[lexer.NUMBER] = {fore = aqua}
-styles[lexer.OPERATOR] = {fore = bg3}
-styles[lexer.PREPROCESSOR] = {fore = blue, underline = true}
+styles[lexer.NUMBER] = {fore = orange}
+styles[lexer.OPERATOR] = {fore = bg4}
+styles[lexer.PREPROCESSOR] = {fore = aqua}
 styles[lexer.REFERENCE] = {underline = true}
 styles[lexer.REGEX] = {fore = yellow}
 styles[lexer.STRING] = {fore = green}
 styles[lexer.TAG] = {fore = blue}
 styles[lexer.TYPE] = {fore = yellow}
 styles[lexer.UNDERLINE] = {underline = true}
-styles[lexer.VARIABLE_BUILTIN] = {fore = red}
-styles[lexer.KEYWORD .. '.ctl'] = {fore = orange}
+styles[lexer.VARIABLE_BUILTIN] = {fore = aqua}
+styles[lexer.VARIABLE.. '.scopes'] = {fore = aqua}
+styles[lexer.TYPE .. '.custom'] = {fore = yellow}
 
 -- CSS.
 styles.property = styles[lexer.ATTRIBUTE]
