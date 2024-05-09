@@ -67,7 +67,7 @@ lexer.detect_extensions.csv = 'ini'
 lexer.detect_extensions.gitconfig = 'ini'
 lexer.detect_extensions.ep = 'html'
 
-textadept.editing.auto_pairs = {}
+textadept.editing.auto_pairs = nil
 
 textadept.run.compile_commands.cpp = 'g++ -std=c++20 -O2 "%f"'
 textadept.run.run_commands.python = 'python3 -u "%f"'
