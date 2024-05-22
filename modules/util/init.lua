@@ -284,6 +284,21 @@ function M.custom_comment(force)
   end
 end
 
+function M.toggle_autoformat()
+  local lang = buffer:get_lexer(true)
+
+  if not lang then
+    return
+  end
+
+  if M.auto_format[lang] == nil then
+    return
+  end
+
+  M.auto_format[lang] = not M.auto_format[lang]
+  ui.statusbar_text = 'AutoFormat for "' .. lang .. '" is now: ' .. (M.auto_format[lang] and 'ON' or 'OFF')
+end
+
 function M.format_buffer(filename)
   local lang = buffer:get_lexer(true)
   if not filename or not lang then return end

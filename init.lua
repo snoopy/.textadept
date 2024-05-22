@@ -845,6 +845,10 @@ local buffer_hydra = hydra.create({
       util.format_buffer(buffer.filename)
     end,
   },
+  { key = 't', help = 'toggle autoformat', action = function()
+      util.toggle_autoformat()
+    end,
+  },
   { key = 'c', help = 'encoding', action = encoding_hydra },
   {
     key = 'k', help = 'close all', action = function()
