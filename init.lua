@@ -107,6 +107,8 @@ util.auto_format['python'] = true
 lfs.default_filter[#lfs.default_filter + 1] = '!/build'
 lfs.default_filter[#lfs.default_filter + 1] = '!/extern%a*'
 lfs.default_filter[#lfs.default_filter + 1] = '!.pyc'
+lfs.default_filter[#lfs.default_filter + 1] = '!/assets'
+lfs.default_filter[#lfs.default_filter + 1] = '!/target'
 
 local function m(labels)
   local menu = textadept.menu.menubar
