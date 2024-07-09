@@ -76,7 +76,8 @@ local function set_buffer_options()
   local name = buffer.lexer_language
   if name == 'yaml' or
       name == 'lua' or
-      name == 'html' then
+      name == 'html' or
+      name == 'css' then
     buffer.use_tabs = false
     buffer.tab_width = 2
   end
