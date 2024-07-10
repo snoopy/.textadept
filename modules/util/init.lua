@@ -132,28 +132,6 @@ end
 
 -- c++
 
-function M.insert_namespace()
-  local value, button = ui.dialogs.input({
-    title = 'Insert Namespace',
-    text = '',
-    button1 = 'OK',
-    button2 = 'Cancel',
-    return_button = true,
-  })
-  if button == 1 then
-    buffer:begin_undo_action()
-    buffer:add_text('namespace ' .. value)
-    buffer:new_line()
-    buffer:add_text('{')
-    buffer:new_line()
-    buffer:new_line()
-    buffer:add_text('} // namespace ' .. value)
-    buffer:line_up()
-    buffer:tab()
-    buffer:end_undo_action()
-  end
-end
-
 function M.toggle_header()
   local filename, ext = buffer.filename:match('^(.+%.)(.+)$')
   if not ext then return end
