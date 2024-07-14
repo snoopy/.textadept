@@ -1,4 +1,4 @@
-view:set_theme('flatbox', { font = 'JetBrains Mono NL Light', size = 16 })
+view:set_theme('everforest', { font = 'JetBrains Mono NL Light', size = 16 })
 
 local hydra = require('hydra')
 local qapp = require('qapp')
@@ -6,8 +6,8 @@ local util = require('util')
 local origin = require('origin')
 local textredux = require('textredux')
 local reduxstyle = textredux.core.style
-reduxstyle.list_match_highlight.fore = 'b57614'
-reduxstyle.fs_directory.fore = '076678'
+reduxstyle.list_match_highlight.fore = 'f57d26'
+reduxstyle.fs_directory.fore = '3a94c5'
 textredux.hijack()
 local ctags_redux = require('ctags_redux')
 
