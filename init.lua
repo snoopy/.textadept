@@ -81,10 +81,6 @@ local function set_buffer_options()
     buffer.use_tabs = false
     buffer.tab_width = 2
   end
-  if name == 'python' then
-    buffer.use_tabs = false
-    buffer.tab_width = 4
-  end
   textadept.editing.strip_trailing_spaces = name ~= 'markdown'
 end
 
