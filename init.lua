@@ -1,5 +1,8 @@
 view:set_theme('everforest', { font = 'JetBrains Mono NL Light', size = 16 })
 
+local exec = require('exec')
+local autoformat = require('autoformat')
+local git = require('git')
 local hydra = require('hydra')
 local quicknav = require('quicknav')
 local util = require('util')
@@ -41,6 +44,7 @@ view.edge_color = 0xcccccc
 view.indentation_guides = buffer.IV_LOOKBOTH
 view.whitespace_size = 3
 
+view.annotation_visible = view.ANNOTATION_STANDARD
 textadept.editing.strip_trailing_spaces = true
 io.ensure_final_newline = true
 view.end_at_last_line = false
@@ -98,8 +102,8 @@ events.connect(events.FILE_CHANGED, function()
   return true
 end, 1)
 
-util.auto_format['cpp'] = true
-util.auto_format['python'] = true
+autoformat.state['cpp'] = true
+autoformat.state['python'] = true
 
 lfs.default_filter[#lfs.default_filter + 1] = '!/build'
 lfs.default_filter[#lfs.default_filter + 1] = '!/extern%a*'
@@ -841,11 +845,11 @@ local buffer_hydra = hydra.create({
   { key = 'w', help = 'whitespace', action = whitespace_hydra },
   { key = 'e', help = 'eol', action = eol_hydra },
   { key = 'f', help = 'format', action = function()
-      util.format_buffer(buffer.filename)
+      autoformat.format_buffer(buffer.filename)
     end,
   },
   { key = 't', help = 'toggle autoformat', action = function()
-      util.toggle_autoformat()
+      autoformat.toggle_autoformat()
     end,
   },
   { key = 'c', help = 'encoding', action = encoding_hydra },
@@ -904,10 +908,15 @@ local project_hydra = hydra.create({
     end,
   },
 
-  { key = 'b', help = 'blame', action = function() util.gitblame() end },
-  { key = 'l', help = 'diff of current line', action = util.gitlinediff, },
-  { key = 's', help = 'show file at revision', action = util.gitshowrev, },
   { key = 'c', help = 'ctags: init', action = dispatch('ctags_init') },
+})
+
+local git_hydra = hydra.create({
+  { key = 'b', help = 'blame', action = function() git.blame() end },
+  { key = 'f', help = 'toggle blame follow', action = git.toggle_blame_follow, },
+  { key = 'l', help = 'diff of current line', action = git.line_diff, },
+  { key = 'r', help = 'show file at revision', action = git.show_rev, },
+  { key = 'h', help = 'heat map', action = git.heatmap, },
 })
 
 local window_hydra = hydra.create({
@@ -1041,11 +1050,11 @@ local open_hydra = hydra.create({
 
 local run_hydra = hydra.create({
   { key = 'l', help = 'lint', action = function()
-      util.run('lint')
+      exec.run('lint')
     end
   },
   { key = 'b', help = 'build', action = function()
-      util.run('build')
+      exec.run('build')
     end
   },
   { key = 'r', help = 'run', action = textadept.run.run },
@@ -1082,6 +1091,7 @@ local main_hydra = hydra.create({
   { key = 'n', help = 'snippets', action = textadept.snippets.select },
   { key = 'w', help = 'window', action = window_hydra },
   { key = 'p', help = 'project', action = project_hydra },
+  { key = 'g', help = 'git', action = git_hydra },
   { key = 'b', help = 'buffer', action = buffer_hydra },
   { key = 'm', help = 'bookmark', action = bookmark_hydra },
   { key = 'q', help = 'quick access', action = quicknav_hydra },

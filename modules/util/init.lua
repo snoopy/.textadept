@@ -1,7 +1,6 @@
 local M = {}
 
-M.auto_format = {}
-last_buffer = nil
+local last_buffer = nil
 
 function M.get_project_root()
   local rootpath = io.get_project_root(true)
@@ -10,59 +9,6 @@ function M.get_project_root()
     return nil
   end
   return rootpath
-end
-
-events.connect(events.FILE_AFTER_SAVE, function(filename)
-  if M.auto_format[buffer.lexer_language] then
-    M.format_buffer(filename)
-  end
-end)
-
-function M.gitlinediff()
-  local rootpath = M.get_project_root()
-  if not rootpath then return end
-  local filename = buffer.filename
-  local linenumber = buffer:line_from_position(buffer.current_pos)
-  local cmd = 'git -C ' .. rootpath .. ' log -p -L' .. linenumber .. ',' .. linenumber .. ':' .. filename
-  local file = assert(io.popen(cmd, 'r'))
-  local result = assert(file:read('*a'))
-  file:close()
-  ui.print(result)
-  buffer.document_start()
-  buffer:set_lexer('diff')
-end
-
-function M.gitblame()
-  local rootpath = M.get_project_root()
-  if not rootpath then return end
-  local filepath = buffer.filename
-  local linenumber = buffer:line_from_position(buffer.current_pos)
-
-  local file = assert(io.popen('git -C ' .. rootpath .. ' blame ' .. filepath, 'r'))
-  local result = assert(file:read('*a'))
-  file:close()
-
-  ui.print(result)
-  buffer.goto_line(linenumber)
-end
-
-function M.gitshowrev()
-  local rootpath = M.get_project_root()
-  if not rootpath then return end
-  local file = buffer.filename
-  if not rootpath then return end
-  rootpath = rootpath:gsub('%-', '%%-')
-  file = file:gsub(rootpath, '')
-  file = file:gsub('^[/\\]', '')
-  file = file:gsub('[\\]', '/')
-
-  local revision, button = ui.dialogs.input({
-    title = 'Enter git revision',
-    return_button = true,
-  })
-  if button ~= 1 then return end
-
-  textadept.run.run_project(nil, 'git show ' .. revision .. ':' .. file)
 end
 
 function M.find_word_under_cursor(next)
@@ -262,35 +208,6 @@ function M.custom_comment(force)
   end
 end
 
-function M.toggle_autoformat()
-  local lang = buffer:get_lexer(true)
-
-  if not lang then
-    return
-  end
-
-  if M.auto_format[lang] == nil then
-    return
-  end
-
-  M.auto_format[lang] = not M.auto_format[lang]
-  ui.statusbar_text = 'AutoFormat for "' .. lang .. '" is now: ' .. (M.auto_format[lang] and 'ON' or 'OFF')
-end
-
-function M.format_buffer(filename)
-  local lang = buffer:get_lexer(true)
-  if not filename or not lang then return end
-
-  local formatters = {}
-  formatters['cpp'] = 'clang-format -i -style=file -fallback-style=none'
-  formatters['python'] = 'black -l 120'
-
-  buffer:begin_undo_action()
-  os.spawn(formatters[lang] .. ' "' .. filename .. '"'):wait()
-  buffer:reload()
-  buffer:end_undo_action()
-end
-
 local function find_indent(target, prev, operation)
   local origin = buffer:line_from_position(buffer.current_pos)
   local line = origin
@@ -352,58 +269,6 @@ function M.goto_definition()
   buffer:document_start()
   buffer:search_anchor()
   ui.find.find_next()
-end
-
-function M.exec(cmd)
-  local proc = assert(io.popen(cmd, 'r'))
-  local stdout = assert(proc:read('*a'))
-  local issues = 0
-  for str in stdout:gmatch('[^\r\n]+') do
-    local name, line, msg = str:match('([^/\\]+):(%d+):%d+: (.+)$')
-
-    if not name
-        or not line
-        or not msg
-        or not buffer.filename:match(name)
-        then
-      goto continue
-    end
-
-    issues = issues + 1
-    buffer.annotation_text[line] = msg
-    buffer.annotation_style[line] = buffer:style_of_name(lexer.ERROR)
-    buffer:marker_add(line, textadept.run.MARK_ERROR)
-
-    ::continue::
-  end
-  proc:close()
-  ui.statusbar_text = issues .. ' issues found'
-end
-
-function M.run(mode)
-  rootpath = M.get_project_root()
-  if not rootpath then return end
-
-  local linter_commands = {}
-  linter_commands['cpp'] = 'clang-tidy -checks=*,-fuchsia*,-llvm* -p ' .. rootpath .. '/build/compile_commands.json ' .. buffer.filename
-  linter_commands['python'] = 'pylint --max-line-length=120 ' .. buffer.filename
-
-  local build_commands = {}
-  build_commands['cpp'] = 'ninja -C ' .. rootpath .. '/build'
-
-  local modes = {}
-  modes['lint'] = linter_commands
-  modes['build'] = build_commands
-
-  local lang = buffer:get_lexer(true)
-  M.exec(modes[mode][lang])
-end
-
-function M.next_error(next)
-  local pos = buffer:line_from_position(buffer.current_pos)
-  local get_line = next and buffer.marker_next or buffer.marker_previous
-  local line = get_line(pos + (next and 1 or -1), 1 << textadept.run.MARK_ERROR -1)
-  buffer:goto_line(line)
 end
 
 return M
