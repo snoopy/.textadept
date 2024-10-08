@@ -63,6 +63,8 @@ buffer.auto_c_max_height = 15
 buffer.auto_c_multi = buffer.MULTIAUTOC_EACH
 textadept.editing.autocomplete_all_words = true
 
+buffer.virtual_space_options = buffer.VS_RECTANGULARSELECTION
+
 -- paste into every selection when multiple selections are active
 buffer.multi_paste = buffer.MULTIPASTE_EACH
 
