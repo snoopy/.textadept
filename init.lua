@@ -14,6 +14,7 @@ reduxstyle.fs_directory.fore = '3a94c5'
 textredux.hijack()
 local ctags_redux = require('ctags_redux')
 
+io.detect_indentation = false
 buffer.use_tabs = false
 buffer.tab_width = 4
 buffer.tab_indents = true
