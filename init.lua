@@ -317,6 +317,9 @@ end
 
 -- movement
 
+keys.f3 = ui.find.find_next
+keys['shift+f3'] = ui.find.find_prev
+
 keys['alt+h'] = function() buffer:char_left() end
 keys['alt+j'] = function() buffer:line_down() end
 keys['alt+k'] = function() buffer:line_up() end
@@ -327,14 +330,6 @@ keys['alt+l'] = function()
 end
 
 keys.f1 = dispatch('switchbuffer')
-
-keys.f3 = function()
-  ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false, whole_word = false})
-end
-
-keys['shift+f3'] = function()
-  ui.find.focus({ in_files = true, incremental = false, regex = false, match_case = false, whole_word = false})
-end
 
 keys.f11 = function()
   util.find_word_under_cursor(false)
@@ -1051,6 +1046,29 @@ local open_hydra = hydra.create({
   },
 })
 
+local find_hydra = hydra.create({
+  {key = 'f', help = 'find', action = function()
+      ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false, whole_word = false})
+    end
+  },
+  {key = 'd', help = 'find on disk', action = function()
+      ui.find.focus({ in_files = true, incremental = false, regex = false, match_case = false, whole_word = false})
+    end
+  },
+  {key = 'r', help = 'find regex', action = function()
+      ui.find.focus({ in_files = false, incremental = true, regex = true, match_case = false, whole_word = false})
+    end
+  },
+  {key = 'c', help = 'find case sensitive', action = function()
+      ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = true, whole_word = false})
+    end
+  },
+  {key = 'w', help = 'find word', action = function()
+      ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false, whole_word = true})
+    end
+  },
+})
+
 local run_hydra = hydra.create({
   { key = 'l', help = 'lint', action = function()
       exec.run('lint')
@@ -1096,6 +1114,7 @@ local main_hydra = hydra.create({
   { key = 'p', help = 'project', action = project_hydra },
   { key = 'g', help = 'git', action = git_hydra },
   { key = 'b', help = 'buffer', action = buffer_hydra },
+  { key = 'f', help = 'find', action = find_hydra },
   { key = 'm', help = 'bookmark', action = bookmark_hydra },
   { key = 'q', help = 'quick access', action = quicknav_hydra },
   { key = 'r', help = 'run', action = run_hydra },
