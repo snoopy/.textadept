@@ -1129,6 +1129,7 @@ snippets.cpp.prnt = [[std::cout << $0 << "\\n";]]
 snippets.cpp.rc = 'reinterpret_cast<$1>($0)'
 snippets.cpp.sc = 'static_cast<${1:std::size_t}>($0)'
 snippets.cpp.sizet = 'std::size_t'
+snippets.cpp.slp = 'std::this_thread::sleep_for(std::chrono::${1:seconds}($0));'
 snippets.cpp.sp = 'std::shared_ptr<$1>'
 snippets.cpp.srn = 'std::string'
 snippets.cpp.stt = 'struct $1\n{\n\t$0\n};'
