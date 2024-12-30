@@ -271,4 +271,28 @@ function M.goto_definition()
   ui.find.find_next()
 end
 
+function M.show_project_buffers()
+  local rootpath = io.get_project_root(true)
+  if not rootpath then
+    ui.statusbar_text = 'not a project'
+    return
+  end
+  rootpath = rootpath:gsub('%-', '%%-')
+
+  local buffers = {}
+  for i = #_G._BUFFERS, 1, -1 do
+    if _G._BUFFERS[i].filename then
+      if _G._BUFFERS[i].filename:match(rootpath) then
+        local buffer_name = _G._BUFFERS[i].filename:match('[^/\\]+$')
+        buffers[#buffers + 1] = (_G._BUFFERS[i].modify and '*' or '') .. buffer_name
+        buffers[#buffers + 1] = _G._BUFFERS[i].filename
+      end
+    end
+  end
+
+  local index = ui.dialogs.list{title = 'Project Buffers', columns = {'Name', 'Path'}, items = buffers}
+  if not index then return end
+  ui.goto_file(buffers[index * 2], false, _VIEWS[view])
+end
+
 return M

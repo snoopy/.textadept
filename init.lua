@@ -146,6 +146,7 @@ local function dispatch(case)
   switch['ctags_global'] = ctags_redux.find_global
   switch['ctags_back'] = ctags_redux.go_back
   switch['ctags_functions'] = ctags_redux.function_list
+  switch['switchbuffer_project'] = textredux.core.filteredlist.wrap(util.show_project_buffers)
 
   -- switch['open'] = io.open_file
   -- switch['switchbuffer'] = ui.switch_buffer
@@ -158,6 +159,7 @@ local function dispatch(case)
   -- switch['ctags_global'] = function()end
   -- switch['ctags_back'] = function()end
   -- switch['ctags_functions'] = function()end
+  -- switch['switchbuffer_project'] = util.show_project_buffers
 
   return switch[case]
 end
@@ -329,7 +331,10 @@ keys['alt+l'] = function()
   end
 end
 
-keys.f1 = dispatch('switchbuffer')
+keys.f1 = {
+  f1 = dispatch('switchbuffer'),
+  f2 = dispatch('switchbuffer_project'),
+}
 
 keys.f11 = function()
   util.find_word_under_cursor(false)
