@@ -292,7 +292,7 @@ function M.show_project_buffers()
 
   local index = ui.dialogs.list{title = 'Project Buffers', columns = {'Name', 'Path'}, items = buffers}
   if not index then return end
-  ui.goto_file(buffers[index * 2], false, _VIEWS[view])
+  io.open_file(buffers[index * 2])
 end
 
 return M
