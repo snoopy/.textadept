@@ -317,10 +317,8 @@ keys['alt+l'] = function()
   end
 end
 
-keys.f1 = {
-  f1 = dispatch('switchbuffer'),
-  f2 = dispatch('switchbuffer_project'),
-}
+keys.f1 = dispatch('switchbuffer')
+keys.f2 = dispatch('switchbuffer_project')
 
 keys.f11 = function()
   util.find_word_under_cursor(false)
