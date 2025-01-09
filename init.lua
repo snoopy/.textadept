@@ -227,20 +227,6 @@ keys.f5 = buffer.redo
 
 keys['ctrl+r'] = textadept.editing.paste_reindent
 
-keys.f2 = function()
-  textadept.editing.select_word()
-  view:scroll_caret()
-end
-
-keys['shift+f2'] = function()
-  buffer:drop_selection_n(buffer.selections)
-  view:scroll_caret()
-end
-
-keys['alt+f2'] = function()
-  textadept.editing.select_word(true)
-end
-
 keys['alt+4'] = function()
   util.enclose_or_add('<', '>')
 end
@@ -593,6 +579,26 @@ local selection_hydra = hydra.create({
       textadept.editing.select_enclosed('"', '"')
     end,
     persistent = true,
+  },
+
+  {
+    key = 'w', help = 'word', action = function()
+      textadept.editing.select_word()
+      view:scroll_caret()
+    end,
+    persistent = true,
+  },
+  {
+    key = 'W', help = 'deselect word', action = function()
+      buffer:drop_selection_n(buffer.selections)
+      view:scroll_caret()
+    end,
+    persistent = true,
+  },
+  {
+    key = 'a', help = 'all words', action = function()
+      textadept.editing.select_word(true)
+    end,
   },
 
   {
