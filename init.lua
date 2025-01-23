@@ -1033,9 +1033,7 @@ local open_hydra = hydra.create({
   { key = 'r', help = 'recent', action = dispatch('recent') },
   {
     key = 'p', help = 'project', action = function()
-      local rootpath = util.get_project_root()
-      if not rootpath then return end
-      io.quick_open(rootpath, true)
+      io.quick_open(nil)
     end,
   },
   { key = 'l', help = 'lexer', action = dispatch('lexer') },
