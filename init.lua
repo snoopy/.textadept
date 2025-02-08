@@ -1081,14 +1081,14 @@ local run_hydra = hydra.create({
       exec.run('lint')
     end
   },
-  { key = 'b', help = 'build', action = function()
+  { key = 'i', help = 'inline build', action = function()
       exec.run('build')
     end
   },
   { key = 'r', help = 'run', action = textadept.run.run },
   { key = 'c', help = 'compile', action = textadept.run.compile },
   {
-    key = 'o', help = 'original build', action = function()
+    key = 'b', help = 'build', action = function()
       local rootpath = util.get_project_root()
       if not rootpath then return end
       textadept.run.build_commands[rootpath] = 'ninja -C ' .. rootpath .. '/build'

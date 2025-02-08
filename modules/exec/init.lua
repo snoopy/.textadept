@@ -13,26 +13,34 @@ local function exec(cmd)
   local proc = assert(io.popen(cmd, 'r'))
   local stdout = assert(proc:read('*a'))
   local issues = 0
+  local build_state = true
   for str in stdout:gmatch('[^\r\n]+') do
-    local name, line, msg = str:match('([^/\\]+):(%d+):%d+: (.+)$')
+    local name, line, type, msg = str:match('^(.+):(%d+):%d+: (.+):(.+)$')
 
     if not name
         or not line
+        or not type
         or not msg
-        or not buffer.filename:match(name)
         then
       goto continue
     end
 
+    io.open_file(name)
+    buffer:goto_line(line)
     issues = issues + 1
     buffer.annotation_text[line] = msg
     buffer.annotation_style[line] = buffer:style_of_name(lexer.EMBEDDED)
-    buffer:marker_add(line, textadept.run.MARK_ERROR)
+    buffer:marker_add(line, (type == 'error') and textadept.run.MARK_ERROR or textadept.run.MARK_WARNING)
+
+    if type == 'error' then
+      build_state = false
+      break
+    end
 
     ::continue::
   end
   proc:close()
-  ui.statusbar_text = issues .. ' issues found'
+  ui.statusbar_text = (build_state and 'Build successful: ' or 'Build failed: ') .. issues .. ' issues found'
 end
 
 function M.run(mode)
