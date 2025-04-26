@@ -13,6 +13,8 @@ reduxstyle.list_match_highlight.fore = 'f57d26'
 reduxstyle.fs_directory.fore = '3a94c5'
 textredux.hijack()
 local ctags_redux = require('ctags_redux')
+local spellcheck = require('spellcheck')
+spellcheck.spellcheckable_styles[lexer.FUNCTION] = true
 
 io.detect_indentation = false
 buffer.use_tabs = false
