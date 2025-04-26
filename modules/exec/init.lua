@@ -14,6 +14,9 @@ local function exec(cmd)
   local stdout = assert(proc:read('*a'))
   local issues = 0
   local build_state = true
+  buffer:marker_delete_all(textadept.run.MARK_ERROR)
+  buffer:marker_delete_all(textadept.run.MARK_WARNING)
+  buffer:annotation_clear_all()
   for str in stdout:gmatch('[^\r\n]+') do
     local name, line, type, msg = str:match('^(.+):(%d+):%d+: (.+):(.+)$')
 

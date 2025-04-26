@@ -845,7 +845,7 @@ local buffer_hydra = hydra.create({
   },
   {
     key = 'n', help = 'name', action = function()
-      ui.clipboard_text = buffer.filename
+      buffer:copy_text(buffer.filename)
       ui.statusbar_text = 'Copied buffer name to clipboard.'
     end,
   },
@@ -924,6 +924,7 @@ local git_hydra = hydra.create({
   { key = 'l', help = 'diff of current line', action = git.line_diff, },
   { key = 'r', help = 'show file at revision', action = git.show_rev, },
   { key = 'h', help = 'heat map', action = git.heatmap, },
+  { key = 'c', help = 'clear markers', action = git.clear_markers, },
 })
 
 local window_hydra = hydra.create({

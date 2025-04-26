@@ -115,6 +115,13 @@ function M.heatmap()
   end
 end
 
+function M.clear_markers()
+  for _, value in ipairs(heatmap_levels) do
+    buffer:marker_delete_all(value['marker'])
+    buffer:annotation_clear_all()
+  end
+end
+
 function M.toggle_blame_follow()
   M.blame_follow = not M.blame_follow
 end
