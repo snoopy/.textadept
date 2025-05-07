@@ -110,11 +110,7 @@ end, 1)
 autoformat.state['cpp'] = true
 autoformat.state['python'] = true
 
-lfs.default_filter[#lfs.default_filter + 1] = '!/build'
-lfs.default_filter[#lfs.default_filter + 1] = '!/extern%a*'
-lfs.default_filter[#lfs.default_filter + 1] = '!.pyc'
-lfs.default_filter[#lfs.default_filter + 1] = '!/assets'
-lfs.default_filter[#lfs.default_filter + 1] = '!/target'
+io.quick_open_filters = {'!**/*.{pyc,ttf}', '!build/*', '!extern%a*/*', '!assets/*', '!target/*', '!bin/*'}
 
 local function m(labels)
   local menu = textadept.menu.menubar
