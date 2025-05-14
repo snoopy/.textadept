@@ -634,13 +634,11 @@ local selection_hydra = hydra.create({
   {
     key = 'home', help = 'to start', action = function()
       buffer:vc_home_extend()
-      buffer:copy()
     end,
   },
   {
     key = 'end', help = 'to end', action = function()
       buffer:line_end_extend()
-      buffer:copy()
     end,
   },
   {
