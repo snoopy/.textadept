@@ -873,17 +873,17 @@ local buffer_hydra = hydra.create({
     end,
   },
   {
-    key = 'p', help = 'purge', action = function()
+    key = 'del', help = 'delete file', action = function()
       local button = ui.dialogs.message
       {
-        title = 'Confirm Purge',
+        title = 'Delete file?',
         text = buffer.filename,
         icon = 'dialog-question',
         button1 = 'Yes',
         button2 = 'No',
       }
       if button == 2 then return end
-        os.remove(buffer.filename)
+      os.remove(buffer.filename)
     end,
   },
 })
