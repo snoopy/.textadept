@@ -32,8 +32,6 @@ events.connect(events.INITIALIZED, function()
     local file = parts[3]
     local ln = tonumber(parts[4])
 
-    if not lfs.attributes(file) then goto next end
-
     if not jumplist[root] then
       jumplist[root] = {}
     end
@@ -84,6 +82,7 @@ function M.go(i)
   if not root then return end
   if not jumplist[root] then return end
   if not jumplist[root][i] then return end
+  if not lfs.attributes(jumplist[root][i][1]) then return end
   io.open_file(jumplist[root][i][1])
   buffer.goto_line(jumplist[root][i][2])
   view:vertical_center_caret()
