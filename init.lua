@@ -15,6 +15,7 @@ textredux.hijack()
 local ctags_redux = require('ctags_redux')
 local spellcheck = require('spellcheck')
 spellcheck.spellcheckable_styles[lexer.FUNCTION] = true
+local favorites = require('favorites')
 
 io.detect_indentation = false
 buffer.use_tabs = false
@@ -145,6 +146,7 @@ local function dispatch(case)
   switch['ctags_back'] = ctags_redux.go_back
   switch['ctags_functions'] = ctags_redux.function_list
   switch['switchbuffer_project'] = textredux.core.filteredlist.wrap(util.show_project_buffers)
+  switch['favorites'] = textredux.core.filteredlist.wrap(favorites.show)
 
   -- switch['open'] = io.open_file
   -- switch['switchbuffer'] = ui.switch_buffer
@@ -158,6 +160,7 @@ local function dispatch(case)
   -- switch['ctags_back'] = function()end
   -- switch['ctags_functions'] = function()end
   -- switch['switchbuffer_project'] = util.show_project_buffers
+  -- switch['favorites'] = favorites.show
 
   return switch[case]
 end
@@ -828,7 +831,7 @@ local buffer_hydra = hydra.create({
   { key = 'r', help = 'reload', action = buffer.reload, },
   { key = 's', help = 'save as', action = dispatch('saveas'), },
   {
-    key = 'v', help = 'word wrap', action = function()
+    key = 'p', help = 'word wrap', action = function()
       if view.wrap_mode == view.WRAP_NONE then
         view.wrap_mode = view.WRAP_WORD
         ui.statusbar_text = 'Word wrap ON'
@@ -845,6 +848,7 @@ local buffer_hydra = hydra.create({
       ui.statusbar_text = 'Copied buffer name to clipboard.'
     end,
   },
+  { key = 'v', help = 'favorite', action = favorites.toggle },
   { key = 'w', help = 'whitespace', action = whitespace_hydra },
   { key = 'e', help = 'eol', action = eol_hydra },
   { key = 'f', help = 'format', action = function()
@@ -1035,6 +1039,7 @@ local open_hydra = hydra.create({
   },
   { key = 'l', help = 'lexer', action = dispatch('lexer') },
   { key = 'm', help = 'bookmarks', action = dispatch('bookmarks') },
+  { key = 'v', help = 'favorites', action = dispatch('favorites')},
   {
     key = 'e', help = 'enter filepath', action = function()
       local value, button = ui.dialogs.input({
