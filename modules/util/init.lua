@@ -24,6 +24,22 @@ function M.find_word_under_cursor(next)
   events.emit(events.FIND, target, next)
 end
 
+function M.select_until(target, reverse)
+  local cur_line_nr = buffer:line_from_position(buffer.current_pos)
+  if reverse then
+    buffer.target_start = buffer.selection_empty and buffer.current_pos - 1 or buffer.selection_start - 1
+    buffer.target_end = buffer:position_from_line(cur_line_nr)
+  else
+    buffer.target_start = buffer.selection_empty and buffer.current_pos + 1 or buffer.selection_end + 1
+    buffer.target_end = buffer.line_end_position[cur_line_nr]
+  end
+
+  buffer.search_flags = buffer.FIND_REGEXP
+  if buffer:search_in_target(target) ~= -1 then
+    buffer:set_selection(buffer.current_pos, buffer.target_start)
+  end
+end
+
 function M.goto_space(reverse)
   local cur_line_nr = buffer:line_from_position(buffer.current_pos)
   if reverse then
@@ -53,7 +69,7 @@ function M.move_to(target, reverse)
   buffer.search_flags = buffer.FIND_REGEXP
   if buffer:search_in_target(target) ~= -1 then
     buffer:goto_pos(buffer.target_start)
-    buffer:choose_caret_x()
+    -- buffer:choose_caret_x()
   end
 end
 

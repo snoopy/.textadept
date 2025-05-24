@@ -131,39 +131,35 @@ keys['ctrl+u'] = nil
 keys['ctrl+\t'] = nil
 keys['shift+ctrl+\t'] = nil
 
-local function dispatch(case)
-  local switch = {}
+local fn_dispatch = {
+  ['open'] = textredux.fs.open_file,
+  ['switchbuffer'] = textredux.buffer_list.show,
+  ['saveas'] = textredux.fs.save_buffer_as,
+  -- ['recent'] = textredux.core.filteredlist.wrap(io.open_recent_file),
+  ['lexer'] = textredux.core.filteredlist.wrap(m('Buffer/Select Lexer...')),
+  ['bookmarks'] = textredux.core.filteredlist.wrap(textadept.bookmarks.goto_mark),
+  ['ctags_init'] = ctags_redux.init_ctags,
+  ['ctags_local'] = ctags_redux.find_local,
+  ['ctags_global'] = ctags_redux.find_global,
+  ['ctags_back'] = ctags_redux.go_back,
+  ['ctags_functions'] = ctags_redux.function_list,
+  ['switchbuffer_project'] = textredux.core.filteredlist.wrap(util.show_project_buffers),
+  ['favorites'] = textredux.core.filteredlist.wrap(favorites.show),
 
-  switch['open'] = textredux.fs.open_file
-  switch['switchbuffer'] = textredux.buffer_list.show
-  switch['saveas'] = textredux.fs.save_buffer_as
-  -- switch['recent'] = textredux.core.filteredlist.wrap(io.open_recent_file)
-  switch['lexer'] = textredux.core.filteredlist.wrap(m('Buffer/Select Lexer...'))
-  switch['bookmarks'] = textredux.core.filteredlist.wrap(textadept.bookmarks.goto_mark)
-  switch['ctags_init'] = ctags_redux.init_ctags
-  switch['ctags_local'] = ctags_redux.find_local
-  switch['ctags_global'] = ctags_redux.find_global
-  switch['ctags_back'] = ctags_redux.go_back
-  switch['ctags_functions'] = ctags_redux.function_list
-  switch['switchbuffer_project'] = textredux.core.filteredlist.wrap(util.show_project_buffers)
-  switch['favorites'] = textredux.core.filteredlist.wrap(favorites.show)
-
-  -- switch['open'] = io.open_file
-  -- switch['switchbuffer'] = ui.switch_buffer
-  -- switch['saveas'] = buffer.save_as
-  switch['recent'] = io.open_recent_file
-  -- switch['lexer'] = m('Buffer/Select Lexer...')
-  -- switch['bookmarks'] = textadept.bookmarks.goto_mark
-  -- switch['ctags_init'] = function()end
-  -- switch['ctags_local'] = function()end
-  -- switch['ctags_global'] = function()end
-  -- switch['ctags_back'] = function()end
-  -- switch['ctags_functions'] = function()end
-  -- switch['switchbuffer_project'] = util.show_project_buffers
-  -- switch['favorites'] = favorites.show
-
-  return switch[case]
-end
+  -- ['open'] = io.open_file,
+  -- ['switchbuffer'] = ui.switch_buffer,
+  -- ['saveas'] = buffer.save_as,
+  ['recent'] = io.open_recent_file,
+  -- ['lexer'] = m('Buffer/Select Lexer...'),
+  -- ['bookmarks'] = textadept.bookmarks.goto_mark,
+  -- ['ctags_init'] = function()end,
+  -- ['ctags_local'] = function()end,
+  -- ['ctags_global'] = function()end,
+  -- ['ctags_back'] = function()end,
+  -- ['ctags_functions'] = function()end,
+  -- ['switchbuffer_project'] = util.show_project_buffers,
+  -- ['favorites'] = favorites.show,
+}
 
 events.connect(events.CHAR_ADDED, function(code)
   if buffer.current_pos - buffer:word_start_position(buffer.current_pos, true) < 3 then return end
@@ -215,37 +211,19 @@ keys.f4 = util.toggle_header
 
 -- editing
 
-keys.f9 = function()
-  ctags_redux.function_hint()
-end
+keys.f9 = function() ctags_redux.function_hint() end
 
-keys['shift+f9'] = function()
-  buffer:annotation_clear_all()
-end
+keys['shift+f9'] = function() buffer:annotation_clear_all() end
 
 keys.f8 = buffer.undo
 keys.f5 = buffer.redo
 
-keys['ctrl+r'] = textadept.editing.paste_reindent
-
-keys['alt+4'] = function()
-  util.enclose_or_add('<', '>')
-end
-keys['alt+3'] = function()
-  util.enclose_or_add('(', ')')
-end
-keys['alt+2'] = function()
-  util.enclose_or_add('[', ']')
-end
-keys['alt+1'] = function()
-  util.enclose_or_add('{', '}')
-end
-keys['alt+s'] = function()
-  util.enclose_or_add("'", "'")
-end
-keys['alt+d'] = function()
-  util.enclose_or_add('"', '"')
-end
+keys['alt+4'] = function() util.enclose_or_add('<', '>') end
+keys['alt+3'] = function() util.enclose_or_add('(', ')') end
+keys['alt+2'] = function() util.enclose_or_add('[', ']') end
+keys['alt+1'] = function() util.enclose_or_add('{', '}') end
+keys['alt+s'] = function() util.enclose_or_add("'", "'") end
+keys['alt+d'] = function() util.enclose_or_add('"', '"') end
 keys['alt+c'] = function() util.custom_comment(false) end
 keys['alt+f'] = buffer.line_delete
 keys['alt+v'] = buffer.line_duplicate
@@ -267,18 +245,15 @@ keys['alt+w'] = function()
 end
 
 keys['alt+a'] = function()
-  if buffer.selection_empty then
+  buffer:vc_home()
+  local _, caret_pos = buffer:get_cur_line()
+  if caret_pos == 1 then
     buffer:vc_home()
-    local _, caret_pos = buffer:get_cur_line()
-    if caret_pos == 1 then
-      buffer:vc_home()
-    end
-    buffer:line_end_extend()
-  else
-    buffer:line_down_extend()
-    buffer:line_end_extend()
   end
+  buffer:line_end_extend()
 end
+
+keys['alt+x'] = textadept.editing.select_word
 
 keys['alt+\b'] = function()
   buffer:line_up()
@@ -318,24 +293,14 @@ keys['alt+l'] = function()
   end
 end
 
-keys.f1 = dispatch('switchbuffer')
-keys.f2 = dispatch('switchbuffer_project')
+keys.f1 = fn_dispatch['switchbuffer']
+keys.f2 = fn_dispatch['switchbuffer_project']
 
-keys.f11 = function()
-  util.find_word_under_cursor(false)
-end
+keys.f11 = function() util.find_word_under_cursor(false) end
+keys.f12 = function() util.find_word_under_cursor(true) end
 
-keys.f12 = function()
-  util.find_word_under_cursor(true)
-end
-
-keys['alt+left'] = function()
-  util.goto_space(true)
-end
-
-keys['alt+right'] = function()
-  util.goto_space(false)
-end
+keys['alt+left'] = function() util.goto_space(true) end
+keys['alt+right'] = function() util.goto_space(false) end
 
 keys['ctrl+alt+right'] = buffer.word_part_right
 keys['ctrl+alt+left'] = buffer.word_part_left
@@ -366,12 +331,8 @@ end
 keys['alt+home'] = buffer.scroll_to_start
 keys['alt+end'] = buffer.scroll_to_end
 
-keys['ctrl+pgup'] = function()
-  buffer:page_up()
-end
-keys['ctrl+pgdn'] = function()
-  buffer:page_down()
-end
+keys['ctrl+pgup'] = function() buffer:page_up() end
+keys['ctrl+pgdn'] = function() buffer:page_down() end
 
 keys['pgup'] = function()
   buffer:goto_line(view:doc_line_from_visible(view.first_visible_line))
@@ -391,98 +352,46 @@ keys['ins'] = function()
 end
 
 keys.f6 = util.goto_last_buffer
+keys.f7 = function() ui.goto_view(1) end
+keys['shift+f7'] = function() ui.goto_view(-1) end
 
-keys.f7 = function()
-  ui.goto_view(1)
-end
-
-keys['shift+f7'] = function()
-  ui.goto_view(-1)
-end
-
-keys['home'] = function()
-  buffer.vc_home_wrap()
-end
-
-keys['end'] = function()
-  buffer.line_end_wrap()
-end
+keys['home'] = function() buffer.vc_home_wrap() end
+keys['end'] = function() buffer.line_end_wrap() end
 
 local insert_hydra = hydra.create({
-  {
-    key = 'm', help = 'allman', action = function()
-      util.add_braces('allman', '', true)
-    end,
-  },
-  {
-    key = 'alt+m', help = 'allman;', action = function()
-      util.add_braces('allman', ';', true)
-    end,
-  },
-  {
-    key = 'k', help = 'kr', action = function()
-      util.add_braces('kr', '', true)
-    end,
-  },
-  {
-    key = 'alt+k', help = 'kr;', action = function()
-      util.add_braces('kr', ';', true)
-    end,
-  },
-  {
-    key = 'n', help = '\\n', action = function()
-      util.insert_text_multi('\\n')
-    end,
-    persistent = true,
-  },
-  {
-    key = 's', help = 'std::', action = function()
-      util.insert_text_multi('std::')
-    end,
-  },
+  { key = 'm', help = 'allman', action = function() util.add_braces('allman', '', true) end },
+  { key = 'alt+m', help = 'allman;', action = function() util.add_braces('allman', ';', true) end },
+  { key = 'k', help = 'kr', action = function() util.add_braces('kr', '', true) end },
+  { key = 'alt+k', help = 'kr;', action = function() util.add_braces('kr', ';', true) end },
+  { key = 'n', help = '\\n', action = function() util.insert_text_multi('\\n') end, persistent = true },
+  { key = 's', help = 'std::', action = function() util.insert_text_multi('std::') end },
 })
 
 local edit_hydra = hydra.create({
-  {
-    key = 'up', help = 'move up', action = buffer.move_selected_lines_up,
-    persistent = true,
-  },
-  {
-    key = 'down', help = 'move down', action = buffer.move_selected_lines_down,
-    persistent = true,
-  },
+  { key = 'up', help = 'move up', action = buffer.move_selected_lines_up, persistent = true },
+  { key = 'down', help = 'move down', action = buffer.move_selected_lines_down, persistent = true },
 
-  {
-    key = 'home', help = 'del start', action = function()
+  { key = 'home', help = 'del start', action = function()
       buffer:vc_home_extend()
       buffer:delete_range(buffer.selection_start, buffer.selection_end - buffer.selection_start)
-    end,
-  },
+  end },
   { key = 'end', help = 'del end', action = buffer.del_line_right, },
 
-  {
-    key = 'p', help = 'del para', action = function()
+  { key = 'p', help = 'del para', action = function()
       textadept.editing.select_paragraph()
       buffer:delete_back()
-    end,
-    persistent = true,
-  },
+  end, persistent = true },
 
-  {
-    key = 'u', help = 'upper case', action = function()
+  { key = 'u', help = 'upper case', action = function()
       if buffer.selection_empty then textadept.editing.select_word() end
       buffer.upper_case()
-    end,
-  },
-  {
-    key = 'l', help = 'lower case', action = function()
+  end, },
+  { key = 'l', help = 'lower case', action = function()
       if buffer.selection_empty then textadept.editing.select_word() end
       buffer.lower_case()
-    end,
-  },
+  end, },
 
-  {
-    key = 's', help = 'sort', action = function()
+  { key = 's', help = 'sort', action = function()
       local lines = {}
       local line_nr = buffer:line_from_position(buffer.selection_start)
       local last_line = buffer:line_from_position(buffer.selection_end)
@@ -497,37 +406,19 @@ local edit_hydra = hydra.create({
       buffer:delete_back()
       buffer:add_text(table.concat(lines, '\n'))
       buffer:end_undo_action()
-    end,
-  },
+  end, },
 
-  {
-    key = 'r', help = 'reverse', action = function()
+  { key = 'r', help = 'reverse', action = function()
       textadept.editing.select_word()
       local s = buffer:get_sel_text()
       buffer:replace_sel(s:reverse())
-    end,
-  },
+  end, },
 
-  {
-    key = ' ', help = 'enclose spaces', action = function()
-      util.enclose_or_add(' ', ' ')
-    end,
-    persistent = true,
-  },
+  { key = ' ', help = 'enclose spaces', action = function() util.enclose_or_add(' ', ' ') end, persistent = true, },
+  { key = 'm', help = 'comment all', action = function() util.custom_comment(true) end, },
+  { key = '*', help = 'enclose /* */', action = function() textadept.editing.enclose('/* ', ' */') end, },
 
-  { key = 'm', help = 'comment all', action = function()
-      util.custom_comment(true)
-    end,
-  },
-
-  {
-    key = '*', help = 'enclose /* */', action = function()
-      textadept.editing.enclose('/* ', ' */')
-    end,
-  },
-
-  {
-    key = 'c', help = 'crop', action = function()
+  { key = 'c', help = 'crop', action = function()
       if buffer.selection_empty then textadept.editing.select_word() end
       buffer:begin_undo_action()
       for i = 1, buffer.selections do
@@ -537,83 +428,123 @@ local edit_hydra = hydra.create({
       end
       buffer:end_undo_action()
     end,
-    persistent = true,
-  },
+  persistent = true, },
+})
 
+local select_action = 1
+local select_args = '()'
+local select_functions = {
+  [1] = function(reverse)
+    util.select_until(select_args, reverse)
+  end,
+  [2] = function(reverse)
+    util.select_until(select_args, reverse)
+  end,
+  [3] = function(reverse)
+    if reverse then buffer:drop_selection_n(buffer.selections) else textadept.editing.select_word() end
+    view:scroll_caret()
+  end,
+}
+
+local directional_selection_hydra = hydra.create({
+  { key = '1', help = '{}', action = function()
+    select_action = 1
+    select_args = '[{}]'
+  end, persistent = true },
+  { key = '2', help = '[]', action = function()
+    select_action = 1
+    select_args = '[\\[\\]]'
+  end, persistent = true },
+  { key = '3', help = '()', action = function()
+    select_action = 1
+    select_args = '[\\(\\)]'
+  end, persistent = true },
+  { key = '4', help = '<>', action = function()
+    select_action = 1
+    select_args = '[<>]'
+  end, persistent = true },
+  { key = 's', help = "'", action = function()
+    select_action = 1
+    select_args = "[']"
+  end, persistent = true },
+  { key = 'd', help = '"', action = function()
+    select_action = 1
+    select_args = '["]'
+  end, persistent = true },
+  { key = ' ', help = 'space', action = function()
+    select_action = 1
+    select_args = '[\\s\\S]\\s{1,1}\\S'
+  end, persistent = true },
+  { key = 'x', help = 'special', action = function()
+    select_action = 1
+    select_args = '[/\\.:,;]'
+  end, persistent = true },
+
+  { key = 'w', help = 'word', action = function() select_action = 3 end, persistent = true },
+
+  { key = 'home', help = 'to line start', action = function() buffer:vc_home_extend() end },
+  { key = 'end', help = 'to line end', action = function() buffer:line_end_extend() end },
+
+  { key = 'i', help = 'line up',
+    action = function()
+      if buffer.selection_empty then
+        buffer:line_end()
+        buffer:home_extend()
+      end
+      buffer:line_up_extend()
+    end,
+  persistent = true },
+
+  { key = 'k', help = 'line down',
+    action = function()
+      if buffer.selection_empty then
+        buffer:home()
+        buffer:line_end_extend()
+      end
+      buffer:line_down_extend()
+      if buffer.selection_start < buffer.current_pos then
+        buffer:line_end_extend()
+      end
+    end,
+  persistent = true },
+
+  { key = 'pgup', help = 'para up',action = function()
+    if buffer.selection_empty then
+      buffer:line_end()
+      buffer:home_extend()
+    end
+    buffer:para_up_extend()
+  end, persistent = true },
+  { key = 'pgdn', help = 'para down', action = function()
+    if buffer.selection_empty then
+      buffer:home()
+      buffer:line_end_extend()
+    end
+    buffer:para_down_extend()
+  end, persistent = true },
+
+  { key = 'h', help = 'buffer start', action = buffer.document_start_extend, },
+  { key = 'g', help = 'buffer end', action = buffer.document_end_extend, },
+
+  { key = 'j', help = 'select left to', action = function() select_functions[select_action](true) end, persistent = true },
+  { key = 'l', help = 'select right to', action = function() select_functions[select_action]() end, persistent = true },
+  { key = 'left', help = 'select left to', action = function() select_functions[select_action](true) end, persistent = true },
+  { key = 'right', help = 'select right to', action = function() select_functions[select_action]() end, persistent = true },
 })
 
 local selection_hydra = hydra.create({
-  {
-    key = '1', help = '{}', action = function()
-      textadept.editing.select_enclosed('{', '}')
-    end,
-    persistent = true,
-  },
-  {
-    key = '2', help = '[]', action = function()
-      textadept.editing.select_enclosed('[', ']')
-    end,
-    persistent = true,
-  },
-  {
-    key = '3', help = '()', action = function()
-      textadept.editing.select_enclosed('(', ')')
-    end,
-    persistent = true,
-  },
-  {
-    key = '4', help = '<>', action = function()
-      textadept.editing.select_enclosed('<', '>')
-    end,
-    persistent = true,
-  },
-  {
-    key = 's', help = "''", action = function()
-      textadept.editing.select_enclosed("'", "'")
-    end,
-    persistent = true,
-  },
-  {
-    key = 'd', help = '""', action = function()
-      textadept.editing.select_enclosed('"', '"')
-    end,
-    persistent = true,
-  },
+  { key = '1', help = '{}', action = function() textadept.editing.select_enclosed('{', '}') end, persistent = true, },
+  { key = '2', help = '[]', action = function() textadept.editing.select_enclosed('[', ']') end, persistent = true, },
+  { key = '3', help = '()', action = function() textadept.editing.select_enclosed('(', ')') end, persistent = true, },
+  { key = '4', help = '<>', action = function() textadept.editing.select_enclosed('<', '>') end, persistent = true, },
+  { key = 's', help = "''", action = function() textadept.editing.select_enclosed("'", "'") end, persistent = true, },
+  { key = 'd', help = '""', action = function() textadept.editing.select_enclosed('"', '"') end, persistent = true, },
 
-  {
-    key = 'w', help = 'word', action = function()
-      textadept.editing.select_word()
-      view:scroll_caret()
-    end,
-    persistent = true,
-  },
-  {
-    key = 'W', help = 'deselect word', action = function()
-      buffer:drop_selection_n(buffer.selections)
-      view:scroll_caret()
-    end,
-    persistent = true,
-  },
-  {
-    key = 'a', help = 'all words', action = function()
-      textadept.editing.select_word(true)
-    end,
-  },
+  { key = 'a', help = 'all words', action = function() textadept.editing.select_word(true) end, },
 
-  {
-    key = '<', help = '><', action = function()
-      textadept.editing.select_enclosed('>', '<')
-    end,
-    persistent = true,
-  },
-
-  {
-    key = ' ', help = 'spaces', action = function()
-      textadept.editing.select_enclosed(' ', ' ')
-    end,
-  },
-  {
-    key = 'x', help = 'custom', action = function()
+  { key = '<', help = '><', action = function() textadept.editing.select_enclosed('>', '<') end, persistent = true, },
+  { key = ' ', help = 'spaces', action = function() textadept.editing.select_enclosed(' ', ' ') end, },
+  { key = 'x', help = 'custom', action = function()
       local value, button = ui.dialogs.input({
         title = 'Select between custom',
         text = '',
@@ -624,105 +555,92 @@ local selection_hydra = hydra.create({
       if button == 1 then
         textadept.editing.select_enclosed(value, value)
       end
-    end,
-  },
-  {
-    key = 'm', help = 'matching', action = function()
-      util.select_matching()
-    end,
-  },
+  end, },
+
+  { key = 'm', help = 'matching', action = function() util.select_matching() end, },
   { key = 'p', help = 'paragraph', action = textadept.editing.select_paragraph },
-  { key = 'right', help = 'sel right', action = buffer.word_right_extend, persistent = true },
-  { key = 'left', help = 'sel left', action = buffer.word_left_extend, persistent = true },
-  {
-    key = 'home', help = 'to start', action = function()
-      buffer:vc_home_extend()
-    end,
-  },
-  {
-    key = 'end', help = 'to end', action = function()
-      buffer:line_end_extend()
-    end,
-  },
-  {
-    key = 'up', help = 'rect up', action = buffer.line_up_rect_extend,
-    persistent = true,
-  },
-  {
-    key = 'down', help = 'rect down', action = buffer.line_down_rect_extend,
-    persistent = true,
-  },
-  {
-    key = 'pgup', help = 'para up',action = buffer.para_up_extend,
-    persistent = true,
-  },
-  {
-    key = 'pgdn', help = 'para down', action = buffer.para_down_extend,
-    persistent = true,
-  },
-  { key = 'b', help = 'buffer end', action = buffer.document_end_extend, },
-  { key = 'B', help = 'buffer start', action = buffer.document_start_extend, },
-  {
-    key = 'e',
-    help = 'edit',
-    action = edit_hydra,
-  },
+  { key = 'c', help = 'clear', action = function() buffer:set_empty_selection(buffer.current_pos) end },
+
+  { key = 'alt+e', help = 'edit', action = edit_hydra, },
 })
 
-local nav_hydra = hydra.create({
-  {
-    key = 'j', help = 'line number', action = function()
+local jump_action = 1
+local jump_args = "'"
+local jump_functions = {
+  [1] = function(reverse) util.move_to(jump_args, reverse) end,
+  [2] = function(reverse) util.goto_zero_indent(reverse) end,
+  [3] = function(reverse) util.goto_matching_indent(reverse) end,
+}
+
+local jump_hydra = hydra.create({
+  { key = 'n', help = 'line number', action = function()
       textadept.editing.goto_line()
       view:vertical_center_caret()
       buffer:vc_home()
     end,
   },
 
-  { key = 't', help = 'find top most', action = function()
+  { key = 't', help = 'top most', action = function()
       util.goto_definition()
     end,
   },
 
-  {
-    key = 'm', help = 'matching', action = function()
-      local pos = buffer:brace_match(buffer.current_pos, 0)
-      buffer:goto_pos(pos)
+  { key = 'm', help = 'matching', action = function()
+      buffer:goto_pos(buffer:brace_match(buffer.current_pos, 0))
     end,
-    persistent = true,
+    persistent = true
   },
 
-  { key = '1', help = '{}', action = function() util.move_to('[{}]') end, persistent = true },
-  { key = '2', help = '[]', action = function() util.move_to('[\\[\\]]') end, persistent = true },
-  { key = '3', help = '()', action = function() util.move_to('[\\(\\)]') end, persistent = true },
-  { key = '4', help = '<>', action = function() util.move_to('[<>]') end, persistent = true },
-  { key = 's', help = "'", action = function() util.move_to("[']") end, persistent = true },
-  { key = 'd', help = '"', action = function() util.move_to('["]') end, persistent = true },
+  { key = 'w', help = 'word', action = function()
+    jump_action = 1
+    jump_args = '\\b\\w+\\b'
+  end, persistent = true },
+  { key = ' ', help = 'space', action = function()
+    jump_action = 1
+    jump_args = '[\\s\\S]\\s{1,1}\\S'
+  end, persistent = true },
 
-  { key = 'alt+1', help = '{}', action = function() util.move_to('[{}]', true) end, persistent = true },
-  { key = 'alt+2', help = '[]', action = function() util.move_to('[\\[\\]]', true) end, persistent = true },
-  { key = 'alt+3', help = '()', action = function() util.move_to('[\\(\\)]', true) end, persistent = true },
-  { key = 'alt+4', help = '<>', action = function() util.move_to('[<>]', true) end, persistent = true },
-  { key = 'alt+s', help = "'", action = function() util.move_to("[']", true) end, persistent = true },
-  { key = 'alt+d', help = '"', action = function() util.move_to('["]', true) end, persistent = true },
+  { key = '1', help = '{}', action = function()
+    jump_action = 1
+    jump_args = '[{}]'
+  end, persistent = true },
+  { key = '2', help = '[]', action = function()
+    jump_action = 1
+    jump_args = '[\\[\\]]'
+  end, persistent = true },
+  { key = '3', help = '()', action = function()
+    jump_action = 1
+    jump_args = '[\\(\\)]'
+  end, persistent = true },
+  { key = '4', help = '<>', action = function()
+    jump_action = 1
+    jump_args = '[<>]'
+  end, persistent = true },
+  { key = 's', help = "'", action = function()
+    jump_action = 1
+    jump_args = "[']"
+  end, persistent = true },
+  { key = 'd', help = '"', action = function()
+    jump_action = 1
+    jump_args = '["]'
+  end, persistent = true },
+  { key = 'x', help = 'special', action = function()
+    jump_action = 1
+    jump_args = '[/\\.:,;]'
+  end, persistent = true },
 
   { key = 'o', help = 'back', action = origin.back, persistent = true, },
   { key = 'i', help = 'forward', action = origin.forward, persistent = true, },
 
-  { key = 'n', help = 'next same indent', action = function() util.goto_matching_indent(false) end, persistent = true, },
-  { key = 'N', help = 'next same indent up', action = function() util.goto_matching_indent(true) end, persistent = true, },
+  { key = '0', help = 'zero indent', action = function() jump_action = 2 end, persistent = true, },
+  { key = '9', help = 'same indent', action = function() jump_action = 3 end, persistent = true },
 
-  { key = 'z', help = 'zero indent', action = function() util.goto_zero_indent(false) end, persistent = true, },
-  { key = 'Z', help = 'zero indent up', action = function() util.goto_zero_indent(true) end, persistent = true, },
+  { key = 'j', help = 'jump left', action = function() jump_functions[jump_action](true) end, persistent = true },
+  { key = 'l', help = 'jump right', action = function() jump_functions[jump_action]() end, persistent = true },
+  { key = 'left', help = 'jump left', action = function() jump_functions[jump_action](true) end, persistent = true },
+  { key = 'right', help = 'jump right', action = function() jump_functions[jump_action]() end, persistent = true },
 
-  { key = 'l', help = '< indent', action = function() util.goto_diff_indent(false, false) end, persistent = true, },
-  { key = 'L', help = '< indent up', action = function() util.goto_diff_indent(false, true) end, persistent = true, },
-
-  { key = 'k', help = '> indent', action = function() util.goto_diff_indent(true, false) end, persistent = true, },
-  { key = 'K', help = '> indent up', action = function() util.goto_diff_indent(true, true) end, persistent = true, },
-
-  { key = 'c', help = 'ctags: find', action = dispatch('ctags_global'), },
-  { key = 'C', help = 'ctags: back', action = dispatch('ctags_back'), persistent = true, },
-  { key = 'u', help = 'ctags: functions', action = dispatch('ctags_functions'), },
+  { key = 'alt+s', help = 'select', action = selection_hydra },
 })
 
 local encoding_hydra = hydra.create({
@@ -733,14 +651,8 @@ local encoding_hydra = hydra.create({
 })
 
 local eol_hydra = hydra.create({
-  {
-    key = 'v', help = 'view', action = function()
-      buffer.view_eol = not buffer.view_eol
-    end,
-    persistent = true,
-  },
-  {
-    key = 't', help = 'toggle', action = function()
+  { key = 'v', help = 'view', action = function() buffer.view_eol = not buffer.view_eol end, persistent = true, },
+  { key = 't', help = 'toggle', action = function()
       if buffer.eol_mode == buffer.EOL_LF then
         buffer.eol_mode = buffer.EOL_CRLF
       elseif buffer.eol_mode == buffer.EOL_CRLF then
@@ -748,26 +660,20 @@ local eol_hydra = hydra.create({
       end
       events.emit(events.UPDATE_UI, 1) -- for updating statusbar
     end,
-    persistent = true,
-  },
-  {
-    key = 'c', help = 'convert', action = function()
+  persistent = true, },
+  { key = 'c', help = 'convert', action = function()
       buffer:convert_eols(buffer.eol_mode)
     end,
-    persistent = true,
-  },
-  {
-    key = 'e', help = 'edge column toggle', action = function()
+  persistent = true, },
+  { key = 'e', help = 'edge column toggle', action = function()
       if buffer.edge_mode == buffer.EDGE_LINE then
         buffer.edge_mode = buffer.EDGE_NONE
       else
         buffer.edge_mode = buffer.EDGE_LINE
       end
     end,
-    persistent = true,
-  },
-  {
-    key = 'l', help = 'set edge column limit', action = function()
+  persistent = true, },
+  { key = 'l', help = 'set edge column limit', action = function()
       local value, button = ui.dialogs.input({
         title = 'Change linelimit',
         text = buffer.edge_column,
@@ -779,27 +685,17 @@ local eol_hydra = hydra.create({
         return
       end
       buffer.edge_column = value
-    end,
-  },
+  end, },
 })
 
 local whitespace_hydra = hydra.create({
-  {
-    key = 'v', help = 'view', action = function()
-      buffer.view_ws = buffer.view_ws == 0 and buffer.WS_VISIBLEALWAYS or 0
-    end,
-    persistent = true,
-  },
-  {
-    key = 't', help = 'toggle', action = function()
+  { key = 'v', help = 'view', action = function() buffer.view_ws = buffer.view_ws == 0 and buffer.WS_VISIBLEALWAYS or 0 end, persistent = true, },
+  { key = 't', help = 'toggle', action = function()
       buffer.use_tabs = not buffer.use_tabs
       events.emit(events.UPDATE_UI, 1) -- for updating statusbar
-    end,
-    persistent = true,
-  },
+    end, persistent = true, },
   { key = 'c', help = 'convert', action = textadept.editing.convert_indentation, persistent = true },
-  {
-    key = 's', help = 'strip', action = function()
+  { key = 's', help = 'strip', action = function()
       if textadept.editing.strip_trailing_spaces then
         textadept.editing.strip_trailing_spaces = false
         buffer.view_ws = buffer.WS_VISIBLEALWAYS
@@ -809,9 +705,7 @@ local whitespace_hydra = hydra.create({
         buffer.view_ws = buffer.WS_INVISIBLE
         ui.statusbar_text = 'Strip whitespace is ON'
       end
-    end,
-    persistent = true,
-  },
+  end, persistent = true, },
   { key = 'w', help = 'width', action = function()
       local value, button = ui.dialogs.input({
         title = 'set tab width',
@@ -823,15 +717,13 @@ local whitespace_hydra = hydra.create({
         buffer.tab_width = value
         events.emit(events.UPDATE_UI, 1) -- for updating statusbar
       end
-    end,
-  },
+  end, },
 })
 
 local buffer_hydra = hydra.create({
   { key = 'r', help = 'reload', action = buffer.reload, },
-  { key = 's', help = 'save as', action = dispatch('saveas'), },
-  {
-    key = 'p', help = 'word wrap', action = function()
+  { key = 's', help = 'save as', action = fn_dispatch['saveas'], },
+  { key = 'p', help = 'word wrap', action = function()
       if view.wrap_mode == view.WRAP_NONE then
         view.wrap_mode = view.WRAP_WORD
         ui.statusbar_text = 'Word wrap ON'
@@ -839,29 +731,18 @@ local buffer_hydra = hydra.create({
         view.wrap_mode = view.WRAP_NONE
         ui.statusbar_text = 'Word wrap OFF'
       end
-    end,
-    persistent = true,
-  },
-  {
-    key = 'n', help = 'name', action = function()
+  end, persistent = true, },
+  { key = 'n', help = 'name', action = function()
       buffer:copy_text(buffer.filename)
       ui.statusbar_text = 'Copied buffer name to clipboard.'
-    end,
-  },
+  end, },
   { key = 'v', help = 'favorite', action = favorites.toggle },
   { key = 'w', help = 'whitespace', action = whitespace_hydra },
   { key = 'e', help = 'eol', action = eol_hydra },
-  { key = 'f', help = 'format', action = function()
-      autoformat.format_buffer(buffer.filename)
-    end,
-  },
-  { key = 't', help = 'toggle autoformat', action = function()
-      autoformat.toggle_autoformat()
-    end,
-  },
+  { key = 'f', help = 'format', action = function() autoformat.format_buffer(buffer.filename) end, },
+  { key = 't', help = 'toggle autoformat', action = function() autoformat.toggle_autoformat() end, },
   { key = 'c', help = 'encoding', action = encoding_hydra },
-  {
-    key = 'k', help = 'close all', action = function()
+  { key = 'k', help = 'close all', action = function()
       local button = ui.dialogs.message
       {
         title = 'Close all buffers?',
@@ -872,10 +753,8 @@ local buffer_hydra = hydra.create({
       }
       if button == 2 then return end
       io.close_all_buffers()
-    end,
-  },
-  {
-    key = 'del', help = 'delete file', action = function()
+  end, },
+  { key = 'del', help = 'delete file', action = function()
       local button = ui.dialogs.message
       {
         title = 'Delete file?',
@@ -886,13 +765,11 @@ local buffer_hydra = hydra.create({
       }
       if button == 2 then return end
       os.remove(buffer.filename)
-    end,
-  },
+  end, },
 })
 
 local project_hydra = hydra.create({
-  {
-    key = 'k', help = 'close all', action = function()
+  { key = 'k', help = 'close all', action = function()
       local rootpath = util.get_project_root()
       if not rootpath then return end
       rootpath = rootpath:gsub('%-', '%%-')
@@ -908,14 +785,13 @@ local project_hydra = hydra.create({
       if button == 2 then return end
 
       for i = #_G._BUFFERS, 1, -1 do
-        if _G._BUFFERS[i].filename:match(rootpath) then
-          _G._BUFFERS[i]:close()
+        if _G._BUFFERS[i].filename then
+          if _G._BUFFERS[i].filename:match(rootpath) then
+            _G._BUFFERS[i]:close()
+          end
         end
       end
-    end,
-  },
-
-  { key = 'c', help = 'ctags: init', action = dispatch('ctags_init') },
+  end, },
 })
 
 local git_hydra = hydra.create({
@@ -930,77 +806,36 @@ local git_hydra = hydra.create({
 local window_hydra = hydra.create({
   { key = 's', help = 'spawn buffer', action = buffer.new },
   { key = 'w', help = 'close buffer', action = buffer.close },
-  {
-    key = '1', help = 'split |', action = function()
-      view:split(true)
-    end,
-  },
-  {
-    key = '2', help = 'split -', action = function()
-      view:split()
-    end,
-  },
-  {
-    key = '3', help = 'unsplit', action = function()
-      view:unsplit()
-    end,
-  },
-  {
-    key = 'q', help = 'unsplit&close', action = function()
+  { key = '1', help = 'split |', action = function() view:split(true) end, },
+  { key = '2', help = 'split -', action = function() view:split() end, },
+  { key = '3', help = 'unsplit', action = function() view:unsplit() end, },
+  { key = 'q', help = 'unsplit&close', action = function()
       buffer:close()
       view:unsplit()
-    end,
-  },
-  {
-    key = 'x', help = 'force close', action = function()
-      buffer:close(true)
-    end,
-  },
+  end, },
+  { key = 'x', help = 'force close', action = function() buffer:close(true) end, },
   { key = 'c', help = 'center', action = view.vertical_center_caret, },
-  {
-    key = 'k', help = 'unsplit all', action = function()
-      while view:unsplit() do
-      end
-    end,
-  },
+  { key = 'k', help = 'unsplit all', action = function() while view:unsplit() do end end, },
   { key = '+', help = 'zoom in', action = view.zoom_in, persistent = true },
   { key = '-', help = 'zoom out', action = view.zoom_out, persistent = true },
-  {
-    key = '0', help = 'reset zoom', action = function()
-      view.zoom = 0
-    end,
-  },
-  {
-    key = 'left', help = 'shrink',
-    action = m('View/Shrink View'),
-    persistent = true,
-  },
-  {
-    key = 'right', help = 'grow',
-    action = m('View/Grow View'),
-    persistent = true,
-  },
+  { key = '0', help = 'reset zoom', action = function() view.zoom = 0 end, },
+  { key = 'left', help = 'shrink', action = m('View/Shrink View'), persistent = true, },
+  { key = 'right', help = 'grow', action = m('View/Grow View'), persistent = true, },
 })
 
 local bookmark_hydra = hydra.create({
   { key = 'm', help = 'toggle', action = textadept.bookmarks.toggle, persistent = true },
   { key = 'c', help = 'clear', action = textadept.bookmarks.clear },
-  {
-    key = 'n', help = 'next', action = function()
+  { key = 'n', help = 'next', action = function()
       textadept.bookmarks.goto_mark(true)
       view:vertical_center_caret()
       buffer:vc_home()
-    end,
-    persistent = true,
-  },
-  {
-    key = 'N', help = 'prev', action = function()
+  end, persistent = true, },
+  { key = 'N', help = 'prev', action = function()
       textadept.bookmarks.goto_mark(false)
       view:vertical_center_caret()
       buffer:vc_home()
-    end,
-    persistent = true,
-  },
+  end, persistent = true, },
 })
 
 local quicknav_hydra = hydra.create({
@@ -1015,33 +850,16 @@ local quicknav_hydra = hydra.create({
 })
 
 local open_hydra = hydra.create({
-  { key = 'o', help = 'open', action = dispatch('open'), },
-  {
-    key = 'f', help = 'flat open', action = function()
-      io.quick_open(buffer.filename:match('^(.+)[/\\]'))
-    end,
-  },
-  {
-    key = 'u', help = 'user home', action = function()
-      io.quick_open(_USERHOME)
-    end,
-  },
-  {
-    key = 'i', help = 'install home', action = function()
-      io.quick_open(_HOME)
-    end,
-  },
-  { key = 'r', help = 'recent', action = dispatch('recent') },
-  {
-    key = 'p', help = 'project', action = function()
-      io.quick_open(nil)
-    end,
-  },
-  { key = 'l', help = 'lexer', action = dispatch('lexer') },
-  { key = 'm', help = 'bookmarks', action = dispatch('bookmarks') },
-  { key = 'v', help = 'favorites', action = dispatch('favorites')},
-  {
-    key = 'e', help = 'enter filepath', action = function()
+  { key = 'o', help = 'open', action = fn_dispatch['open'], },
+  { key = 'f', help = 'flat open', action = function() io.quick_open(buffer.filename:match('^(.+)[/\\]')) end, },
+  { key = 'u', help = 'user home', action = function() io.quick_open(_USERHOME) end, },
+  { key = 'i', help = 'install home', action = function() io.quick_open(_HOME) end, },
+  { key = 'r', help = 'recent', action = fn_dispatch['recent'] },
+  { key = 'p', help = 'project', action = function() if util.get_project_root() then io.quick_open(nil) end end, },
+  { key = 'l', help = 'lexer', action = fn_dispatch['lexer'] },
+  { key = 'm', help = 'bookmarks', action = fn_dispatch['bookmarks'] },
+  { key = 'v', help = 'favorites', action = fn_dispatch['favorites']},
+  { key = 'e', help = 'enter filepath', action = function()
       local value, button = ui.dialogs.input({
         title = 'Enter filepath',
         button1 = 'OK',
@@ -1051,75 +869,50 @@ local open_hydra = hydra.create({
       if button == 1 then
         io.open_file(value)
       end
-    end,
-  },
+  end, },
 })
 
 local find_hydra = hydra.create({
-  {key = 'f', help = 'find', action = function()
-      ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false, whole_word = false})
-    end
-  },
-  {key = 'd', help = 'find on disk', action = function()
-      ui.find.focus({ in_files = true, incremental = false, regex = false, match_case = false, whole_word = false})
-    end
-  },
-  {key = 'r', help = 'find regex', action = function()
-      ui.find.focus({ in_files = false, incremental = true, regex = true, match_case = false, whole_word = false})
-    end
-  },
-  {key = 'c', help = 'find case sensitive', action = function()
-      ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = true, whole_word = false})
-    end
-  },
-  {key = 'w', help = 'find word', action = function()
-      ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false, whole_word = true})
-    end
-  },
+  {key = 'f', help = 'find', action = function() ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false, whole_word = false}) end },
+  {key = 'd', help = 'find on disk', action = function() ui.find.focus({ in_files = true, incremental = false, regex = false, match_case = false, whole_word = false}) end },
+  {key = 'r', help = 'find regex', action = function() ui.find.focus({ in_files = false, incremental = true, regex = true, match_case = false, whole_word = false}) end },
+  {key = 'c', help = 'find case sensitive', action = function() ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = true, whole_word = false}) end },
+  {key = 'w', help = 'find word', action = function() ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false, whole_word = true}) end },
 })
 
 local run_hydra = hydra.create({
-  { key = 'l', help = 'lint', action = function()
-      exec.run('lint')
-    end
-  },
-  { key = 'i', help = 'inline build', action = function()
-      exec.run('build')
-    end
-  },
+  { key = 'l', help = 'lint', action = function() exec.run('lint') end },
+  { key = 'i', help = 'inline build', action = function() exec.run('build') end },
   { key = 'r', help = 'run', action = textadept.run.run },
   { key = 'c', help = 'compile', action = textadept.run.compile },
-  {
-    key = 'b', help = 'build', action = function()
+  { key = 'b', help = 'build', action = function()
       local rootpath = util.get_project_root()
       if not rootpath then return end
       textadept.run.build_commands[rootpath] = 'ninja -C ' .. rootpath .. '/build'
       textadept.run.build(rootpath)
-    end,
-  },
-  { key = 'p', help = 'project', action = function()
-    textadept.run.run_project(nil, '')
   end, },
-  { key = 'n', help = 'next', action = function()
-      exec.next_error(true)
-    end,
-    persistent = true,
-  },
-  { key = 'N', help = 'prev', action = function()
-      exec.next_error(false)
-    end,
-    persistent = true,
-  },
+  { key = 'p', help = 'project', action = function() textadept.run.run_project(nil, '') end, },
+  { key = 'n', help = 'next', action = function() exec.next_error(true) end, persistent = true, },
+  { key = 'N', help = 'prev', action = function() exec.next_error(false) end, persistent = true, },
+})
+
+local ctags_hydra = hydra.create({
+  { key = 'c', help = 'ctags: find', action = fn_dispatch['ctags_global'] },
+  { key = 'o', help = 'ctags: back', action = fn_dispatch['ctags_back'], persistent = true },
+  { key = 'f', help = 'ctags: functions', action = fn_dispatch['ctags_functions'] },
+  { key = 'i', help = 'ctags: init', action = fn_dispatch['ctags_init'] },
 })
 
 local main_hydra = hydra.create({
   { key = 'o', help = 'open', action = open_hydra },
-  { key = 'j', help = 'jump to', action = nav_hydra },
+  { key = 'j', help = 'jump to', action = jump_hydra },
   { key = 'e', help = 'edit', action = edit_hydra },
   { key = 's', help = 'select', action = selection_hydra },
+  { key = 'd', help = 'directional select', action = directional_selection_hydra },
   { key = 'i', help = 'insert', action = insert_hydra },
   { key = 'n', help = 'snippets', action = textadept.snippets.select },
   { key = 'w', help = 'window', action = window_hydra },
+  { key = 'c', help = 'ctags', action = ctags_hydra },
   { key = 'p', help = 'project', action = project_hydra },
   { key = 'g', help = 'git', action = git_hydra },
   { key = 'b', help = 'buffer', action = buffer_hydra },

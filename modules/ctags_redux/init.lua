@@ -126,6 +126,7 @@ local function find()
   buffer:set_empty_selection(buffer.current_pos)
   textadept.editing.select_word()
   tag = buffer:get_sel_text()
+  buffer:set_empty_selection(buffer.current_pos)
   if not tag or type(tag) ~= 'string' then return end
 
   local tag_regex = '^.*(' .. tag .. ')\t'
