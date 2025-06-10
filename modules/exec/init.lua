@@ -20,13 +20,13 @@ local function exec(cmd)
   for str in stdout:gmatch('[^\r\n]+') do
     local name, line, type, msg = str:match('^(.+):(%d+):%d+: (.+):(.+)$')
 
+    -- stylua: ignore start
     if not name
-        or not line
-        or not type
-        or not msg
-        then
-      goto continue
-    end
+      or not line
+      or not type
+      or not msg
+    then goto continue end
+    -- stylua: ignore end
 
     io.open_file(name)
     buffer:goto_line(line)
@@ -47,11 +47,14 @@ local function exec(cmd)
 end
 
 function M.run(mode)
-  rootpath = get_project_root()
+  local rootpath = get_project_root()
   if not rootpath then return end
 
   local linter_commands = {}
-  linter_commands['cpp'] = 'clang-tidy -checks=*,-fuchsia*,-llvm* -p ' .. rootpath .. '/build/compile_commands.json ' .. buffer.filename
+  linter_commands['cpp'] = 'clang-tidy -checks=*,-fuchsia*,-llvm* -p '
+    .. rootpath
+    .. '/build/compile_commands.json '
+    .. buffer.filename
   linter_commands['python'] = 'pylint --max-line-length=120 ' .. buffer.filename
 
   local build_commands = {}
@@ -68,7 +71,7 @@ end
 function M.next_error(next)
   local pos = buffer:line_from_position(buffer.current_pos)
   local get_line = next and buffer.marker_next or buffer.marker_previous
-  local line = get_line(pos + (next and 1 or -1), 1 << textadept.run.MARK_ERROR -1)
+  local line = get_line(pos + (next and 1 or -1), 1 << textadept.run.MARK_ERROR - 1)
   buffer:goto_line(line)
 end
 

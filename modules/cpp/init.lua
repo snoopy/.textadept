@@ -1,8 +1,7 @@
 local M = {}
 
 textadept.editing.autocompleters.cpp = function()
-  local symbols =
-  {
+  local symbols = {
     -- keywords
     'alignas',
     'alignof',

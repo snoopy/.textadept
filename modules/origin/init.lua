@@ -7,9 +7,7 @@ local min_line_diff = 10
 events.connect(events.UPDATE_UI, function(updated)
   if not (updated & buffer.UPDATE_H_SCROLL) then return end
   local line = buffer.line_from_position(buffer.current_pos)
-  if active and math.abs(last_line - line) > min_line_diff then
-    textadept.history.record()
-  end
+  if active and math.abs(last_line - line) > min_line_diff then textadept.history.record() end
   last_line = line
 end)
 

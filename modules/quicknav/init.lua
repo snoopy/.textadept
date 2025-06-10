@@ -6,9 +6,9 @@ local installdir = _USERHOME .. '/modules/quicknav/session'
 local function dump(o)
   if type(o) == 'table' then
     local s = '{ '
-    for k,v in pairs(o) do
-      if type(k) ~= 'number' then k = '"'..k..'"' end
-      s = s .. '['..k..'] = ' .. dump(v) .. ','
+    for k, v in pairs(o) do
+      if type(k) ~= 'number' then k = '"' .. k .. '"' end
+      s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
     end
     return s .. '} '
   else
@@ -32,17 +32,11 @@ events.connect(events.INITIALIZED, function()
     local file = parts[3]
     local ln = tonumber(parts[4])
 
-    if not jumplist[root] then
-      jumplist[root] = {}
-    end
+    if not jumplist[root] then jumplist[root] = {} end
 
-    if not jumplist[root][i] then
-      jumplist[root][i] = {}
-    end
+    if not jumplist[root][i] then jumplist[root][i] = {} end
 
-    jumplist[root][i] = {file, ln}
-
-    ::next::
+    jumplist[root][i] = { file, ln }
   end
 
   f:close()
@@ -66,14 +60,10 @@ function M.set(i)
   if not root then return end
   local linenum = buffer.line_from_position(buffer.current_pos)
 
-  if not jumplist[root] then
-    jumplist[root] = {}
-  end
-  if not jumplist[root][i] then
-    jumplist[root][i] = {}
-  end
+  if not jumplist[root] then jumplist[root] = {} end
+  if not jumplist[root][i] then jumplist[root][i] = {} end
 
-  jumplist[root][i] = {buffer.filename, linenum}
+  jumplist[root][i] = { buffer.filename, linenum }
   ui.statusbar_text = 'quick access [' .. i .. '] = ' .. buffer.filename .. ':' .. linenum
 end
 

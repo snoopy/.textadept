@@ -1,9 +1,9 @@
 local M = {}
 
-local reduxlist = require 'textredux.core.list'
+local reduxlist = require('textredux.core.list')
 
 -- List of jump positions comprising a jump history.
-local jump_list = {pos = 0}
+local jump_list = { pos = 0 }
 
 function M.go_back()
   if jump_list.pos > 0 then
@@ -14,7 +14,7 @@ function M.go_back()
     jump_list[jump_list.pos] = nil
     jump_list.pos = jump_list.pos - 1
   else
-    ui.statusbar_text = "ctags: no more history."
+    ui.statusbar_text = 'ctags: no more history.'
   end
 end
 
@@ -23,7 +23,7 @@ local function on_selection(list, item)
   list:close()
 
   -- add jump list entry
-  jump_list[#jump_list + 1] = {buffer.filename, buffer.current_pos}
+  jump_list[#jump_list + 1] = { buffer.filename, buffer.current_pos }
   jump_list.pos = #jump_list
 
   -- Jump to the tag.
@@ -35,7 +35,7 @@ end
 
 local function result_list(title, tags)
   local list = reduxlist.new(title)
-  list.headers = {'File', 'Type', 'Snippet', 'Path', 'Line'}
+  list.headers = { 'File', 'Type', 'Snippet', 'Path', 'Line' }
   list.items = tags
   list.on_selection = on_selection
   list:show()
@@ -43,23 +43,21 @@ end
 
 local function type_lookup(type)
   local ctags_types = {}
-  ctags_types['c'] = "Class"
-  ctags_types['d'] = "Macro"
-  ctags_types['e'] = "Enumerators"
-  ctags_types['f'] = "Function"
-  ctags_types['g'] = "Enumeration"
-  ctags_types['l'] = "Local"
-  ctags_types['m'] = "Member"
-  ctags_types['n'] = "Namespace"
-  ctags_types['p'] = "Prototype"
-  ctags_types['s'] = "Struct"
-  ctags_types['t'] = "Typedef"
-  ctags_types['u'] = "Union"
-  ctags_types['v'] = "Variable"
-  ctags_types['x'] = "External"
-  if ctags_types[type] then
-    return ctags_types[type]
-  end
+  ctags_types['c'] = 'Class'
+  ctags_types['d'] = 'Macro'
+  ctags_types['e'] = 'Enumerators'
+  ctags_types['f'] = 'Function'
+  ctags_types['g'] = 'Enumeration'
+  ctags_types['l'] = 'Local'
+  ctags_types['m'] = 'Member'
+  ctags_types['n'] = 'Namespace'
+  ctags_types['p'] = 'Prototype'
+  ctags_types['s'] = 'Struct'
+  ctags_types['t'] = 'Typedef'
+  ctags_types['u'] = 'Union'
+  ctags_types['v'] = 'Variable'
+  ctags_types['x'] = 'External'
+  if ctags_types[type] then return ctags_types[type] end
   return type
 end
 
@@ -73,9 +71,7 @@ local function search_in_files(pattern, function_list)
     return
   end
   local tags_path = project_root .. '/tags'
-  if not lfs.attributes(tags_path) then
-    M.init_ctags()
-  end
+  if not lfs.attributes(tags_path) then M.init_ctags() end
   local tags_file = io.open(tags_path)
   if not tags_file then return end
 
@@ -88,7 +84,7 @@ local function search_in_files(pattern, function_list)
         file_path = dir .. file_path
       end
       local file_name = file_path:match('[/\\]([^/\\]+)$')
-      tags[#tags + 1] = {file_name, type_lookup(type), snippet, file_path, linenr}
+      tags[#tags + 1] = { file_name, type_lookup(type), snippet, file_path, linenr }
       found = true
     elseif found and not function_list then
       break
@@ -98,7 +94,7 @@ local function search_in_files(pattern, function_list)
   tags_file:close()
 
   if #tags == 0 then
-    ui.statusbar_text = "ctags: no results."
+    ui.statusbar_text = 'ctags: no results.'
     return nil
   end
 
@@ -116,16 +112,16 @@ function M.function_list()
   local pattern = tag_regex .. path_regex .. snippet_regex .. type_regex .. line_regex
   local results = search_in_files(pattern, true)
   if not results then
-    ui.statusbar_text = "ctags: no results."
+    ui.statusbar_text = 'ctags: no results.'
     return
   end
-  result_list("Function list: " .. buffer.filename, results)
+  result_list('Function list: ' .. buffer.filename, results)
 end
 
 local function find()
   buffer:set_empty_selection(buffer.current_pos)
   textadept.editing.select_word()
-  tag = buffer:get_sel_text()
+  local tag = buffer:get_sel_text()
   buffer:set_empty_selection(buffer.current_pos)
   if not tag or type(tag) ~= 'string' then return end
 
@@ -140,9 +136,9 @@ local function find()
 end
 
 function M.find_global()
-  tags = find()
+  local tags = find()
   if not tags then return end
-  result_list("CTAGS results", tags)
+  result_list('CTAGS results', tags)
 end
 
 function M.function_hint()
@@ -161,9 +157,9 @@ textadept.editing.autocompleters.ctags = function()
   local tag = buffer:text_range(s, e)
 
   -- match anything including the (partial) tag
-  local tags = search_in_files('^.*('.. tag .. '%S*)\t([^\t]+)\t(.-);"\t?(.*)$', false)
+  local tags = search_in_files('^.*(' .. tag .. '%S*)\t([^\t]+)\t(.-);"\t?(.*)$', false)
   if #tags == 0 then
-    ui.statusbar_text = "ctags: No autocompletions found."
+    ui.statusbar_text = 'ctags: No autocompletions found.'
     return
   end
 
@@ -173,7 +169,7 @@ textadept.editing.autocompleters.ctags = function()
   -- remove dupes
   for i = 1, #tags do
     local value = tags[i][4]
-    if (not exists[value]) then
+    if not exists[value] then
       completions[#completions + 1] = value
       exists[value] = true
     end

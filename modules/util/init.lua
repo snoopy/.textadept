@@ -12,10 +12,8 @@ function M.get_project_root()
 end
 
 function M.find_word_under_cursor(next)
-  if buffer.selection_empty then
-    textadept.editing.select_word()
-  end
-  target = buffer:get_sel_text()
+  if buffer.selection_empty then textadept.editing.select_word() end
+  local target = buffer:get_sel_text()
   ui.find.whole_word = true
   ui.find.match_case = true
   ui.find.incremental = false
@@ -35,9 +33,7 @@ function M.select_until(target, reverse)
   end
 
   buffer.search_flags = buffer.FIND_REGEXP
-  if buffer:search_in_target(target) ~= -1 then
-    buffer:set_selection(buffer.current_pos, buffer.target_start)
-  end
+  if buffer:search_in_target(target) ~= -1 then buffer:set_selection(buffer.current_pos, buffer.target_start) end
 end
 
 function M.goto_space(reverse)
@@ -51,7 +47,7 @@ function M.goto_space(reverse)
   end
 
   buffer.search_flags = buffer.FIND_REGEXP
-  if buffer:search_in_target("[\\s\\S]\\s{1,1}\\S") ~= -1 then
+  if buffer:search_in_target('[\\s\\S]\\s{1,1}\\S') ~= -1 then
     buffer:goto_pos(buffer.target_start + 2)
     buffer:choose_caret_x()
   end
@@ -67,10 +63,7 @@ function M.move_to(target, reverse)
   end
 
   buffer.search_flags = buffer.FIND_REGEXP
-  if buffer:search_in_target(target) ~= -1 then
-    buffer:goto_pos(buffer.target_start)
-    -- buffer:choose_caret_x()
-  end
+  if buffer:search_in_target(target) ~= -1 then buffer:goto_pos(buffer.target_start) end
 end
 
 -- lastbuffer
@@ -87,9 +80,7 @@ end)
 
 -- Switch to last buffer.
 function M.goto_last_buffer()
-  if last_buffer and _BUFFERS[last_buffer] then
-    view:goto_buffer(last_buffer)
-  end
+  if last_buffer and _BUFFERS[last_buffer] then view:goto_buffer(last_buffer) end
 end
 
 -- c++
@@ -97,7 +88,7 @@ end
 function M.toggle_header()
   local filename, ext = buffer.filename:match('^(.+%.)(.+)$')
   if not ext then return end
-  local extensions = ext:find('^h') and {'cpp', 'cc', 'c', 'cxx'} or {'h', 'hpp', 'hxx'}
+  local extensions = ext:find('^h') and { 'cpp', 'cc', 'c', 'cxx' } or { 'h', 'hpp', 'hxx' }
   for _, ex in pairs(extensions) do
     local fn = filename .. ex
     if lfs.attributes(fn) then
@@ -122,9 +113,7 @@ function M.add_braces(style, append, tab)
   buffer:new_line()
   buffer:add_text('}' .. append)
   buffer:line_up()
-  if tab then
-    buffer:tab()
-  end
+  if tab then buffer:tab() end
   buffer:end_undo_action()
 end
 
@@ -230,21 +219,18 @@ local function find_indent(target, prev, operation)
   local function search()
     while true do
       line = prev and line - 1 or line + 1
-      if line < 1 or line > buffer.line_count then
-        return origin
-      end
-      if operation == 'eq' then
-        if buffer.line_indentation[line] == target and buffer:get_line(line):match('[^%s]+') then
-          return line
-        end
-      elseif operation == 'gt' then
-        if buffer.line_indentation[line] > target and buffer:get_line(line):match('[^%s]+') then
-          return line
-        end
-      elseif operation == 'lt' then
-        if buffer.line_indentation[line] < target and buffer:get_line(line):match('[^%s]+') then
-          return line
-        end
+      if line < 1 or line > buffer.line_count then return origin end
+
+      local indentation = buffer.line_indentation[line]
+      if
+        buffer:get_line(line):match('[^%s]+')
+        and (
+          (operation == 'eq' and indentation == target)
+          or (operation == 'gt' and indentation > target)
+          or (operation == 'lt' and indentation < target)
+        )
+      then
+        return line
       end
     end
   end
@@ -273,9 +259,7 @@ function M.goto_zero_indent(prev)
 end
 
 function M.goto_definition()
-  if buffer.selection_empty then
-    textadept.editing.select_word()
-  end
+  if buffer.selection_empty then textadept.editing.select_word() end
   ui.find.find_entry_text = buffer:get_sel_text()
   ui.find.whole_word = true
   ui.find.match_case = true
@@ -306,7 +290,7 @@ function M.show_project_buffers()
     end
   end
 
-  local index = ui.dialogs.list{title = 'Project Buffers', columns = {'Name', 'Path'}, items = buffers}
+  local index = ui.dialogs.list({ title = 'Project Buffers', columns = { 'Name', 'Path' }, items = buffers })
   if not index then return end
   io.open_file(buffers[index * 2])
 end

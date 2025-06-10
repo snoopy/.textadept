@@ -1,8 +1,7 @@
 local M = {}
 
 local function autocomplete()
-  local symbols =
-  {
+  local symbols = {
     'ACCUMULATOR',
     'ARG',
     'ARGV',
@@ -493,4 +492,3 @@ end
 textadept.editing.autocompleters.perl = autocomplete
 
 return M
-

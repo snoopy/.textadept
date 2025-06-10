@@ -86,9 +86,7 @@ end
 
 local function get_heatmap_value(time_diff)
   for i = 1, #heatmap_levels do
-    if time_diff < heatmap_levels[i]['age'] then
-      return heatmap_levels[i]['marker']
-    end
+    if time_diff < heatmap_levels[i]['age'] then return heatmap_levels[i]['marker'] end
   end
   return heatmap_levels[#heatmap_levels]['marker']
 end
@@ -107,7 +105,8 @@ function M.heatmap()
   local current_line = 1
   for line in result:gmatch('[^\r\n]+') do
     local date = {}
-    date.year, date.month, date.day, date.hour, date.min, date.sec = line:match('(%d%d%d%d)-(%d%d)-(%d%d) (%d%d):(%d%d):(%d%d)')
+    date.year, date.month, date.day, date.hour, date.min, date.sec =
+      line:match('(%d%d%d%d)-(%d%d)-(%d%d) (%d%d):(%d%d):(%d%d)')
     local timestamp = os.time(date)
     local time_diff = math.abs(os.difftime(today, timestamp))
     buffer:marker_add(current_line, get_heatmap_value(time_diff))
