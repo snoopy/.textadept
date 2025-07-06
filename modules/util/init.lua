@@ -282,7 +282,7 @@ function M.show_project_buffers()
   local buffers = {}
   for i = #_G._BUFFERS, 1, -1 do
     if _G._BUFFERS[i].filename then
-      if _G._BUFFERS[i].filename:match(rootpath) then
+      if _G._BUFFERS[i].filename:match(rootpath .. '[/\\]') then
         local buffer_name = _G._BUFFERS[i].filename:match('[^/\\]+$')
         buffers[#buffers + 1] = (_G._BUFFERS[i].modify and '*' or '') .. buffer_name
         buffers[#buffers + 1] = _G._BUFFERS[i].filename
