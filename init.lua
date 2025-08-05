@@ -639,7 +639,7 @@ local directional_selection_hydra = hydra.create({
     help = 'space',
     action = function()
       select_action = 1
-      select_args = '[\\s\\S]\\s{1,1}\\S'
+      select_args = '\\s'
     end,
     persistent = true,
   },

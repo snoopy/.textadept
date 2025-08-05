@@ -33,7 +33,8 @@ function M.select_until(target, reverse)
   end
 
   buffer.search_flags = buffer.FIND_REGEXP
-  if buffer:search_in_target(target) ~= -1 then buffer:set_selection(buffer.current_pos, buffer.target_start) end
+  local pos = buffer:search_in_target(target)
+  if pos ~= -1 then buffer:set_selection(buffer.current_pos, reverse and pos + 1 or pos) end
 end
 
 function M.goto_space(reverse)
