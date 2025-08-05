@@ -9,6 +9,7 @@ local f_bg_m = 0x2e2a23
 local f_bg_s = 0x363129
 
 local f_g1 = 0xa0b0a6
+local f_g1_inv = 0x5f4f59
 local f_g2 = 0x919f93
 local f_g3 = 0x819182
 local f_g4 = 0x898070
@@ -56,55 +57,58 @@ colors.purple = f_purple
 
 -- Predefined styles.
 styles[view.STYLE_DEFAULT] = {
-  font = font, size = size, fore = f_g4, back = f_bg0
+  font = font,
+  size = size,
+  fore = f_g4,
+  back = f_bg0,
 }
-styles[view.STYLE_LINENUMBER] = {fore = f_dark2, back = f_bg0}
-styles[view.STYLE_BRACELIGHT] = {fore = colors.orange}
-styles[view.STYLE_BRACEBAD] = {fore = colors.red}
-styles[view.STYLE_INDENTGUIDE] = {fore = f_g4}
-styles[view.STYLE_CALLTIP] = {fore = colors.light_grey, back = colors.light_black}
+styles[view.STYLE_LINENUMBER] = { fore = f_dark2, back = f_bg0 }
+styles[view.STYLE_BRACELIGHT] = { fore = f_g1, back = f_g1_inv }
+styles[view.STYLE_BRACEBAD] = { fore = colors.red }
+styles[view.STYLE_INDENTGUIDE] = { fore = f_g4 }
+styles[view.STYLE_CALLTIP] = { fore = colors.light_grey, back = colors.light_black }
 
 -- Tag styles.
-styles[lexer.ANNOTATION] = {fore = colors.purple}
-styles[lexer.ATTRIBUTE] = {fore = colors.yellow}
-styles[lexer.BOLD] = {bold = true}
-styles[lexer.CLASS] = {fore = colors.yellow}
-styles[lexer.CODE] = {fore = f_dark, eol_filled = true}
-styles[lexer.COMMENT] = {fore = f_g9}
-styles[lexer.CONSTANT] = {fore = colors.orange}
-styles[lexer.EMBEDDED] = {fore = colors.yellow}
-styles[lexer.ERROR] = {fore = colors.red}
-styles[lexer.FUNCTION] = {fore = colors.blue}
+styles[lexer.ANNOTATION] = { fore = colors.purple }
+styles[lexer.ATTRIBUTE] = { fore = colors.yellow }
+styles[lexer.BOLD] = { bold = true }
+styles[lexer.CLASS] = { fore = colors.yellow }
+styles[lexer.CODE] = { fore = f_dark, eol_filled = true }
+styles[lexer.COMMENT] = { fore = f_g9 }
+styles[lexer.CONSTANT] = { fore = colors.orange }
+styles[lexer.EMBEDDED] = { fore = colors.yellow }
+styles[lexer.ERROR] = { fore = colors.red }
+styles[lexer.FUNCTION] = { fore = colors.blue }
 -- styles[lexer.FUNCTION_BUILTIN] = {fore = colors.blue}
-styles[lexer.HEADING] = {fore = colors.purple}
-styles[lexer.ITALIC] = {italic = true}
-styles[lexer.KEYWORD] = {fore = colors.red}
-styles[lexer.LABEL] = {fore = colors.yellow}
-styles[lexer.LINK] = {underline = true}
-styles[lexer.LIST] = {fore = f_dark}
-styles[lexer.NUMBER] = {fore = colors.purple}
-styles[lexer.OPERATOR] = {fore = f_g5}
-styles[lexer.PREPROCESSOR] = {fore = colors.yellow}
-styles[lexer.REFERENCE] = {underline = true}
-styles[lexer.REGEX] = {fore = colors.teal}
-styles[lexer.STRING] = {fore = colors.green}
-styles[lexer.TAG] = {fore = colors.blue}
-styles[lexer.TYPE] = {fore = colors.teal}
-styles[lexer.UNDERLINE] = {underline = true}
-styles[lexer.VARIABLE_BUILTIN] = {fore = colors.yellow}
-styles[lexer.TYPE .. '.custom'] = {fore = colors.teal}
+styles[lexer.HEADING] = { fore = colors.purple }
+styles[lexer.ITALIC] = { italic = true }
+styles[lexer.KEYWORD] = { fore = colors.red }
+styles[lexer.LABEL] = { fore = colors.yellow }
+styles[lexer.LINK] = { underline = true }
+styles[lexer.LIST] = { fore = f_dark }
+styles[lexer.NUMBER] = { fore = colors.purple }
+styles[lexer.OPERATOR] = { fore = f_g5 }
+styles[lexer.PREPROCESSOR] = { fore = colors.yellow }
+styles[lexer.REFERENCE] = { underline = true }
+styles[lexer.REGEX] = { fore = colors.teal }
+styles[lexer.STRING] = { fore = colors.green }
+styles[lexer.TAG] = { fore = colors.blue }
+styles[lexer.TYPE] = { fore = colors.teal }
+styles[lexer.UNDERLINE] = { underline = true }
+styles[lexer.VARIABLE_BUILTIN] = { fore = colors.yellow }
+styles[lexer.TYPE .. '.custom'] = { fore = colors.teal }
 
 -- CSS.
 styles.property = styles[lexer.ATTRIBUTE]
 -- styles.pseudoclass = {}
 -- styles.pseudoelement = {}
 -- Diff.
-styles.addition = {fore = colors.green}
-styles.deletion = {fore = colors.red}
-styles.change = {fore = colors.yellow}
+styles.addition = { fore = colors.green }
+styles.deletion = { fore = colors.red }
+styles.change = { fore = colors.yellow }
 -- HTML.
-styles.tag_unknown = styles.tag .. {italic = true}
-styles.attribute_unknown = styles.attribute .. {italic = true}
+styles.tag_unknown = styles.tag .. { italic = true }
+styles.attribute_unknown = styles.attribute .. { italic = true }
 -- Latex, TeX, and Texinfo.
 styles.command = styles[lexer.KEYWORD]
 styles.command_section = styles[lexer.HEADING]
@@ -119,7 +123,7 @@ styles.keyword_soft = {}
 -- XML.
 -- styles.cdata = {}
 -- YAML.
-styles.error_indent = {back = colors.red}
+styles.error_indent = { back = colors.red }
 
 -- Caret and Selection Styles.
 view.element_color[view.ELEMENT_CARET] = f_g1
@@ -163,7 +167,6 @@ view.indic_outline_alpha[ui.find.INDIC_FIND] = 128
 view.indic_fore[textadept.editing.INDIC_HIGHLIGHT] = f_g1
 view.indic_alpha[textadept.editing.INDIC_HIGHLIGHT] = 32
 view.indic_outline_alpha[textadept.editing.INDIC_HIGHLIGHT] = 128
-
 
 -- Call tips.
 view.call_tip_fore_hlt = colors.blue
