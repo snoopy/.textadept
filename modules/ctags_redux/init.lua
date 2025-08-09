@@ -5,6 +5,9 @@ local reduxlist = require('textredux.core.list')
 -- List of jump positions comprising a jump history.
 local jump_list = { pos = 0 }
 
+local SNIPPET_REGEX = '/%^%s*(.+)%$?/;"\t'
+local LINE_REGEX = 'line:(%d+).*$'
+
 function M.go_back()
   if jump_list.pos > 0 then
     io.open_file(jump_list[jump_list.pos][1])
@@ -106,10 +109,8 @@ function M.function_list()
   local path_regex = '(' .. buffer.filename .. ')\t'
   path_regex = path_regex:gsub('%-', '%%-')
   path_regex = path_regex:gsub('\\', '/')
-  local snippet_regex = '/%^%s*(.+)%$?/;"\t'
   local type_regex = buffer.lexer_language == 'python' and '([fpm])\t' or '([fp])\t'
-  local line_regex = 'line:(%d+).*$'
-  local pattern = tag_regex .. path_regex .. snippet_regex .. type_regex .. line_regex
+  local pattern = tag_regex .. path_regex .. SNIPPET_REGEX .. type_regex .. LINE_REGEX
   local results = search_in_files(pattern, true)
   if not results then
     ui.statusbar_text = 'ctags: no results.'
@@ -118,36 +119,43 @@ function M.function_list()
   result_list('Function list: ' .. buffer.filename, results)
 end
 
-local function find()
-  buffer:set_empty_selection(buffer.current_pos)
-  textadept.editing.select_word()
-  local tag = buffer:get_sel_text()
-  buffer:set_empty_selection(buffer.current_pos)
-  if not tag or type(tag) ~= 'string' then return end
+local function find(symbol)
+  local tag_regex = '^(' .. symbol .. ')\t'
+  local path_regex = '(.+)\t'
+  local type_regex = '(.+)\t'
 
-  local tag_regex = '^.*(' .. tag .. ')\t'
-  local path_regex = '(.*)\t'
-  local snippet_regex = '/%^%s*(.+)%$?/;"\t'
-  local type_regex = '(%l)\t'
-  local line_regex = 'line:(%d+).*$'
-
-  local pattern = tag_regex .. path_regex .. snippet_regex .. type_regex .. line_regex
+  local pattern = tag_regex .. path_regex .. SNIPPET_REGEX .. type_regex .. LINE_REGEX
   return search_in_files(pattern, false)
 end
 
 function M.find_global()
-  local tags = find()
-  if not tags then return end
-  result_list('CTAGS results', tags)
+  buffer:set_empty_selection(buffer.current_pos)
+  textadept.editing.select_word()
+  local symbol = buffer:get_sel_text()
+  buffer:set_empty_selection(buffer.current_pos)
+  if not symbol or type(symbol) ~= 'string' then return end
+  local results = find(symbol)
+  if not results then return end
+  result_list('Find current', results)
+end
+
+function M.find_symbol()
+  local results = find('.+')
+  if not results then return end
+  result_list('Find symbol', results)
 end
 
 function M.function_hint()
+  buffer:set_empty_selection(buffer.current_pos)
+  textadept.editing.select_word()
+  local symbol = buffer:get_sel_text()
+  buffer:set_empty_selection(buffer.current_pos)
+  if not symbol or type(symbol) ~= 'string' then return end
+
   buffer:annotation_clear_all()
-  local hint = ''
-  local results = find()
-  if not tags then return end
+  local results = find(symbol)
+  if not results then return end
   buffer.annotation_text[buffer:line_from_position(buffer.current_pos)] = results[1][3]
-  buffer:char_right()
 end
 
 -- Autocompleter function for ctags.
@@ -184,7 +192,14 @@ function M.init_ctags()
     ui.statusbar_text = 'ctags: not a project'
     return
   end
-  local ctags_options = ' -R --exclude=".git" --exclude="build" --exclude="extern*" --fields=+ain  --c++-kinds=+p '
+  -- exclude all but src
+  -- local ctags_options = ' -R --exclude="*" --exclude-exception="**/src/*" --fields=+ain  --c++-kinds=+p '
+  local ctags_options = ' -R --fields=+ain --c++-kinds=+p'
+    .. ' --exclude=".git"'
+    .. ' --exclude="extern*"'
+    .. ' --exclude="bin"'
+    .. ' --exclude="doc*"'
+    .. ' --exclude="build" '
   local proc = os.spawn('ctags -f ' .. rootpath .. '/tags' .. ctags_options .. rootpath):wait()
   if proc == nil then
     ui.statusbar_text = 'ctags: init failed'

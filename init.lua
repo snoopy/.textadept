@@ -221,10 +221,6 @@ keys.f4 = util.toggle_header
 
 -- editing
 
-keys.f9 = function()
-  ctags_redux.function_hint()
-end
-
 keys['shift+f9'] = function()
   buffer:annotation_clear_all()
 end
@@ -1575,7 +1571,8 @@ local run_hydra = hydra.create({
 })
 
 local ctags_hydra = hydra.create({
-  { key = 'c', help = 'ctags: find', action = fn_dispatch['ctags_global'] },
+  { key = 'c', help = 'ctags: find current', action = fn_dispatch['ctags_global'] },
+  { key = 's', help = 'ctags: find symbol', action = ctags_redux.find_symbol },
   { key = 'o', help = 'ctags: back', action = fn_dispatch['ctags_back'], persistent = true },
   { key = 'f', help = 'ctags: functions', action = fn_dispatch['ctags_functions'] },
   { key = 'i', help = 'ctags: init', action = fn_dispatch['ctags_init'] },
