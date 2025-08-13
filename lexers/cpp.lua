@@ -26,7 +26,7 @@ local basic_type = lex:tag(lexer.TYPE, lex:word_match(lexer.TYPE))
 lex:add_rule('type', basic_type + stl_type * -P('::'))
 
 -- highlight custom types like 'type' in this: foo::bar::type
-lex:add_rule('custom_type', lex:tag(lexer.DEFAULT, '::') * lex:tag(lexer.TYPE .. '.custom', lexer.word * -S('(:<')))
+lex:add_rule('custom_type', lex:tag(lexer.DEFAULT, '::') * lex:tag(lexer.TYPE .. '.custom', lexer.word * -(P('::') + P('('))))
 
 -- highlight namespace scopes like this: foo::bar::
 -- lex:add_rule('namespace_scopes', lex:tag(lexer.VARIABLE .. '.scopes', (lexer.word * '::' * -P('::'))))
