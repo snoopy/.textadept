@@ -9,41 +9,29 @@ local function get_project_root()
   return rootpath
 end
 
-local function exec(cmd)
+local function run_and_mark(cmd)
   local proc = assert(io.popen(cmd, 'r'))
   local stdout = assert(proc:read('*a'))
   local issues = 0
-  local build_state = true
-  buffer:marker_delete_all(textadept.run.MARK_ERROR)
+
   buffer:marker_delete_all(textadept.run.MARK_WARNING)
   buffer:annotation_clear_all()
-  for str in stdout:gmatch('[^\r\n]+') do
-    local name, line, type, msg = str:match('^(.+):(%d+):%d+: (.+):(.+)$')
 
-    -- stylua: ignore start
-    if not name
-      or not line
-      or not type
-      or not msg
-    then goto continue end
-    -- stylua: ignore end
+  for line in stdout:gmatch('[^\r\n]+') do
+    local filepath, line_num, msg = line:match('^%s*(.+):(%d+):%d+:%s*(.+)$')
+    if not filepath or not line_num or not msg then goto continue end
 
-    io.open_file(name)
-    buffer:goto_line(line)
+    io.open_file(filepath)
+    buffer:goto_line(line_num)
     issues = issues + 1
-    buffer.annotation_text[line] = msg
-    buffer.annotation_style[line] = buffer:style_of_name(lexer.EMBEDDED)
-    buffer:marker_add(line, (type == 'error') and textadept.run.MARK_ERROR or textadept.run.MARK_WARNING)
-
-    if type == 'error' then
-      build_state = false
-      break
-    end
+    buffer.annotation_text[line_num] = msg
+    buffer.annotation_style[line_num] = buffer:style_of_name(lexer.EMBEDDED)
+    buffer:marker_add(line_num, textadept.run.MARK_WARNING)
 
     ::continue::
   end
   proc:close()
-  ui.statusbar_text = (build_state and 'Build successful: ' or 'Build failed: ') .. issues .. ' issues found'
+  ui.statusbar_text = issues .. ' issues found'
 end
 
 function M.run(mode)
@@ -56,6 +44,7 @@ function M.run(mode)
     .. '/build/compile_commands.json '
     .. buffer.filename
   linter_commands['python'] = 'pylint --max-line-length=120 ' .. buffer.filename
+  linter_commands['lua'] = 'luacheck --no-color ' .. buffer.filename
 
   local build_commands = {}
   build_commands['cpp'] = 'ninja -C ' .. rootpath .. '/build'
@@ -65,13 +54,18 @@ function M.run(mode)
   modes['build'] = build_commands
 
   local lang = buffer:get_lexer(true)
-  exec(modes[mode][lang])
+  if lang == nil or modes[mode][lang] == nil then
+    ui.statusbar_text = 'no command for: ' .. lang
+    return
+  end
+
+  run_and_mark(modes[mode][lang])
 end
 
-function M.next_error(next)
+function M.next_issue(next)
   local pos = buffer:line_from_position(buffer.current_pos)
   local get_line = next and buffer.marker_next or buffer.marker_previous
-  local line = get_line(pos + (next and 1 or -1), 1 << textadept.run.MARK_ERROR - 1)
+  local line = get_line(pos + (next and 1 or -1), 1 << textadept.run.MARK_WARNING - 1)
   buffer:goto_line(line)
 end
 

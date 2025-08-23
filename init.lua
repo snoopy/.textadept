@@ -1,6 +1,6 @@
 view:set_theme('everforest', { font = 'JetBrains Mono NL Light', size = 16 })
 
-local exec = require('exec')
+local run = require('run')
 local format = require('format')
 local git = require('git')
 local hydra = require('hydra')
@@ -1170,7 +1170,15 @@ local whitespace_hydra = hydra.create({
 })
 
 local buffer_hydra = hydra.create({
-  { key = 'r', help = 'reload', action = buffer.reload },
+  {
+    key = 'r',
+    help = 'reload',
+    action = function()
+      buffer:marker_delete_all(-1)
+      buffer:annotation_clear_all()
+      buffer.reload()
+    end,
+  },
   { key = 's', help = 'save as', action = fn_dispatch['saveas'] },
   {
     key = 'p',
@@ -1523,14 +1531,14 @@ local run_hydra = hydra.create({
     key = 'l',
     help = 'lint',
     action = function()
-      exec.run('lint')
+      run.run('lint')
     end,
   },
   {
     key = 'i',
     help = 'inline build',
     action = function()
-      exec.run('build')
+      run.run('build')
     end,
   },
   { key = 'r', help = 'run', action = textadept.run.run },
@@ -1556,7 +1564,7 @@ local run_hydra = hydra.create({
     key = 'n',
     help = 'next',
     action = function()
-      exec.next_error(true)
+      run.next_issue(true)
     end,
     persistent = true,
   },
@@ -1564,7 +1572,7 @@ local run_hydra = hydra.create({
     key = 'N',
     help = 'prev',
     action = function()
-      exec.next_error(false)
+      run.next_issue(false)
     end,
     persistent = true,
   },
