@@ -2,19 +2,16 @@ local view, colors, styles = view, view.colors, view.styles
 
 local color = require('color')
 
-local fgdef = color.rgb2bgr('d3c6aa')
+local fgdef = color.rgb2bgr('ebdbb2')
 local fgdefinv = color.rgb2bgr('212642')
-local fgl = color.rgb2bgr('5c6a72')
 
--- hard
-
-local bgdim = color.rgb2bgr('1e2326')
-local bg0 = color.rgb2bgr('272e33')
-local bg1 = color.rgb2bgr('2e383c')
-local bg2 = color.rgb2bgr('374145')
-local bg3 = color.rgb2bgr('414b50')
-local bg4 = color.rgb2bgr('495156')
-local bg5 = color.rgb2bgr('4f5b58')
+local bgdim = color.rgb2bgr('1d2021')
+local bg0 = color.rgb2bgr('282828')
+local bg1 = color.rgb2bgr('3c3836')
+local bg2 = color.rgb2bgr('504945')
+local bg3 = color.rgb2bgr('665c54')
+local bg4 = color.rgb2bgr('7c6f64')
+local bg5 = color.rgb2bgr('32302f')
 local bgred = color.rgb2bgr('493b40')
 local bgyellow = color.rgb2bgr('45443c')
 local bggreen = color.rgb2bgr('3c4841')
@@ -22,64 +19,30 @@ local bgblue = color.rgb2bgr('384b55')
 local bgpurple = color.rgb2bgr('463f48')
 local bgvisual = color.rgb2bgr('4c3743')
 
--- medium
+-- darker
 
--- local bgdim = color.rgb2bgr('232a2e')
--- local bg0 = color.rgb2bgr('2d353b')
--- local bg1 = color.rgb2bgr('343f44')
--- local bg2 = color.rgb2bgr('3d484d')
--- local bg3 = color.rgb2bgr('475258')
--- local bg4 = color.rgb2bgr('4f585e')
--- local bg5 = color.rgb2bgr('56635f')
--- local bgred = color.rgb2bgr('514045')
--- local bgyellow = color.rgb2bgr('4d4c43')
--- local bggreen = color.rgb2bgr('425047')
--- local bgblue = color.rgb2bgr('3a515d')
--- local bgpurple = color.rgb2bgr('4a444e')
--- local bgvisual = color.rgb2bgr('543a48')
+local red = color.rgb2bgr('cc241d')
+local green = color.rgb2bgr('98971a')
+local yellow = color.rgb2bgr('d79921')
+local blue = color.rgb2bgr('458588')
+local purple = color.rgb2bgr('b16286')
+local aqua = color.rgb2bgr('689d6a')
+local orange = color.rgb2bgr('d65d0e')
 
--- soft
+-- brighter
 
--- local bgdim = color.rgb2bgr('293136')
--- local bg0 = color.rgb2bgr('333c43')
--- local bg1 = color.rgb2bgr('3a464c')
--- local bg2 = color.rgb2bgr('434f55')
--- local bg3 = color.rgb2bgr('4d5960')
--- local bg4 = color.rgb2bgr('555f66')
--- local bg5 = color.rgb2bgr('5d6b66')
--- local bgred = color.rgb2bgr('59464c')
--- local bgyellow = color.rgb2bgr('55544a')
--- local bggreen = color.rgb2bgr('48584e')
--- local bgblue = color.rgb2bgr('3f5865')
--- local bgpurple = color.rgb2bgr('4e4953')
--- local bgvisual = color.rgb2bgr('5c3f4f')
+-- local red = color.rgb2bgr('fb4934')
+-- local green = color.rgb2bgr('b8bb26')
+-- local yellow = color.rgb2bgr('fabd2f')
+-- local blue = color.rgb2bgr('83a598')
+-- local purple = color.rgb2bgr('d3869b')
+-- local aqua = color.rgb2bgr('8ec07c')
+-- local orange = color.rgb2bgr('fe8019')
 
--- light colors (hard contrast)
-
-local red = color.rgb2bgr('f85552')
-local yellow = color.rgb2bgr('dfa000')
-local green = color.rgb2bgr('8da101')
-local blue = color.rgb2bgr('3a94c5')
-local purple = color.rgb2bgr('df69ba')
-local aqua = color.rgb2bgr('35a77c')
-local orange = color.rgb2bgr('f57d26')
-local grey0 = color.rgb2bgr('a6b0a0')
-local grey1 = color.rgb2bgr('939f91')
-local grey2 = color.rgb2bgr('829181')
-local grey3 = color.rgb2bgr('708089')
-
--- dark colors (soft contrast)
-
--- local red = color.rgb2bgr('e57e80')
--- local yellow = color.rgb2bgr('dabc7f')
--- local green = color.rgb2bgr('a7c080')
--- local blue = color.rgb2bgr('7fbbb3')
--- local purple = color.rgb2bgr('d699b6')
--- local aqua = color.rgb2bgr('83c092')
--- local orange = color.rgb2bgr('e59875')
--- local grey0 = color.rgb2bgr('7a8478')
--- local grey1 = color.rgb2bgr('859289')
--- local grey2 = color.rgb2bgr('9da9a0')
+local grey0 = color.rgb2bgr('a89984')
+local grey1 = color.rgb2bgr('928374')
+local grey2 = color.rgb2bgr('bdae93')
+local grey3 = color.rgb2bgr('fbf1c7')
 
 -- Greyscale colors.
 colors.black = color.rgb2bgr('000000')
@@ -103,10 +66,11 @@ colors.purple = purple
 styles[view.STYLE_DEFAULT] = {
   font = font,
   size = size,
-  fore = grey3,
+  -- fore = bg4,
+  fore = grey1,
   back = bg0,
 }
-styles[view.STYLE_LINENUMBER] = { fore = bg4, back = bg0 }
+styles[view.STYLE_LINENUMBER] = { fore = bg3, back = bg0 }
 styles[view.STYLE_BRACELIGHT] = { fore = fgdef, back = bg3 }
 styles[view.STYLE_BRACEBAD] = { fore = colors.red }
 styles[view.STYLE_INDENTGUIDE] = { fore = grey2 }
@@ -118,7 +82,7 @@ styles[lexer.ATTRIBUTE] = { fore = colors.yellow }
 styles[lexer.BOLD] = { bold = true }
 styles[lexer.CLASS] = { fore = colors.yellow }
 styles[lexer.CODE] = { fore = bg2, eol_filled = true }
-styles[lexer.COMMENT] = { fore = bg5 }
+styles[lexer.COMMENT] = { fore = bg3 }
 styles[lexer.CONSTANT] = { fore = colors.orange }
 styles[lexer.EMBEDDED] = { fore = colors.yellow }
 styles[lexer.ERROR] = { fore = colors.red }
@@ -131,7 +95,7 @@ styles[lexer.LABEL] = { fore = colors.yellow }
 styles[lexer.LINK] = { underline = true }
 styles[lexer.LIST] = { fore = bg2 }
 styles[lexer.NUMBER] = { fore = colors.purple }
-styles[lexer.OPERATOR] = { fore = grey2 }
+styles[lexer.OPERATOR] = { fore = grey0 }
 styles[lexer.PREPROCESSOR] = { fore = colors.yellow }
 styles[lexer.REFERENCE] = { underline = true }
 styles[lexer.REGEX] = { fore = colors.teal }
@@ -170,7 +134,7 @@ styles.keyword_soft = {}
 styles.error_indent = { back = colors.red }
 
 -- Caret and Selection Styles.
-view.element_color[view.ELEMENT_CARET] = fgdef
+view.element_color[view.ELEMENT_CARET] = grey0
 view.element_color[view.ELEMENT_CARET_LINE_BACK] = bg4
 
 ui.command_entry.element_color[view.ELEMENT_CARET] = fgdef
