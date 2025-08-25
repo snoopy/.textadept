@@ -1207,11 +1207,7 @@ local buffer_hydra = hydra.create({
   {
     key = 'r',
     help = 'reload',
-    action = function()
-      buffer:marker_delete_all(-1)
-      buffer:annotation_clear_all()
-      buffer.reload()
-    end,
+    action = buffer.reload,
   },
   { key = 's', help = 'save as', action = fn_dispatch['saveas'] },
   {
@@ -1224,6 +1220,15 @@ local buffer_hydra = hydra.create({
   },
   { key = 'f', help = 'formatting', action = formatting_hydra },
   { key = 'v', help = 'favorite', action = favorites.toggle },
+  {
+    key = 'c',
+    help = 'clear marks/annotations',
+    action = function()
+      buffer:marker_delete_all(-1)
+      buffer:annotation_clear_all()
+      buffer:eol_annotation_clear_all()
+    end,
+  },
   {
     key = 'k',
     help = 'close all',

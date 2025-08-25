@@ -15,7 +15,7 @@ local function run_and_mark(cmd)
   local issues = 0
 
   buffer:marker_delete_all(textadept.run.MARK_WARNING)
-  buffer:annotation_clear_all()
+  buffer:eol_annotation_clear_all()
 
   for line in stdout:gmatch('[^\r\n]+') do
     local filepath, line_num, msg = line:match('^%s*(.+):(%d+):%d+:%s*(.+)$')
@@ -24,8 +24,8 @@ local function run_and_mark(cmd)
     io.open_file(filepath)
     buffer:goto_line(line_num)
     issues = issues + 1
-    buffer.annotation_text[line_num] = msg
-    buffer.annotation_style[line_num] = buffer:style_of_name(lexer.EMBEDDED)
+    buffer.eol_annotation_text[line_num] = msg
+    buffer.eol_annotation_style[line_num] = buffer:style_of_name(lexer.EMBEDDED)
     buffer:marker_add(line_num, textadept.run.MARK_WARNING)
 
     ::continue::
