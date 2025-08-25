@@ -1169,42 +1169,7 @@ local whitespace_hydra = hydra.create({
   },
 })
 
-local buffer_hydra = hydra.create({
-  {
-    key = 'r',
-    help = 'reload',
-    action = function()
-      buffer:marker_delete_all(-1)
-      buffer:annotation_clear_all()
-      buffer.reload()
-    end,
-  },
-  { key = 's', help = 'save as', action = fn_dispatch['saveas'] },
-  {
-    key = 'p',
-    help = 'word wrap',
-    action = function()
-      if view.wrap_mode == view.WRAP_NONE then
-        view.wrap_mode = view.WRAP_WORD
-        ui.statusbar_text = 'Word wrap ON'
-      else
-        view.wrap_mode = view.WRAP_NONE
-        ui.statusbar_text = 'Word wrap OFF'
-      end
-    end,
-    persistent = true,
-  },
-  {
-    key = 'n',
-    help = 'name',
-    action = function()
-      buffer:copy_text(buffer.filename)
-      ui.statusbar_text = 'Copied buffer name to clipboard.'
-    end,
-  },
-  { key = 'v', help = 'favorite', action = favorites.toggle },
-  { key = 'w', help = 'whitespace', action = whitespace_hydra },
-  { key = 'e', help = 'eol', action = eol_hydra },
+local formatting_hydra = hydra.create({
   {
     key = 'f',
     help = 'format',
@@ -1219,7 +1184,46 @@ local buffer_hydra = hydra.create({
       format.toggle_on_save()
     end,
   },
+  {
+    key = 'w',
+    help = 'word wrap',
+    action = function()
+      if view.wrap_mode == view.WRAP_NONE then
+        view.wrap_mode = view.WRAP_WORD
+        ui.statusbar_text = 'Word wrap ON'
+      else
+        view.wrap_mode = view.WRAP_NONE
+        ui.statusbar_text = 'Word wrap OFF'
+      end
+    end,
+    persistent = true,
+  },
+  { key = 's', help = 'whitespace', action = whitespace_hydra },
+  { key = 'e', help = 'eol', action = eol_hydra },
   { key = 'c', help = 'encoding', action = encoding_hydra },
+})
+
+local buffer_hydra = hydra.create({
+  {
+    key = 'r',
+    help = 'reload',
+    action = function()
+      buffer:marker_delete_all(-1)
+      buffer:annotation_clear_all()
+      buffer.reload()
+    end,
+  },
+  { key = 's', help = 'save as', action = fn_dispatch['saveas'] },
+  {
+    key = 'n',
+    help = 'copy name',
+    action = function()
+      buffer:copy_text(buffer.filename)
+      ui.statusbar_text = 'Copied buffer name to clipboard.'
+    end,
+  },
+  { key = 'f', help = 'formatting', action = formatting_hydra },
+  { key = 'v', help = 'favorite', action = favorites.toggle },
   {
     key = 'k',
     help = 'close all',
