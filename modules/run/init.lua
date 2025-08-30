@@ -9,11 +9,9 @@ local function get_project_root()
   return rootpath
 end
 
-local function run_and_mark(cmd)
-  local proc = assert(io.popen(cmd, 'r'))
-  local stdout = assert(proc:read('*a'))
+local function run_and_mark(cmd, cwd)
+  local stdout = os.spawn(cmd, cwd):read('a')
   local issues = 0
-
   buffer:marker_delete_all(textadept.run.MARK_WARNING)
   buffer:eol_annotation_clear_all()
 
@@ -30,7 +28,6 @@ local function run_and_mark(cmd)
 
     ::continue::
   end
-  proc:close()
   ui.statusbar_text = issues .. ' issues found'
 end
 
@@ -59,7 +56,7 @@ function M.run(mode)
     return
   end
 
-  run_and_mark(modes[mode][lang])
+  run_and_mark(modes[mode][lang], rootpath)
 end
 
 function M.next_issue(next)
