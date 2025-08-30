@@ -19,7 +19,7 @@ local function run_and_mark(cmd, cwd)
     local filepath, line_num, msg = line:match('^%s*(.+):(%d+):%d+:%s*(.+)$')
     if not filepath or not line_num or not msg then goto continue end
 
-    io.open_file(filepath)
+    io.open_file(lfs.abspath(filepath, cwd))
     buffer:goto_line(line_num)
     issues = issues + 1
     buffer.eol_annotation_text[line_num] = msg
