@@ -42,9 +42,11 @@ function M.run(mode)
     .. buffer.filename
   linter_commands['python'] = 'pylint --max-line-length=120 ' .. buffer.filename
   linter_commands['lua'] = 'luacheck --no-color ' .. buffer.filename
+  linter_commands['rust'] = 'cargo clippy --message-format short 2>&1'
 
   local build_commands = {}
   build_commands['cpp'] = 'ninja -C ' .. rootpath .. '/build'
+  build_commands['rust'] = 'cargo build --message-format short 2>&1'
 
   local modes = {}
   modes['lint'] = linter_commands

@@ -10,6 +10,7 @@ local formatters = {
     .. ' --indent-type Spaces'
     .. ' --quote-style AutoPreferSingle'
     .. ' --collapse-simple-statement ConditionalOnly',
+  ['rust'] = 'rustfmt',
 }
 
 function M.toggle_on_save()

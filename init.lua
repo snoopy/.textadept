@@ -83,8 +83,12 @@ lexer.detect_extensions.ep = 'html'
 
 textadept.editing.auto_pairs = nil
 
-textadept.run.compile_commands.cpp = 'g++ -std=c++20 -O2 "%f"'
 textadept.run.run_commands.python = 'python3 -u "%f"'
+textadept.run.run_commands.lua = _HOME .. '/textadept -L "%f"'
+textadept.run.run_commands.rust = 'cargo run --message-format short'
+
+textadept.run.compile_commands.cpp = 'g++ -std=c++20 -O2 "%f"'
+textadept.run.compile_commands.rust = 'cargo build'
 
 -- stylua: ignore start
 local function set_buffer_options()
@@ -118,6 +122,7 @@ end, 1)
 format.on_save['cpp'] = true
 format.on_save['python'] = true
 format.on_save['lua'] = true
+format.on_save['rust'] = true
 
 io.quick_open_filters = { '!**/*.{pyc,ttf}', '!build/*', '!extern%a*/*', '!assets/*', '!target/*', '!bin/*' }
 
