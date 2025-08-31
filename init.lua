@@ -119,11 +119,6 @@ events.connect(events.FILE_CHANGED, function()
   return true
 end, 1)
 
-format.on_save['cpp'] = true
-format.on_save['python'] = true
-format.on_save['lua'] = true
-format.on_save['rust'] = true
-
 io.quick_open_filters = { '!**/*.{pyc,ttf}', '!build/*', '!extern%a*/*', '!assets/*', '!target/*', '!bin/*' }
 
 local function m(labels)

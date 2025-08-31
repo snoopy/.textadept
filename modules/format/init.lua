@@ -1,7 +1,5 @@
 local M = {}
 
-M.on_save = {}
-
 local formatters = {
   ['cpp'] = 'clang-format -i -style=file -fallback-style=none',
   ['python'] = 'black -l 120',
@@ -12,6 +10,11 @@ local formatters = {
     .. ' --collapse-simple-statement ConditionalOnly',
   ['rust'] = 'rustfmt',
 }
+
+M.on_save = {}
+for k, _ in pairs(formatters) do
+  M.on_save[k] = true
+end
 
 function M.toggle_on_save()
   local lang = buffer:get_lexer(true)
