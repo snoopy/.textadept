@@ -43,6 +43,8 @@ events.connect(events.INITIALIZED, function()
 end)
 
 events.connect(events.QUIT, function()
+  if next(jumplist) == nil then return end
+
   local f = io.open(installdir, 'w')
   if not f then return end
 
