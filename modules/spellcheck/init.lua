@@ -60,24 +60,6 @@ M.misspelled_color_name = 'red'
 --- The Hunspell spellchecker object.
 -- @field spellchecker
 
--- Localizations.
-local _L = _L
-if not rawget(_L, 'Spelling') then
-	-- Menu.
-	_L['Spelling'] = 'Spell_ing'
-	_L['Check Spelling...'] = '_Check Spelling...'
-	_L['Mark Misspelled Words'] = '_Mark Misspelled Words'
-	_L['Load Dictionary...'] = '_Load Dictionary...'
-	_L['Select Dictionary'] = 'Select Dictionary'
-	_L['Open User Dictionary'] = '_Open User Dictionary'
-	-- Other.
-	_L['Language not found'] = 'Language not found'
-	_L['No Suggestions'] = 'No Suggestions'
-	_L['Add'] = 'Add'
-	_L['Ignore'] = 'Ignore'
-	_L['No misspelled words.'] = 'No misspelled words.'
-end
-
 local lib = 'spellcheck.spell'
 if OSX then
 	lib = lib .. 'osx'
@@ -88,9 +70,10 @@ M.spell = require(lib)
 
 --- List of paths to search for Hunspell dictionaries in.
 M.hunspell_paths = {
-	_USERHOME .. '/modules/spellcheck/', '/usr/local/share/hunspell/', '/usr/share/hunspell/',
-	'C:\\Program Files (x86)\\hunspell\\', 'C:\\Program Files\\hunspell\\',
-	_HOME .. '/modules/spellcheck/'
+	_USERHOME .. '/modules/spellcheck', --
+	'/usr/local/share/hunspell', '/usr/share/hunspell', --
+	'C:\\Program Files (x86)\\hunspell', 'C:\\Program Files\\hunspell', --
+	_HOME .. '/modules/spellcheck'
 }
 
 --- Map of spellcheckable style names to `true`.
@@ -107,22 +90,19 @@ local user_dicts = _USERHOME .. (not WIN32 and '/' or '\\') .. 'dictionaries'
 -- @param lang String Hunspell language name to load.
 -- @usage spellcheck.load('en_US')
 function M.load(lang)
-	local aff, dic = lang .. '.aff', lang .. '.dic'
 	for _, path in ipairs(M.hunspell_paths) do
-		local aff_path, dic_path = path .. aff, path .. dic
+		local aff_path = string.format('%s/%s.aff', path, lang)
+		local dic_path = string.format('%s/%s.dic', path, lang)
 		if lfs.attributes(aff_path) and lfs.attributes(dic_path) then
 			M.spellchecker = M.spell(aff_path, dic_path)
-			goto lang_found
+			break
 		end
 	end
-	error(_L['Language not found'] .. ': ' .. lang)
-	::lang_found::
-	if lfs.attributes(user_dicts) then
-		for dic in lfs.dir(user_dicts) do
-			if dic:find('^%.%.?$') then goto continue end
-			M.spellchecker:add_dic(user_dicts .. (not WIN32 and '/' or '\\') .. dic)
-			::continue::
-		end
+	if not M.spellchecker then error(_L['Language not found'] .. ': ' .. lang) end
+	if not lfs.attributes(user_dicts) then return end
+	local sep = not WIN32 and '/' or '\\'
+	for dic in lfs.dir(user_dicts) do
+		if not dic:find('^%.%.?$') then M.spellchecker:add_dic(user_dicts .. sep .. dic) end
 	end
 end
 M.load((os.getenv('LANG') or ''):match('^[^.@]+') or 'en_US')
@@ -157,13 +137,13 @@ events.connect(events.USER_LIST_SELECTION, function(id, text, position)
 		if text:find(_L['Add']) then
 			if not lfs.attributes(user_dicts) then lfs.mkdir(user_dicts) end
 			local user_dict = user_dicts .. '/user.dic'
-			local words = {}
+			local user_words = {}
 			if lfs.attributes(user_dict) then
-				for word in io.lines(user_dict) do words[#words + 1] = word end
+				for user_word in io.lines(user_dict) do user_words[#user_words + 1] = user_word end
 			end
-			words[1] = #words + 1
-			words[#words + 1] = word
-			io.open(user_dict, 'wb'):write(table.concat(words, '\n')):close()
+			user_words[1] = #user_words + 1
+			user_words[#user_words + 1] = word
+			io.open(user_dict, 'wb'):write(table.concat(user_words, '\n')):close()
 		end
 		M.spellchecker:add_word(word:iconv(M.spellchecker:get_dic_encoding(), 'UTF-8'))
 		M.check_spelling() -- clear highlighting for all occurrences
@@ -187,8 +167,8 @@ local word_patt = {
 -- @param pattern LPeg pattern.
 -- @param subject String subject.
 local function lpeg_gmatch(pattern, subject)
-	return function(subject, i)
-		local s, word, e = lpeg.match(pattern, subject, i)
+	return function(subject_, i)
+		local s, word, e = lpeg.match(pattern, subject_, i)
 		if word then return e, s, word end
 	end, subject, 1
 end
@@ -275,6 +255,12 @@ end)
 
 -- Add menu entries and configure key bindings.
 -- (Insert 'Spelling' menu in alphabetical order.)
+_L['Spelling'] = 'Spell_ing'
+_L['Check Spelling...'] = '_Check Spelling...'
+_L['Mark Misspelled Words'] = '_Mark Misspelled Words'
+_L['Load Dictionary...'] = '_Load Dictionary...'
+_L['Select Dictionary'] = '_Select Dictionary'
+_L['Open User Dictionary'] = '_Open User Dictionary'
 local m_tools = textadept.menu.menubar['Tools']
 local found_area
 local SEP = {''}
@@ -300,9 +286,9 @@ for i = 1, #m_tools - 1 do
 							end
 							::continue::
 						end
-						local button
-						i = ui.dialogs.list{title = _L['Select Dictionary'], items = dicts}
-						if i then M.load(dicts[i]) end
+						table.sort(dicts)
+						local j = ui.dialogs.list{title = _L['Select Dictionary'], items = dicts}
+						if j then M.load(dicts[j]) end
 					end
 				}, SEP, {
 					_L['Open User Dictionary'], function()
@@ -315,9 +301,11 @@ for i = 1, #m_tools - 1 do
 		end
 	end
 end
-local mod = (WIN32 or LINUX) and 'ctrl' or OSX and 'cmd' or CURSES and 'meta'
-keys[mod .. '+:'] = m_tools[_L['Spelling']][_L['Check Spelling...']][2]
-keys[mod .. '+;'] = M.check_spelling
+
+keys.assign_platform_bindings{
+	[m_tools[_L['Spelling']][_L['Check Spelling...']][2]] = {'ctrl+:', 'cmd+:', 'meta+:'},
+	[M.check_spelling] = {'ctrl+;', 'cmd+;', 'meta+;'}
+}
 
 return M
 

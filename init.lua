@@ -221,8 +221,8 @@ keys.f4 = util.toggle_header
 
 -- editing
 
-keys['shift+f9'] = function()
-  buffer:annotation_clear_all()
+keys.f9 = function()
+  spellcheck.check_spelling(true)
 end
 
 keys.f8 = buffer.undo
