@@ -274,6 +274,10 @@ keys['alt+a'] = function()
 end
 
 keys['alt+x'] = textadept.editing.select_word
+keys['alt+y'] = function()
+  buffer:drop_selection_n(buffer.selections)
+  view:vertical_center_caret()
+end
 
 keys['alt+\b'] = function()
   buffer:line_up()
@@ -659,76 +663,6 @@ local directional_selection_hydra = hydra.create({
   },
 
   {
-    key = 'home',
-    help = 'to line start',
-    action = function()
-      buffer:vc_home_extend()
-    end,
-  },
-  {
-    key = 'end',
-    help = 'to line end',
-    action = function()
-      buffer:line_end_extend()
-    end,
-  },
-
-  {
-    key = 'i',
-    help = 'line up',
-    action = function()
-      if buffer.selection_empty then
-        buffer:line_end()
-        buffer:home_extend()
-      end
-      buffer:line_up_extend()
-    end,
-    persistent = true,
-  },
-
-  {
-    key = 'k',
-    help = 'line down',
-    action = function()
-      if buffer.selection_empty then
-        buffer:home()
-        buffer:line_end_extend()
-      end
-      buffer:line_down_extend()
-      if buffer.selection_start < buffer.current_pos then buffer:line_end_extend() end
-    end,
-    persistent = true,
-  },
-
-  {
-    key = 'pgup',
-    help = 'para up',
-    action = function()
-      if buffer.selection_empty then
-        buffer:line_end()
-        buffer:home_extend()
-      end
-      buffer:para_up_extend()
-    end,
-    persistent = true,
-  },
-  {
-    key = 'pgdn',
-    help = 'para down',
-    action = function()
-      if buffer.selection_empty then
-        buffer:home()
-        buffer:line_end_extend()
-      end
-      buffer:para_down_extend()
-    end,
-    persistent = true,
-  },
-
-  { key = 'h', help = 'buffer start', action = buffer.document_start_extend },
-  { key = 'g', help = 'buffer end', action = buffer.document_end_extend },
-
-  {
     key = 'j',
     help = 'select left to',
     action = function()
@@ -813,8 +747,8 @@ local selection_hydra = hydra.create({
   },
 
   {
-    key = 'a',
-    help = 'all words',
+    key = 'w',
+    help = 'word (all)',
     action = function()
       textadept.editing.select_word(true)
     end,
@@ -858,9 +792,82 @@ local selection_hydra = hydra.create({
     end,
   },
   { key = 'p', help = 'paragraph', action = textadept.editing.select_paragraph },
+
   {
-    key = 'c',
-    help = 'clear',
+    key = 'home',
+    help = 'to line start',
+    action = function()
+      buffer:vc_home_extend()
+    end,
+  },
+  {
+    key = 'end',
+    help = 'to line end',
+    action = function()
+      buffer:line_end_extend()
+    end,
+  },
+
+  {
+    key = 'i',
+    help = 'line up',
+    action = function()
+      if buffer.selection_empty then
+        buffer:line_end()
+        buffer:home_extend()
+      end
+      buffer:line_up_extend()
+    end,
+    persistent = true,
+  },
+
+  {
+    key = 'k',
+    help = 'line down',
+    action = function()
+      if buffer.selection_empty then
+        buffer:home()
+        buffer:line_end_extend()
+      end
+      buffer:line_down_extend()
+      if buffer.selection_start < buffer.current_pos then buffer:line_end_extend() end
+    end,
+    persistent = true,
+  },
+
+  {
+    key = 'pgup',
+    help = 'para up',
+    action = function()
+      if buffer.selection_empty then
+        buffer:line_end()
+        buffer:home_extend()
+      end
+      buffer:para_up_extend()
+    end,
+    persistent = true,
+  },
+  {
+    key = 'pgdn',
+    help = 'para down',
+    action = function()
+      if buffer.selection_empty then
+        buffer:home()
+        buffer:line_end_extend()
+      end
+      buffer:para_down_extend()
+    end,
+    persistent = true,
+  },
+
+  { key = 'h', help = 'buffer start', action = buffer.document_start_extend },
+  { key = 'g', help = 'buffer end', action = buffer.document_end_extend },
+
+  { key = 'a', help = 'to anchor', action = directional_selection_hydra },
+
+  {
+    key = 'r',
+    help = 'reset',
     action = function()
       buffer:set_empty_selection(buffer.current_pos)
     end,
