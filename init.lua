@@ -1304,11 +1304,9 @@ local git_hydra = hydra.create({
       git.blame()
     end,
   },
-  { key = 'f', help = 'toggle blame follow', action = git.toggle_blame_follow },
   { key = 'l', help = 'diff of current line', action = git.line_diff },
   { key = 'r', help = 'show file at revision', action = git.show_rev },
   { key = 'h', help = 'heat map', action = git.heatmap },
-  { key = 'c', help = 'clear markers', action = git.clear_markers },
 })
 
 local window_hydra = hydra.create({

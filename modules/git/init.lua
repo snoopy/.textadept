@@ -1,8 +1,8 @@
 local M = {}
 
-M.blame_follow = false
-
+local blame_active = false
 local blame_lines = {}
+local heatmap_active = false
 
 local heatmap_levels = {
   [1] = {
@@ -56,9 +56,9 @@ local function show_git_blame()
   local blame_value = blame_lines[current_line]
   if blame_value == nil then return end
 
-  buffer:annotation_clear_all()
-  buffer.annotation_text[current_line] = blame_value
-  buffer.annotation_style[current_line] = buffer:style_of_name(lexer.COMMENT)
+  buffer:eol_annotation_clear_all()
+  buffer.eol_annotation_text[current_line] = blame_value
+  buffer.eol_annotation_style[current_line] = buffer:style_of_name(lexer.COMMENT)
 end
 
 local function get_project_root()
@@ -96,14 +96,23 @@ function M.heatmap()
   if not rootpath then return end
   local filepath = buffer.filename
 
+  if heatmap_active then
+    for _, value in ipairs(heatmap_levels) do
+      buffer:marker_delete_all(value['marker'])
+    end
+    heatmap_active = false
+    return
+  end
+
+  heatmap_active = true
+
   local file = assert(io.popen('git -C ' .. rootpath .. ' blame -c ' .. filepath, 'r'))
-  local result = assert(file:read('*a'))
+  local lines = assert(file:read('*a'))
   file:close()
 
   local today = os.time()
-
   local current_line = 1
-  for line in result:gmatch('[^\r\n]+') do
+  for line in lines:gmatch('[^\r\n]+') do
     local date = {}
     date.year, date.month, date.day, date.hour, date.min, date.sec =
       line:match('(%d%d%d%d)-(%d%d)-(%d%d) (%d%d):(%d%d):(%d%d)')
@@ -114,28 +123,26 @@ function M.heatmap()
   end
 end
 
-function M.clear_markers()
-  for _, value in ipairs(heatmap_levels) do
-    buffer:marker_delete_all(value['marker'])
-    buffer:annotation_clear_all()
-  end
-end
-
-function M.toggle_blame_follow()
-  M.blame_follow = not M.blame_follow
-end
-
 function M.blame()
   local rootpath = get_project_root()
   if not rootpath then return end
   local filepath = buffer.filename
 
-  local file = assert(io.popen('git -C ' .. rootpath .. ' blame -c ' .. filepath, 'r'))
-  local result = assert(file:read('*a'))
-  file:close()
+  if blame_active then
+    blame_active = false
+    buffer:eol_annotation_clear_all()
+    return
+  end
+
+  blame_active = true
+
+  local proc = assert(io.popen('git -C ' .. rootpath .. ' blame -c ' .. filepath, 'r'))
+  local result = assert(proc:read('*a'))
+  proc:close()
 
   for line in result:gmatch('[^\r\n]+') do
-    table.insert(blame_lines, line)
+    local blame_info = line:match('%(%s*(.+)%s+%d+%)')
+    if blame_info ~= nil then table.insert(blame_lines, blame_info) end
   end
 
   show_git_blame()
@@ -161,7 +168,7 @@ function M.show_rev()
 end
 
 events.connect(events.UPDATE_UI, function(updated)
-  if not M.blame_follow then return end
+  if not blame_active then return end
   if not (updated & buffer.UPDATE_H_SCROLL) then return end
   if #blame_lines == 0 then return end
   show_git_blame()
