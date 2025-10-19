@@ -1055,6 +1055,7 @@ local jump_hydra = hydra.create({
   },
 
   { key = 'alt+s', help = 'select', action = selection_hydra },
+  { key = 'alt+e', help = 'edit', action = edit_hydra },
 })
 
 local encoding_hydra = hydra.create({
