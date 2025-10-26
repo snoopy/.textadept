@@ -452,14 +452,7 @@ local edit_hydra = hydra.create({
   { key = 'up', help = 'move up', action = buffer.move_selected_lines_up, persistent = true },
   { key = 'down', help = 'move down', action = buffer.move_selected_lines_down, persistent = true },
 
-  {
-    key = 'home',
-    help = 'del start',
-    action = function()
-      buffer:vc_home_extend()
-      buffer:delete_range(buffer.selection_start, buffer.selection_end - buffer.selection_start)
-    end,
-  },
+  { key = 'home', help = 'del start', action = buffer.del_line_left },
   { key = 'end', help = 'del end', action = buffer.del_line_right },
 
   {
