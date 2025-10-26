@@ -694,6 +694,8 @@ local target_select_hydra = hydra.create({
     end,
     persistent = true,
   },
+
+  { key = 'alt+e', help = 'edit', action = edit_hydra },
 })
 
 local selection_hydra = hydra.create({
@@ -768,6 +770,7 @@ local selection_hydra = hydra.create({
     action = function()
       textadept.editing.select_enclosed(' ', ' ')
     end,
+    persistent = true,
   },
   {
     key = 'x',
@@ -782,6 +785,7 @@ local selection_hydra = hydra.create({
       })
       if button == 1 then textadept.editing.select_enclosed(value, value) end
     end,
+    persistent = true,
   },
 
   {
@@ -790,6 +794,7 @@ local selection_hydra = hydra.create({
     action = function()
       util.select_matching()
     end,
+    persistent = true,
   },
   { key = 'p', help = 'paragraph', action = textadept.editing.select_paragraph },
 
