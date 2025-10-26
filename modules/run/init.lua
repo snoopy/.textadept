@@ -36,10 +36,12 @@ function M.run(mode)
   if not rootpath then return end
 
   local linter_commands = {}
-  linter_commands['cpp'] = 'clang-tidy -checks=*,-fuchsia*,-llvm* -p '
-    .. rootpath
-    .. '/build/compile_commands.json '
+  -- stylua: ignore start
+  linter_commands['cpp'] = 'clang-tidy -checks="*,-fuchsia*,-llvm*" -p '
+    .. rootpath .. '/build/compile_commands.json '
     .. buffer.filename
+    .. ' 2>&1'
+  -- stylua: ignore end
   linter_commands['python'] = 'pylint --max-line-length=120 ' .. buffer.filename
   linter_commands['lua'] = 'luacheck --no-color ' .. buffer.filename
   linter_commands['rust'] = 'cargo clippy --message-format short 2>&1'
