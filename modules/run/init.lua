@@ -16,7 +16,7 @@ local function run_and_mark(cmd, cwd)
   buffer:eol_annotation_clear_all()
 
   for line in stdout:gmatch('[^\r\n]+') do
-    local filepath, line_num, msg = line:match('^%s*(.+):(%d+):%d+:%s*(.+)$')
+    local filepath, line_num, msg = line:match('^%s*(.-):(%d+)(.+)$')
     if not filepath or not line_num or not msg then goto continue end
 
     io.open_file(lfs.abspath(filepath, cwd))
