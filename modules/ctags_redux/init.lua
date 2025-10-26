@@ -69,10 +69,7 @@ local function search_in_files(pattern, function_list)
 
   local tags = {}
   local project_root = io.get_project_root(buffer.filename, true)
-  if not project_root then
-    ui.statusbar_text = 'ctags: not a project'
-    return
-  end
+  if not project_root then return end
   local tags_path = project_root .. '/tags'
   if not lfs.attributes(tags_path) then M.init_ctags() end
   local tags_file = io.open(tags_path)
@@ -96,10 +93,7 @@ local function search_in_files(pattern, function_list)
 
   tags_file:close()
 
-  if #tags == 0 then
-    ui.statusbar_text = 'ctags: no results.'
-    return nil
-  end
+  if #tags == 0 then return nil end
 
   return tags
 end
@@ -166,10 +160,7 @@ textadept.editing.autocompleters.ctags = function()
 
   -- match anything including the (partial) tag
   local tags = search_in_files('^.*(' .. tag .. '%S*)\t([^\t]+)\t(.-);"\t?(.*)$', false)
-  if #tags == 0 then
-    ui.statusbar_text = 'ctags: No autocompletions found.'
-    return
-  end
+  if tags == nil or #tags == 0 then return end
 
   local exists = {}
   local completions = {}

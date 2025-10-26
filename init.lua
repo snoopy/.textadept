@@ -173,8 +173,9 @@ local fn_dispatch = {
 
 events.connect(events.CHAR_ADDED, function(_code)
   if buffer.current_pos - buffer:word_start_position(buffer.current_pos, true) < 3 then return end
+  if textadept.editing.autocomplete(buffer:get_lexer(true)) then return end
   if textadept.editing.autocomplete('word') then return end
-  textadept.editing.autocomplete(buffer:get_lexer(true))
+  if textadept.editing.autocomplete('ctags') then return end
 end)
 
 -- stylua: ignore start
