@@ -579,7 +579,7 @@ local select_functions = {
   end,
 }
 
-local directional_selection_hydra = hydra.create({
+local target_select_hydra = hydra.create({
   {
     key = '1',
     help = '{}',
@@ -863,7 +863,7 @@ local selection_hydra = hydra.create({
   { key = 'h', help = 'buffer start', action = buffer.document_start_extend },
   { key = 'g', help = 'buffer end', action = buffer.document_end_extend },
 
-  { key = 'a', help = 'to anchor', action = directional_selection_hydra },
+  { key = 'a', help = 'to target', action = target_select_hydra },
 
   {
     key = 'r',
@@ -1606,7 +1606,6 @@ local main_hydra = hydra.create({
   { key = 'j', help = 'jump to', action = jump_hydra },
   { key = 'e', help = 'edit', action = edit_hydra },
   { key = 's', help = 'select', action = selection_hydra },
-  { key = 'd', help = 'directional select', action = directional_selection_hydra },
   { key = 'i', help = 'insert', action = insert_hydra },
   { key = 'n', help = 'snippets', action = textadept.snippets.select },
   { key = 'w', help = 'window', action = window_hydra },
