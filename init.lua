@@ -1,4 +1,4 @@
-view:set_theme('everforest', { font = 'JetBrains Mono NL Light', size = 16 })
+view:set_theme('everforest', { font = 'JetBrains Mono NL ExtraLight', size = 16 })
 
 local run = require('run')
 local format = require('format')
@@ -78,7 +78,7 @@ buffer.multi_paste = buffer.MULTIPASTE_EACH
 
 lexer.detect_extensions.conf = 'ini'
 lexer.detect_extensions.csv = 'ini'
-lexer.detect_extensions.gitconfig = 'ini'
+lexer.detect_extensions.config = 'ini'
 lexer.detect_extensions.ep = 'html'
 
 textadept.editing.auto_pairs = nil
@@ -355,10 +355,6 @@ keys['alt+\n'] = function()
   buffer:new_line()
   buffer:line_up()
   buffer:end_undo_action()
-end
-
-keys['ctrl+ '] = function()
-  if buffer.char_at[buffer.current_pos] ~= 0xA then buffer:char_right() end
 end
 
 keys['alt+home'] = buffer.scroll_to_start
@@ -1627,6 +1623,7 @@ local main_hydra = hydra.create({
 -- F10::Capslock
 hydra.keys = hydra.create({
   { key = 'f10', help = 'Hydra', action = main_hydra },
+  { key = 'ctrl+ ', help = 'Hydra', action = main_hydra },
 })
 
 snippets.cpp.arr = 'std::array<${1:bool}, ${2:8}> $0'
@@ -1652,6 +1649,7 @@ snippets.cpp.slp = 'std::this_thread::sleep_for(std::chrono::${1:seconds}($0));'
 snippets.cpp.spdlog = 'spdlog::${1:debug}("${2:\\{\\}}", $0);'
 snippets.cpp.sptr = 'std::shared_ptr<$1>'
 snippets.cpp.str = 'std::string'
+snippets.cpp.svw = 'std::string_view'
 snippets.cpp.stt = 'struct $1\n{\n\t$0\n};'
 snippets.cpp.swt = 'switch ($1) {\ncase $2:\n\t$0\nbreak;\n\ndefault:\nbreak;\n}'
 snippets.cpp.tmpl = 'template <typename ${0:T}>'
