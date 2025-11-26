@@ -1305,24 +1305,23 @@ local git_hydra = hydra.create({
 })
 
 local window_hydra = hydra.create({
-  { key = 's', help = 'spawn buffer', action = buffer.new },
-  { key = 'w', help = 'close buffer', action = buffer.close },
+  { key = 'n', help = 'new buffer', action = buffer.new },
   {
-    key = '1',
-    help = 'split |',
-    action = function()
-      view:split(true)
-    end,
-  },
-  {
-    key = '2',
+    key = 's',
     help = 'split -',
     action = function()
       view:split()
     end,
   },
   {
-    key = '3',
+    key = 'v',
+    help = 'split |',
+    action = function()
+      view:split(true)
+    end,
+  },
+  {
+    key = 'w',
     help = 'unsplit',
     action = function()
       view:unsplit()
