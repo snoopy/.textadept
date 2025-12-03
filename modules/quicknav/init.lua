@@ -3,58 +3,44 @@ local M = {}
 local jumplist = {}
 local installdir = _USERHOME .. '/modules/quicknav/session'
 
-local function dump(o)
-  if type(o) == 'table' then
-    local s = '{ '
-    for k, v in pairs(o) do
-      if type(k) ~= 'number' then k = '"' .. k .. '"' end
-      s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
-    end
-    return s .. '} '
-  else
-    return tostring(o)
-  end
-end
-
 events.connect(events.INITIALIZED, function()
-  local f = io.open(installdir, 'r')
-  if not f then return end
+  local filehandle = io.open(installdir, 'r')
+  if not filehandle then return end
 
-  for line in f:lines() do
+  for line in filehandle:lines() do
     local parts = {}
-    for str in line:gmatch('([^,]+)') do
-      str = str:gsub('\n$', '')
-      parts[#parts + 1] = str
+    for part in line:gmatch('([^,]+)') do
+      parts[#parts + 1] = part:gsub('\n$', '')
     end
 
     local root = parts[1]
     local i = tonumber(parts[2])
-    local file = parts[3]
+    local filename = parts[3]
     local ln = tonumber(parts[4])
 
     if not jumplist[root] then jumplist[root] = {} end
 
     if not jumplist[root][i] then jumplist[root][i] = {} end
 
-    jumplist[root][i] = { file, ln }
+    jumplist[root][i] = { filename, ln }
   end
 
-  f:close()
+  filehandle:close()
 end)
 
 events.connect(events.QUIT, function()
   if next(jumplist) == nil then return end
 
-  local f = io.open(installdir, 'w')
-  if not f then return end
+  local filehandle = io.open(installdir, 'w')
+  if not filehandle then return end
 
   for project, slots in pairs(jumplist) do
-    for k, file in pairs(slots) do
-      f:write(project .. ',' .. k .. ',' .. file[1] .. ',' .. file[2] .. '\n')
+    for k, filename in pairs(slots) do
+      filehandle:write(project .. ',' .. k .. ',' .. filename[1] .. ',' .. filename[2] .. '\n')
     end
   end
 
-  f:close()
+  filehandle:close()
 end, 1)
 
 function M.set(i)
