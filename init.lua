@@ -1492,7 +1492,7 @@ local open_hydra = hydra.create({
         button2 = 'Cancel',
         return_button = true,
       })
-      if button == 1 then io.open_file(value) end
+      if button == 1 and #value > 0 then io.open_file(value) end
     end,
   },
 })
@@ -1620,6 +1620,7 @@ local main_hydra = hydra.create({
 -- windows:
 -- Capslock::F10
 -- F10::Capslock
+-- ctrl+shift+H to check keys
 hydra.keys = hydra.create({
   { key = 'f10', help = 'Hydra', action = main_hydra },
   { key = 'ctrl+ ', help = 'Hydra', action = main_hydra },
