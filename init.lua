@@ -384,14 +384,6 @@ keys['ins'] = function()
   end
 end
 
-keys.f6 = util.goto_last_buffer
-keys.f7 = function()
-  ui.goto_view(1)
-end
-keys['shift+f7'] = function()
-  ui.goto_view(-1)
-end
-
 keys['home'] = function()
   buffer.vc_home_wrap()
 end
@@ -1351,6 +1343,14 @@ local window_hydra = hydra.create({
       end
     end,
   },
+  {
+    key = '\t',
+    help = 'next view',
+    action = function()
+      ui.goto_view(1)
+    end,
+    persistent = true,
+  },
   { key = '+', help = 'zoom in', action = view.zoom_in, persistent = true },
   { key = '-', help = 'zoom out', action = view.zoom_out, persistent = true },
   {
@@ -1611,6 +1611,7 @@ local main_hydra = hydra.create({
   { key = 'm', help = 'bookmark', action = bookmark_hydra },
   { key = 'q', help = 'quick access', action = quicknav_hydra },
   { key = 'r', help = 'run', action = run_hydra },
+  { key = 'l', help = 'last buffer', action = util.goto_last_buffer },
 })
 
 -- map f10/triggerkey to capslock
