@@ -1,6 +1,6 @@
 local M = {}
 
-local last_buffer = nil
+local last_buffer = _BUFFERS[#_BUFFERS]
 
 function M.get_project_root()
   local rootpath = io.get_project_root(true)
@@ -68,35 +68,13 @@ function M.move_to(target, reverse)
 end
 
 -- lastbuffer
-
--- Save the buffer index before switching.
 events.connect(events.BUFFER_BEFORE_SWITCH, function()
-  for _, b in ipairs(_BUFFERS) do
-    if b == buffer then
-      last_buffer = b
-      break
-    end
-  end
+  last_buffer = view.buffer
 end)
 
 -- Switch to last buffer.
 function M.goto_last_buffer()
-  if last_buffer and _BUFFERS[last_buffer] then view:goto_buffer(last_buffer) end
-end
-
--- c++
-
-function M.toggle_header()
-  local filename, ext = buffer.filename:match('^(.+%.)(.+)$')
-  if not ext then return end
-  local extensions = ext:find('^h') and { 'cpp', 'cc', 'c', 'cxx' } or { 'h', 'hpp', 'hxx' }
-  for _, ex in pairs(extensions) do
-    local fn = filename .. ex
-    if lfs.attributes(fn) then
-      io.open_file(fn)
-      return
-    end
-  end
+  view:goto_buffer(last_buffer)
 end
 
 function M.add_braces(style, append, tab)

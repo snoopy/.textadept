@@ -1,5 +1,18 @@
 local M = {}
 
+function M.toggle_header()
+  local filename, ext = buffer.filename:match('^(.+%.)(.+)$')
+  if not ext then return end
+  local extensions = ext:find('^h') and { 'cpp', 'cc', 'c', 'cxx' } or { 'h', 'hpp', 'hxx' }
+  for _, ex in pairs(extensions) do
+    local fn = filename .. ex
+    if lfs.attributes(fn) then
+      io.open_file(fn)
+      return
+    end
+  end
+end
+
 textadept.editing.autocompleters.cpp = function()
   local symbols = {
     -- keywords

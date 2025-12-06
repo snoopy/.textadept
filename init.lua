@@ -16,6 +16,7 @@ local ctags_redux = require('ctags_redux')
 local spellcheck = require('spellcheck')
 spellcheck.spellcheckable_styles[lexer.FUNCTION] = true
 local favorites = require('favorites')
+local cpp = require('cpp')
 
 io.detect_indentation = false
 buffer.use_tabs = false
@@ -218,7 +219,7 @@ keys['shift+ctrl+\t'] = function()
   end
 end
 
-keys.f4 = util.toggle_header
+keys.f4 = cpp.toggle_header
 
 -- editing
 
@@ -1209,6 +1210,7 @@ local buffer_hydra = hydra.create({
     key = 'n',
     help = 'copy name',
     action = function()
+      if buffer.filename == nil then return end
       buffer:copy_text(buffer.filename)
       ui.statusbar_text = 'Copied buffer name to clipboard.'
     end,
