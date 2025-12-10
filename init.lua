@@ -51,7 +51,6 @@ view.edge_color = 0xcccccc
 view.indentation_guides = buffer.IV_LOOKBOTH
 view.whitespace_size = 3
 
-view.annotation_visible = view.ANNOTATION_STANDARD
 textadept.editing.strip_trailing_spaces = true
 io.ensure_final_newline = true
 view.end_at_last_line = false
@@ -1218,15 +1217,6 @@ local buffer_hydra = hydra.create({
   { key = 'f', help = 'formatting', action = formatting_hydra },
   { key = 'v', help = 'favorite', action = favorites.toggle },
   {
-    key = 'c',
-    help = 'clear marks/annotations',
-    action = function()
-      buffer:marker_delete_all(-1)
-      buffer:annotation_clear_all()
-      buffer:eol_annotation_clear_all()
-    end,
-  },
-  {
     key = 'k',
     help = 'close all',
     action = function()
@@ -1586,6 +1576,15 @@ local run_hydra = hydra.create({
       run.next_issue(false)
     end,
     persistent = true,
+  },
+  {
+    key = 'k',
+    help = 'clear marks/annotations',
+    action = function()
+      buffer:marker_delete_all(textadept.run.MARK_ERROR)
+      buffer:marker_delete_all(textadept.run.MARK_WARNING)
+      buffer:annotation_clear_all()
+    end,
   },
 })
 
