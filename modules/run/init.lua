@@ -11,29 +11,51 @@ end
 
 local function run_and_mark(cmd, cwd)
   local stdout = os.spawn(cmd, cwd):read('a')
-  local issues = 0
+  if not stdout then
+    ui.statusbar_text = 'ERROR - failed to run: ' .. cmd
+    return
+  end
+
   buffer:marker_delete_all(textadept.run.MARK_WARNING)
-  buffer:eol_annotation_clear_all()
+  buffer:annotation_clear_all()
+
+  local issues = 0
+  local messages = {}
 
   for line in stdout:gmatch('[^\r\n]+') do
     local filepath, line_num, msg = line:match('^%s*(.-):(%d+)(.+)$')
     if not filepath or not line_num or not msg then goto continue end
 
-    io.open_file(lfs.abspath(filepath, cwd))
-    buffer:goto_line(line_num)
+    local filepath_abs = lfs.abspath(filepath, cwd)
+    if not messages[filepath_abs] then messages[filepath_abs] = {} end
+    if not messages[filepath_abs][line_num] then messages[filepath_abs][line_num] = {} end
+    table.insert(messages[filepath_abs][line_num], msg)
+
     issues = issues + 1
-    buffer.eol_annotation_text[line_num] = msg
-    buffer.eol_annotation_style[line_num] = buffer:style_of_name(lexer.EMBEDDED)
-    buffer:marker_add(line_num, textadept.run.MARK_WARNING)
 
     ::continue::
   end
+
+  for filepath, line_table in pairs(messages) do
+    for line_num, msg_table in pairs(line_table) do
+      local all_messages = ''
+      for _, msg in pairs(msg_table) do
+        all_messages = all_messages .. msg .. '\n'
+      end
+      io.open_file(filepath)
+      buffer:goto_line(line_num)
+      buffer.annotation_text[line_num] = all_messages:gsub('\n$', '')
+      buffer.annotation_style[line_num] = buffer:style_of_name(lexer.COMMENT)
+      buffer:marker_add(line_num, textadept.run.MARK_WARNING)
+    end
+  end
+
   ui.statusbar_text = issues .. ' issues found'
 end
 
 function M.run(mode)
   local rootpath = get_project_root()
-  if not rootpath then return end
+  if not rootpath then rootpath = buffer.filename:match('^(.+)[/\\][^/\\]+$') end
 
   local linter_commands = {}
   -- stylua: ignore start
@@ -42,7 +64,9 @@ function M.run(mode)
     .. buffer.filename
     .. ' 2>&1'
   -- stylua: ignore end
-  linter_commands['python'] = 'pylint --max-line-length=120 ' .. buffer.filename
+  linter_commands['python'] = 'ruff check --select ALL --ignore D200,D205,D209,D212,D213,D400,D415 --output-format pylint '
+    .. buffer.filename
+    .. (_G.WIN32 and ' 2>&1' or '')
   linter_commands['lua'] = 'luacheck --no-color ' .. buffer.filename
   linter_commands['rust'] = 'cargo clippy --message-format short 2>&1'
 

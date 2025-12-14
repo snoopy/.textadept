@@ -2,8 +2,9 @@ local M = {}
 
 local formatters = {
   ['cpp'] = 'clang-format -i -style=file -fallback-style=none',
-  ['python'] = 'black -l 120',
+  ['python'] = 'ruff format --line-length 120',
   ['lua'] = 'stylua'
+    .. ' --syntax lua54'
     .. ' --indent-width 2'
     .. ' --indent-type Spaces'
     .. ' --quote-style AutoPreferSingle'
@@ -28,9 +29,16 @@ function M.run(filename)
   local lang = buffer:get_lexer(true)
   if not filename or not lang then return end
   if not formatters[lang] then return end
-  local proc = os.spawn(formatters[lang] .. ' "' .. filename .. '"')
-  if not proc then return end
-  proc:wait()
+  local proc = os.spawn(formatters[lang] .. ' "' .. filename .. '" 2>&1'):read('a')
+  if not proc then
+    ui.statusbar_text = 'ERROR - failed to run: ' .. formatters[lang]
+    return
+  end
+  if proc:match('error') then
+    ui.print(proc)
+    return
+  end
+
   buffer:reload()
 end
 
