@@ -1336,10 +1336,18 @@ local window_hydra = hydra.create({
     end,
   },
   {
-    key = '\t',
+    key = 'd',
     help = 'next view',
     action = function()
       ui.goto_view(1)
+    end,
+    persistent = true,
+  },
+  {
+    key = 'a',
+    help = 'prev view',
+    action = function()
+      ui.goto_view(-1)
     end,
     persistent = true,
   },
