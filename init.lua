@@ -475,20 +475,15 @@ local edit_hydra = hydra.create({
     key = 's',
     help = 'sort',
     action = function()
-      local lines = {}
-      local line_nr = buffer:line_from_position(buffer.selection_start)
-      local last_line = buffer:line_from_position(buffer.selection_end)
-      while line_nr <= last_line do
-        local line = buffer:get_line(line_nr)
-        line = line:match('^%s*(.-)%s*$')
-        table.insert(lines, line)
-        line_nr = line_nr + 1
-      end
-      table.sort(lines)
-      buffer:begin_undo_action()
-      buffer:delete_back()
-      buffer:add_text(table.concat(lines, '\n'))
-      buffer:end_undo_action()
+      textadept.editing.filter_through('sort')
+    end,
+  },
+
+  {
+    key = 'q',
+    help = 'unique',
+    action = function()
+      textadept.editing.filter_through('sort|uniq')
     end,
   },
 
