@@ -1,55 +1,52 @@
 local M = {}
 
+local color = require('color')
+
 local blame_active = false
 local blame_lines = {}
-local heatmap_active = false
+local heatmap_active = {}
 
-local heatmap_levels = {
-  [1] = {
-    -- 24h == 86400s
-    ['age'] = 86400,
-    ['color'] = 0x3951c3,
-  },
-  [2] = {
-    -- 1 week
-    ['age'] = 86400 * 7,
-    ['color'] = 0x168fe7,
-  },
-  [3] = {
-    -- 1 month
-    ['age'] = 86400 * 30,
-    ['color'] = 0x01d8f7,
-  },
-  [4] = {
-    -- 6 months
-    ['age'] = 86400 * 30 * 6,
-    ['color'] = 0x00ee7c,
-  },
-  [5] = {
-    -- 1 year
-    ['age'] = 86400 * 30 * 12,
-    ['color'] = 0x3fc505,
-  },
-  [6] = {
-    -- 3 years
-    ['age'] = 86400 * 30 * 12 * 3,
-    ['color'] = 0x959118,
-  },
-  [7] = {
-    -- 5 years
-    ['age'] = 86400 * 30 * 12 * 5,
-    ['color'] = 0x7b2803,
-  },
+local SECONDS_PER_DAY = 86400
+local SECONDS_PER_WEEK = SECONDS_PER_DAY * 7
+local SECONDS_PER_MONTH = SECONDS_PER_WEEK * 30
+local HEATMAP_TIMESTEPS = {
+  SECONDS_PER_DAY,
+  SECONDS_PER_WEEK,
+  SECONDS_PER_MONTH,
+  SECONDS_PER_MONTH * 2,
+  SECONDS_PER_MONTH * 3,
+  SECONDS_PER_MONTH * 5,
+  SECONDS_PER_MONTH * 8,
+  SECONDS_PER_MONTH * 13,
+  SECONDS_PER_MONTH * 21,
+  SECONDS_PER_MONTH * 34,
 }
 
-local function create_heatmap_markers()
-  for i = 1, #heatmap_levels do
-    heatmap_levels[i]['marker'] = view.new_marker_number()
-    view.marker_define(heatmap_levels[i]['marker'], view.MARK_FULLRECT)
-    view.marker_back[heatmap_levels[i]['marker']] = heatmap_levels[i]['color']
+local HEATMAP_COLORS = {
+  color.rgb2bgr('fde725'),
+  color.rgb2bgr('99d83d'),
+  color.rgb2bgr('4fc269'),
+  color.rgb2bgr('2bac80'),
+  color.rgb2bgr('22948b'),
+  color.rgb2bgr('297a8e'),
+  color.rgb2bgr('34618d'),
+  color.rgb2bgr('3f4486'),
+  color.rgb2bgr('482575'),
+  color.rgb2bgr('440154'),
+}
+
+local HEATMAP_LEVELS = {}
+local function make_heatmap()
+  for i = 1, #HEATMAP_TIMESTEPS do
+    HEATMAP_LEVELS[i] = {}
+    HEATMAP_LEVELS[i]['time'] = HEATMAP_TIMESTEPS[i]
+    HEATMAP_LEVELS[i]['color'] = HEATMAP_COLORS[i]
+    HEATMAP_LEVELS[i]['marker'] = view.new_marker_number()
+    view.marker_define(HEATMAP_LEVELS[i]['marker'], view.MARK_FULLRECT)
+    view.marker_back[HEATMAP_LEVELS[i]['marker']] = HEATMAP_LEVELS[i]['color']
   end
 end
-create_heatmap_markers()
+make_heatmap()
 
 local function show_git_blame()
   local current_line = buffer:line_from_position(buffer.current_pos)
@@ -85,10 +82,10 @@ function M.line_diff()
 end
 
 local function get_heatmap_value(time_diff)
-  for i = 1, #heatmap_levels do
-    if time_diff < heatmap_levels[i]['age'] then return heatmap_levels[i]['marker'] end
+  for i = 1, #HEATMAP_LEVELS do
+    if time_diff < HEATMAP_LEVELS[i]['time'] then return HEATMAP_LEVELS[i]['marker'] end
   end
-  return heatmap_levels[#heatmap_levels]['marker']
+  return HEATMAP_LEVELS[#HEATMAP_LEVELS]['marker']
 end
 
 function M.heatmap()
@@ -96,31 +93,42 @@ function M.heatmap()
   if not rootpath then return end
   local filepath = buffer.filename
 
-  if heatmap_active then
-    for _, value in ipairs(heatmap_levels) do
+  if heatmap_active[filepath] then
+    for _, value in ipairs(HEATMAP_LEVELS) do
       buffer:marker_delete_all(value['marker'])
     end
-    heatmap_active = false
+    heatmap_active[filepath] = false
     return
   end
-
-  heatmap_active = true
 
   local file = assert(io.popen('git -C ' .. rootpath .. ' blame -c ' .. filepath, 'r'))
   local lines = assert(file:read('*a'))
   file:close()
 
   local today = os.time()
-  local current_line = 1
+  local current_line = 0
   for line in lines:gmatch('[^\r\n]+') do
-    local date = {}
-    date.year, date.month, date.day, date.hour, date.min, date.sec =
-      line:match('(%d%d%d%d)-(%d%d)-(%d%d) (%d%d):(%d%d):(%d%d)')
-    local timestamp = os.time(date)
-    local time_diff = math.abs(os.difftime(today, timestamp))
-    buffer:marker_add(current_line, get_heatmap_value(time_diff))
     current_line = current_line + 1
+    local commit, year, month, day, hour, min, sec =
+      line:match('^(........).+(%d%d%d%d)%-(%d%d)%-(%d%d) (%d%d):(%d%d):(%d%d)')
+    if not commit or not year or not month or not day or not hour or not min or not sec then
+      ui.print('heatmap: failed to parse line: ' .. line)
+      return
+    end
+    if commit == '00000000' then goto continue end
+    local timestamp = os.time({
+      year = year,
+      month = month,
+      day = day,
+      hour = hour,
+      min = minute,
+      sec = second,
+    })
+    local time_diff = os.difftime(today, timestamp)
+    buffer:marker_add(current_line, get_heatmap_value(time_diff))
+    ::continue::
   end
+  heatmap_active[filepath] = true
 end
 
 function M.blame()
