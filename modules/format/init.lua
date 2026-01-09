@@ -27,18 +27,17 @@ end
 
 function M.run(filename)
   local lang = buffer:get_lexer(true)
-  if not filename or not lang then return end
-  if not formatters[lang] then return end
-  local proc = os.spawn(formatters[lang] .. ' "' .. filename .. '" 2>&1'):read('a')
+  if not filename or not lang or not formatters[lang] then return end
+  local proc = os.spawn(formatters[lang] .. ' "' .. filename .. '" 2>&1')
   if not proc then
-    ui.statusbar_text = 'ERROR - failed to run: ' .. formatters[lang]
+    ui.statusbar_text = 'ERROR - failed running formatter for: ' .. lang
     return
   end
-  if proc:match('error') then
-    ui.print(proc)
+  local stdout = proc:read('a')
+  if stdout:match('error') then
+    ui.print(stdout)
     return
   end
-
   buffer:reload()
 end
 

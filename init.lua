@@ -1,4 +1,4 @@
-view:set_theme('everforest', { font = 'JetBrains Mono NL ExtraLight', size = 16 })
+view:set_theme('everforest', { font = 'JetBrains Mono NL ExtraLight', size = 17 })
 
 local run = require('run')
 local format = require('format')
@@ -219,6 +219,7 @@ keys['shift+ctrl+\t'] = function()
 end
 
 keys.f4 = cpp.toggle_header
+keys.f6 = util.goto_last_buffer
 
 -- editing
 
@@ -1615,7 +1616,6 @@ local main_hydra = hydra.create({
   { key = 'm', help = 'bookmark', action = bookmark_hydra },
   { key = 'q', help = 'quick access', action = quicknav_hydra },
   { key = 'r', help = 'run', action = run_hydra },
-  { key = 'l', help = 'last buffer', action = util.goto_last_buffer },
 })
 
 -- map f10/triggerkey to capslock

@@ -10,11 +10,12 @@ local function get_project_root()
 end
 
 local function run_and_mark(cmd, cwd)
-  local stdout = os.spawn(cmd, cwd):read('a')
-  if not stdout then
+  local proc = os.spawn(cmd, cwd)
+  if not proc then
     ui.statusbar_text = 'ERROR - failed to run: ' .. cmd
     return
   end
+  local stdout = proc:read('a')
 
   buffer:marker_delete_all(textadept.run.MARK_WARNING)
   buffer:annotation_clear_all()
@@ -64,7 +65,7 @@ function M.run(mode)
     .. buffer.filename
     .. ' 2>&1'
   -- stylua: ignore end
-  linter_commands['python'] = 'ruff check --select ALL --ignore D200,D205,D209,D212,D213,D400,D415 --output-format pylint '
+  linter_commands['python'] = 'ruff check --line-length 120 --select ALL --ignore D200,D205,D209,D212,D213,D400,D415 --output-format pylint I --fix '
     .. buffer.filename
     .. (_G.WIN32 and ' 2>&1' or '')
   linter_commands['lua'] = 'luacheck --no-color ' .. buffer.filename
@@ -92,6 +93,7 @@ function M.next_issue(next)
   local get_line = next and buffer.marker_next or buffer.marker_previous
   local line = get_line(pos + (next and 1 or -1), 1 << textadept.run.MARK_WARNING - 1)
   buffer:goto_line(line)
+  view:vertical_center_caret()
 end
 
 return M
