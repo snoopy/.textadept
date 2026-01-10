@@ -7,16 +7,18 @@ local hydra = require('hydra')
 local quicknav = require('quicknav')
 local util = require('util')
 local origin = require('origin')
+local favorites = require('favorites')
+local cpp = require('cpp')
+local ctags = require('ctags')
+
+local spellcheck = require('spellcheck')
+spellcheck.spellcheckable_styles[lexer.FUNCTION] = true
+
 local textredux = require('textredux')
 local reduxstyle = textredux.core.style
 reduxstyle.list_match_highlight.fore = 'f57d26'
 reduxstyle.fs_directory.fore = '3a94c5'
 textredux.hijack()
-local ctags_redux = require('ctags_redux')
-local spellcheck = require('spellcheck')
-spellcheck.spellcheckable_styles[lexer.FUNCTION] = true
-local favorites = require('favorites')
-local cpp = require('cpp')
 
 io.detect_indentation = false
 buffer.use_tabs = false
@@ -148,11 +150,11 @@ local fn_dispatch = {
   -- ['recent'] = textredux.core.filteredlist.wrap(io.open_recent_file),
   ['lexer'] = textredux.core.filteredlist.wrap(m('Buffer/Select Lexer...')),
   ['bookmarks'] = textredux.core.filteredlist.wrap(textadept.bookmarks.goto_mark),
-  ['ctags_init'] = ctags_redux.init_ctags,
-  ['ctags_local'] = ctags_redux.find_local,
-  ['ctags_global'] = ctags_redux.find_global,
-  ['ctags_back'] = ctags_redux.go_back,
-  ['ctags_functions'] = ctags_redux.function_list,
+  ['ctags_global'] = textredux.core.filteredlist.wrap(ctags.goto_tag),
+  ['ctags_fileonly'] = textredux.core.filteredlist.wrap(ctags.fileonly),
+  ['ctags_symbol'] = textredux.core.filteredlist.wrap(
+    textadept.menu.menubar[_L['Search']][_L['Ctags']][_L['Go To Ctag...']][2]
+  ),
   ['switchbuffer_project'] = textredux.core.filteredlist.wrap(util.show_project_buffers),
   ['favorites'] = textredux.core.filteredlist.wrap(favorites.show),
 
@@ -162,11 +164,8 @@ local fn_dispatch = {
   ['recent'] = io.open_recent_file,
   -- ['lexer'] = m('Buffer/Select Lexer...'),
   -- ['bookmarks'] = textadept.bookmarks.goto_mark,
-  -- ['ctags_init'] = function()end,
-  -- ['ctags_local'] = function()end,
-  -- ['ctags_global'] = function()end,
-  -- ['ctags_back'] = function()end,
-  -- ['ctags_functions'] = function()end,
+  -- ['ctags_global'] = ctags.goto_tag
+  -- ['ctags_fileonly'] = ctags.fileonly
   -- ['switchbuffer_project'] = util.show_project_buffers,
   -- ['favorites'] = favorites.show,
 }
@@ -175,7 +174,7 @@ events.connect(events.CHAR_ADDED, function(_code)
   if buffer.current_pos - buffer:word_start_position(buffer.current_pos, true) < 3 then return end
   if textadept.editing.autocomplete(buffer:get_lexer(true)) then return end
   if textadept.editing.autocomplete('word') then return end
-  if textadept.editing.autocomplete('ctags') then return end
+  if textadept.editing.autocomplete('ctag') then return end
 end)
 
 -- stylua: ignore start
@@ -1594,10 +1593,13 @@ local run_hydra = hydra.create({
 
 local ctags_hydra = hydra.create({
   { key = 'c', help = 'ctags: find current', action = fn_dispatch['ctags_global'] },
-  { key = 's', help = 'ctags: find symbol', action = ctags_redux.find_symbol },
-  { key = 'o', help = 'ctags: back', action = fn_dispatch['ctags_back'], persistent = true },
-  { key = 'f', help = 'ctags: functions', action = fn_dispatch['ctags_functions'] },
-  { key = 'i', help = 'ctags: init', action = fn_dispatch['ctags_init'] },
+  { key = 's', help = 'ctags: find symbol', action = fn_dispatch['ctags_symbol'] },
+  { key = 'f', help = 'ctags: file only', action = fn_dispatch['ctags_fileonly'] },
+  {
+    key = 'i',
+    help = 'ctags: init',
+    action = textadept.menu.menubar[_L['Search']][_L['Ctags']][_L['Generate Project Tags']][2],
+  },
 })
 
 local main_hydra = hydra.create({

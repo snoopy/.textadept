@@ -7,7 +7,7 @@
 * modules
     * color - helper module for converting rgb to bgr
     * cpp - adds keyword autocompletion
-    * ctags_redux - ctags functionality for Textredux
+    * ctags - modified ctags module based on the [official](https://github.com/orbitalquark/textadept-ctags) one
     * favorites - keep a list of favorite files independent of your session
     * format - custom module for source code formatters
     * git - provides various git functionality
