@@ -121,7 +121,8 @@ events.connect(events.FILE_CHANGED, function()
   return true
 end, 1)
 
-io.quick_open_filters = { '!**/*.{pyc,ttf}', '!build/*', '!extern%a*/*', '!assets/*', '!target/*', '!bin/*' }
+io.quick_open_filters =
+  { '!**/*.{pyc,ttf}', '!build/*', '!extern%a*/*', '!assets/*', '!target/*', '!bin/*', '!.cache/*' }
 
 local function m(labels)
   local menu = textadept.menu.menubar
