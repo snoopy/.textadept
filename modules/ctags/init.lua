@@ -228,6 +228,8 @@ function M.goto_tag(tag, file_only)
     local e = buffer:word_end_position(buffer.current_pos, true)
     tag = buffer:text_range(s, e)
   end
+  if not tag or tag:match('^%s*$') then return end
+
   -- Search for potential tags to go to.
 
   local fileonly_pattern = '^([^\t]+)\t(%S+[/\\]' .. buffer.filename:match('[^/\\]+$') .. ')\t(.-);"\t?(.*)$'
