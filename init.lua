@@ -44,8 +44,8 @@ ui.command_entry.caret_line_frame = 1
 view.caret_period = 0
 view.caret_style = view.CARETSTYLE_BLOCK
 view.caret_line_frame = 1
--- keep caret 8 lines away from top/bottom
-view:set_y_caret_policy(view.CARET_SLOP | view.CARET_STRICT | view.CARET_EVEN, 8)
+-- keep caret 3 lines away from top/bottom
+view:set_y_caret_policy(view.CARET_SLOP | view.CARET_STRICT | view.CARET_EVEN, 3)
 
 view.edge_column = 100
 view.edge_color = 0xcccccc
@@ -369,11 +369,11 @@ keys['ctrl+pgdn'] = function()
 end
 
 keys['pgup'] = function()
-  buffer:goto_line(view:doc_line_from_visible(view.first_visible_line))
+  view:stuttered_page_up()
   view:vertical_center_caret()
 end
 keys['pgdn'] = function()
-  buffer:goto_line(view:doc_line_from_visible(view.first_visible_line) + view.lines_on_screen - 1)
+  view:stuttered_page_down()
   view:vertical_center_caret()
 end
 
