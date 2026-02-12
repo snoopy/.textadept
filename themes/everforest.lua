@@ -109,8 +109,9 @@ styles[view.STYLE_DEFAULT] = {
 styles[view.STYLE_LINENUMBER] = { fore = bg4, back = bg0 }
 styles[view.STYLE_BRACELIGHT] = { fore = fgdef, back = bg3 }
 styles[view.STYLE_BRACEBAD] = { fore = colors.red }
-styles[view.STYLE_INDENTGUIDE] = { fore = grey2 }
+styles[view.STYLE_INDENTGUIDE] = { fore = colors.dark_grey }
 styles[view.STYLE_CALLTIP] = { fore = colors.light_grey, back = colors.light_black }
+styles[view.STYLE_FOLDDISPLAYTEXT] = { fore = colors.dark_grey, back = bg0 }
 
 -- Tag styles.
 styles[lexer.ANNOTATION] = { fore = colors.purple }
@@ -190,6 +191,10 @@ view.element_color[view.ELEMENT_SELECTION_SECONDARY_TEXT] = grey1
 
 view.element_color[view.ELEMENT_WHITE_SPACE] = bg4
 
+-- Fold Margin.
+view:set_fold_margin_color(true, bg0)
+view:set_fold_margin_hi_color(true, bg0)
+
 -- Markers.
 -- view.marker_fore[textadept.bookmarks.MARK_BOOKMARK] = colors.black
 view.marker_back[textadept.bookmarks.MARK_BOOKMARK] = colors.blue
@@ -198,7 +203,7 @@ view.marker_back[textadept.run.MARK_WARNING] = colors.yellow
 -- view.marker_fore[textadept.run.MARK_ERROR] = colors.black
 view.marker_back[textadept.run.MARK_ERROR] = colors.red
 for i = view.MARKNUM_FOLDEREND, view.MARKNUM_FOLDEROPEN do -- fold margin
-  view.marker_fore[i] = colors.black
+  view.marker_fore[i] = bg0
   view.marker_back[i] = colors.dark_grey
   view.marker_back_selected[i] = colors.light_grey
 end

@@ -34,9 +34,6 @@ end)
 ui.tabs = false
 view.h_scroll_bar = false
 view.v_scroll_bar = false
--- disable folding and fold margin
-view.property['fold'] = 0
-view.margin_width_n[3] = 0
 
 ui.command_entry.caret_period = 0
 ui.command_entry.caret_style = view.CARETSTYLE_BLOCK
@@ -1603,6 +1600,104 @@ local ctags_hydra = hydra.create({
   },
 })
 
+local toggle_folding_hydra = hydra.create({
+  {
+    key = 't',
+    help = 'toggle line',
+    action = function()
+      view:fold_line(buffer:line_from_position(buffer.current_pos), view.FOLDACTION_TOGGLE)
+    end,
+  },
+
+  {
+    key = 'left',
+    help = 'collapse',
+    action = function()
+      view:fold_line(buffer:line_from_position(buffer.current_pos), view.FOLDACTION_CONTRACT)
+    end,
+    persistent = true,
+  },
+  {
+    key = 'right',
+    help = 'expand',
+    action = function()
+      view:fold_line(buffer:line_from_position(buffer.current_pos), view.FOLDACTION_EXPAND)
+    end,
+    persistent = true,
+  },
+
+  {
+    key = 'ctrl+left',
+    help = 'collapse recursive',
+    action = function()
+      view:fold_children(buffer:line_from_position(buffer.current_pos), view.FOLDACTION_CONTRACT)
+    end,
+    persistent = true,
+  },
+  {
+    key = 'ctrl+right',
+    help = 'expand recursive',
+    action = function()
+      view:fold_children(buffer:line_from_position(buffer.current_pos), view.FOLDACTION_EXPAND)
+    end,
+    persistent = true,
+  },
+
+  {
+    key = 'shift+left',
+    help = 'collapse all',
+    action = function()
+      view:fold_all(view.FOLDACTION_CONTRACT)
+    end,
+    persistent = true,
+  },
+  {
+    key = 'shift+right',
+    help = 'expand all',
+    action = function()
+      view:fold_all(view.FOLDACTION_EXPAND)
+    end,
+    persistent = true,
+  },
+
+  {
+    key = 'up',
+    help = 'prev node',
+    action = function()
+      util.goto_fold_point(false)
+    end,
+    persistent = true,
+  },
+  {
+    key = 'down',
+    help = 'next node',
+    action = function()
+      util.goto_fold_point(true)
+    end,
+    persistent = true,
+  },
+
+  {
+    key = 'ctrl+up',
+    help = 'prev contracted node',
+    action = function()
+      local pos = view:contracted_fold_next(buffer:line_from_position(buffer.current_pos))
+      if pos > 0 then buffer:goto_line(pos) end
+    end,
+    persistent = true,
+  },
+  {
+    key = 'ctrl+down',
+    help = 'next contracted node',
+    action = function()
+      -- local pos = view:contracted_fold_next(buffer:line_from_position(buffer.current_pos) + 1)
+      -- if pos > 0 then buffer:goto_line(pos) end
+      util.goto_fold_point(true)
+    end,
+    persistent = true,
+  },
+})
+
 local main_hydra = hydra.create({
   { key = 'o', help = 'open', action = open_hydra },
   { key = 'j', help = 'jump to', action = jump_hydra },
@@ -1614,6 +1709,7 @@ local main_hydra = hydra.create({
   { key = 'c', help = 'ctags', action = ctags_hydra },
   { key = 'p', help = 'project', action = project_hydra },
   { key = 'g', help = 'git', action = git_hydra },
+  { key = 't', help = 'toggle lines', action = toggle_folding_hydra },
   { key = 'b', help = 'buffer', action = buffer_hydra },
   { key = 'f', help = 'find', action = find_hydra },
   { key = 'm', help = 'bookmark', action = bookmark_hydra },

@@ -274,4 +274,25 @@ function M.show_project_buffers()
   io.open_file(buffers[index * 2])
 end
 
+function M.goto_fold_point(next)
+  local first = buffer:line_from_position(buffer.current_pos)
+  first = next and first + 1 or first - 1
+  local last = next and buffer.line_count or 1
+  local step = next and 1 or -1
+
+  local pos = 0
+
+  for i = first, last, step do
+    if (buffer.fold_level[i] & buffer.FOLDLEVELHEADERFLAG) > 0 and view.line_visible[i] then
+      pos = i
+      break
+    end
+  end
+
+  if pos > 0 then
+    buffer.goto_line(pos)
+    view:vertical_center_caret()
+  end
+end
+
 return M
