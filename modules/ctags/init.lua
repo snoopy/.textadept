@@ -91,6 +91,7 @@ M.ctags_flags = table.concat({
   '--exclude="*.gcno"',
   '--exclude="*.gcda"',
   '--exclude="third_party/*"',
+  '--exclude=".*"',
 }, ' ')
 
 M.api_commands = {} -- legacy
@@ -110,7 +111,6 @@ M.LUA_FLAGS = table.concat({
 M.CPP_FLAGS = table.concat({
   '--languages=C++',
   '--langmap=C++:+.h',
-  '--language-force=C++',
   '--fields=+{line}{end}{kind}{scope}{signature}',
   '--extras=+q',
   '--tag-relative=yes',
@@ -119,12 +119,12 @@ M.CPP_FLAGS = table.concat({
 }, ' ')
 
 M.PYTHON_FLAGS = table.concat({
-  '--language-force=Python',
+  '--languages=Python',
+  '--langmap=Python:+.py',
   '--extras=+r',
-  '--fields=+rK',
+  '--fields=+riK',
   '--fields-Python=+{nameref}',
-  '--extras=+{anonymous}',
-  '--kinds-Python=+cfm',
+  '--kinds-Python=+cfmp',
   '--output-format=u-ctags',
 }, ' ')
 
