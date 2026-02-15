@@ -222,18 +222,20 @@ end
 -- Prompts the user when multiple sources are found.
 -- @param tag The tag to go to the source of.
 -- @return whether or not a tag was found and jumped to.
-function M.goto_tag(tag, file_only)
+function M.goto_tag(tag, file_only, from_dialog)
   if not tag then
     local s = buffer:word_start_position(buffer.current_pos, true)
     local e = buffer:word_end_position(buffer.current_pos, true)
     tag = buffer:text_range(s, e)
   end
-  if not tag or tag:match('^%s*$') then return end
+  if not tag or tag:match('^%s*$') and not file_only then return end
 
   -- Search for potential tags to go to.
 
   local fileonly_pattern = '^([^\t]+)\t(%S+[/\\]' .. buffer.filename:match('[^/\\]+$') .. ')\t(.-);"\t?(.*)$'
-  local pattern = file_only and fileonly_pattern or '^([^\t]*' .. tag .. '[^\t]*)\t([^\t]+)\t(.-);"\t?(.*)$'
+  local def_pattern = file_only and fileonly_pattern or '^(' .. tag .. ')\t([^\t]+)\t(.-);"\t?(.*)$'
+  -- use a more lenient pattern when searching via input dialog
+  local pattern = from_dialog and '^([^\t]*' .. tag .. '[^\t]*)\t([^\t]+)\t(.-);"\t?(.*)$' or def_pattern
   local tags = find_tags(pattern)
 
   if #tags == 0 then return false end
@@ -279,7 +281,7 @@ function M.goto_tag(tag, file_only)
 end
 
 function M.fileonly()
-  M.goto_tag(nil, true)
+  M.goto_tag(nil, true, false)
 end
 
 ---
@@ -308,7 +310,7 @@ m_search[#m_search + 1] = {
     _L['Go To Ctag...'],
     function()
       local name = ui.dialogs.input({ title = _L['Go To Tag'] })
-      if name and name ~= '' then M.goto_tag(name, false) end
+      if name and name ~= '' then M.goto_tag(name, false, true) end
     end,
   },
   SEPARATOR, --
