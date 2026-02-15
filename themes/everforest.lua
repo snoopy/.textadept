@@ -118,19 +118,19 @@ styles[lexer.ANNOTATION] = { fore = colors.purple }
 styles[lexer.ATTRIBUTE] = { fore = colors.yellow }
 styles[lexer.BOLD] = { bold = true }
 styles[lexer.CLASS] = { fore = colors.yellow }
-styles[lexer.CODE] = { fore = bg2, eol_filled = true }
+styles[lexer.CODE] = { fore = grey2, eol_filled = true }
 styles[lexer.COMMENT] = { fore = bg5 }
 styles[lexer.CONSTANT] = { fore = colors.orange }
 styles[lexer.EMBEDDED] = { fore = colors.yellow }
 styles[lexer.ERROR] = { fore = colors.red }
 styles[lexer.FUNCTION] = { fore = colors.blue }
 -- styles[lexer.FUNCTION_BUILTIN] = {fore = colors.blue}
-styles[lexer.HEADING] = { fore = colors.purple }
+styles[lexer.HEADING] = { fore = colors.blue }
 styles[lexer.ITALIC] = { italic = true }
 styles[lexer.KEYWORD] = { fore = colors.red }
 styles[lexer.LABEL] = { fore = colors.yellow }
 styles[lexer.LINK] = { underline = true }
-styles[lexer.LIST] = { fore = bg2 }
+styles[lexer.LIST] = { fore = bgblue }
 styles[lexer.NUMBER] = { fore = colors.purple }
 styles[lexer.OPERATOR] = { fore = grey2 }
 styles[lexer.PREPROCESSOR] = { fore = colors.yellow }
