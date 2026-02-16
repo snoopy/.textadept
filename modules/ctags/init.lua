@@ -232,7 +232,9 @@ function M.goto_tag(tag, file_only, from_dialog)
 
   -- Search for potential tags to go to.
 
-  local fileonly_pattern = '^([^\t]+)\t(%S+[/\\]' .. buffer.filename:match('[^/\\]+$') .. ')\t(.-);"\t?(.*)$'
+  local fileonly_pattern = '^([^\t]+)\t(%S+[/\\]'
+    .. buffer.filename:match('[^/\\]+$'):gsub('%-', '%%-')
+    .. ')\t(.-);"\t?(.*)$'
   local def_pattern = file_only and fileonly_pattern or '^(' .. tag .. ')\t([^\t]+)\t(.-);"\t?(.*)$'
   -- use a more lenient pattern when searching via input dialog
   local pattern = from_dialog and '^([^\t]*' .. tag .. '[^\t]*)\t([^\t]+)\t(.-);"\t?(.*)$' or def_pattern
