@@ -1,4 +1,4 @@
--- Copyright 2015-2025 Mitchell. See LICENSE.
+-- Copyright 2015-2026 Mitchell. See LICENSE.
 
 --- Spell checking for Textadept.
 -- Install this module by copying it into your *~/.textadept/modules/* directory or Textadept's
@@ -105,7 +105,9 @@ function M.load(lang)
 		if not dic:find('^%.%.?$') then M.spellchecker:add_dic(user_dicts .. sep .. dic) end
 	end
 end
-M.load((os.getenv('LANG') or ''):match('^[^.@]+') or 'en_US')
+local lang = (os.getenv('LANG') or ''):match('^[^.@]+') or 'en_US'
+if lang == 'C' then lang = 'en_US' end -- not valid for spellchecking
+M.load(lang)
 events.connect(events.RESET_BEFORE, function() M.spellchecker = nil end)
 
 --- Shows suggestions for a word.
@@ -258,6 +260,7 @@ end)
 _L['Spelling'] = 'Spell_ing'
 _L['Check Spelling...'] = '_Check Spelling...'
 _L['Mark Misspelled Words'] = '_Mark Misspelled Words'
+_L['Unmark Misspelled Words'] = '_Unmark Misspelled Words'
 _L['Load Dictionary...'] = '_Load Dictionary...'
 _L['Select Dictionary'] = '_Select Dictionary'
 _L['Open User Dictionary'] = '_Open User Dictionary'
@@ -273,8 +276,12 @@ for i = 1, #m_tools - 1 do
 			table.insert(m_tools, i, {
 				title = _L['Spelling'], --
 				{_L['Check Spelling...'], function() M.check_spelling(true) end},
-				{_L['Mark Misspelled Words'], M.check_spelling}, --
-				SEP, {
+				{_L['Mark Misspelled Words'], M.check_spelling}, {
+					_L['Unmark Misspelled Words'], function()
+						buffer.indicator_current = M.INDIC_SPELLING
+						buffer:indicator_clear_range(1, buffer.length)
+					end
+				}, SEP, {
 					_L['Load Dictionary...'], function()
 						local dicts = {}
 						for _, path in ipairs(M.hunspell_paths) do
