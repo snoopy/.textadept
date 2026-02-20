@@ -1561,6 +1561,16 @@ local run_hydra = hydra.create({
     end,
   },
   {
+    key = 't',
+    help = 'test',
+    action = function()
+      local rootpath = util.get_project_root()
+      if not rootpath then return end
+      textadept.run.test_commands[rootpath] = 'ctest --test-dir build'
+      textadept.run.test(rootpath)
+    end,
+  },
+  {
     key = 'p',
     help = 'project',
     action = function()
