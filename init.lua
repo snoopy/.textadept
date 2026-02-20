@@ -1501,9 +1501,12 @@ local find_hydra = hydra.create({
     end,
   },
   {
-    key = 'd',
-    help = 'find on disk',
+    key = 'i',
+    help = 'in files',
     action = function()
+      local s = buffer:word_start_position(buffer.current_pos, true)
+      local e = buffer:word_end_position(buffer.current_pos, true)
+      ui.find.find_entry_text = buffer:text_range(s, e)
       ui.find.focus({ in_files = true, incremental = false, regex = false, match_case = false, whole_word = false })
     end,
   },
