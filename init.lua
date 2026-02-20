@@ -15,10 +15,11 @@ local spellcheck = require('spellcheck')
 spellcheck.spellcheckable_styles[lexer.FUNCTION] = true
 
 local textredux = require('textredux')
-local reduxstyle = textredux.core.style
-reduxstyle.list_match_highlight.fore = 'f57d26'
-reduxstyle.fs_directory.fore = '3a94c5'
-textredux.hijack()
+if textredux then
+  local reduxstyle = textredux.core.style
+  reduxstyle.list_match_highlight.fore = 'f57d26'
+  reduxstyle.fs_directory.fore = '3a94c5'
+end
 
 io.detect_indentation = false
 buffer.use_tabs = false
@@ -141,32 +142,33 @@ keys['ctrl+u'] = nil
 keys['ctrl+\t'] = nil
 keys['shift+ctrl+\t'] = nil
 
-local fn_dispatch = {
-  ['open'] = textredux.fs.open_file,
-  ['switchbuffer'] = textredux.buffer_list.show,
-  ['saveas'] = textredux.fs.save_buffer_as,
-  -- ['recent'] = textredux.core.filteredlist.wrap(io.open_recent_file),
-  ['lexer'] = textredux.core.filteredlist.wrap(m('Buffer/Select Lexer...')),
-  ['bookmarks'] = textredux.core.filteredlist.wrap(textadept.bookmarks.goto_mark),
-  ['ctags_global'] = textredux.core.filteredlist.wrap(ctags.goto_tag),
-  ['ctags_fileonly'] = textredux.core.filteredlist.wrap(ctags.fileonly),
-  ['ctags_symbol'] = textredux.core.filteredlist.wrap(
-    textadept.menu.menubar[_L['Search']][_L['Ctags']][_L['Go To Ctag...']][2]
-  ),
-  ['switchbuffer_project'] = textredux.core.filteredlist.wrap(util.show_project_buffers),
-  ['favorites'] = textredux.core.filteredlist.wrap(favorites.show),
-
-  -- ['open'] = io.open_file,
-  -- ['switchbuffer'] = ui.switch_buffer,
-  -- ['saveas'] = buffer.save_as,
-  ['recent'] = io.open_recent_file,
-  -- ['lexer'] = m('Buffer/Select Lexer...'),
-  -- ['bookmarks'] = textadept.bookmarks.goto_mark,
-  -- ['ctags_global'] = ctags.goto_tag
-  -- ['ctags_fileonly'] = ctags.fileonly
-  -- ['switchbuffer_project'] = util.show_project_buffers,
-  -- ['favorites'] = favorites.show,
+-- stylua: ignore start
+local dispatch = {
+  ['open'] = textredux and textredux.fs.open_file
+    or io.open_file,
+  ['switchbuffer'] = textredux and textredux.buffer_list.show
+    or ui.switch_buffer,
+  ['saveas'] = textredux and textredux.fs.save_buffer_as
+    or buffer.save_as,
+  -- ['recent'] =textredux and textredux.core.filteredlist.wrap(io.open_recent_file),
+  ['recent'] = textredux and io.open_recent_file
+    or io.open_recent_file,
+  ['lexer'] = textredux and textredux.core.filteredlist.wrap(m('Buffer/Select Lexer...'))
+    or m('Buffer/Select Lexer...'),
+  ['bookmarks'] = textredux and textredux.core.filteredlist.wrap(textadept.bookmarks.goto_mark)
+    or textadept.bookmarks.goto_mark,
+  ['ctags_global'] = textredux and textredux.core.filteredlist.wrap(ctags.goto_tag)
+    or ctags.goto_tag,
+  ['ctags_fileonly'] = textredux and textredux.core.filteredlist.wrap(ctags.fileonly)
+    or ctags.fileonly,
+  ['ctags_symbol'] = textredux and textredux.core.filteredlist.wrap(textadept.menu.menubar[_L['Search']][_L['Ctags']][_L['Go To Ctag...']][2])
+    or textadept.menu.menubar[_L['Search']][_L['Ctags']][_L['Go To Ctag...']][2],
+  ['switchbuffer_project'] = textredux and textredux.core.filteredlist.wrap(util.show_project_buffers)
+    or util.show_project_buffers,
+  ['favorites'] = textredux and textredux.core.filteredlist.wrap(favorites.show)
+    or favorites.show,
 }
+-- stylua: ignore end
 
 events.connect(events.CHAR_ADDED, function(_code)
   if buffer.current_pos - buffer:word_start_position(buffer.current_pos, true) < 3 then return end
@@ -320,8 +322,8 @@ keys['alt+l'] = function()
   if buffer.char_at[buffer.current_pos] ~= 0xA then buffer:char_right() end
 end
 
-keys.f1 = fn_dispatch['switchbuffer']
-keys.f2 = fn_dispatch['switchbuffer_project']
+keys.f1 = dispatch['switchbuffer']
+keys.f2 = dispatch['switchbuffer_project']
 
 keys.f11 = function()
   util.find_word_under_cursor(false)
@@ -1197,7 +1199,7 @@ local buffer_hydra = hydra.create({
     help = 'reload',
     action = buffer.reload,
   },
-  { key = 's', help = 'save as', action = fn_dispatch['saveas'] },
+  { key = 's', help = 'save as', action = dispatch['saveas'] },
   {
     key = 'n',
     help = 'copy name',
@@ -1442,7 +1444,7 @@ local quicknav_hydra = hydra.create({
 })
 
 local open_hydra = hydra.create({
-  { key = 'o', help = 'open', action = fn_dispatch['open'] },
+  { key = 'o', help = 'open', action = dispatch['open'] },
   {
     key = 'f',
     help = 'flat open',
@@ -1464,7 +1466,7 @@ local open_hydra = hydra.create({
       io.quick_open(_HOME)
     end,
   },
-  { key = 'r', help = 'recent', action = fn_dispatch['recent'] },
+  { key = 'r', help = 'recent', action = dispatch['recent'] },
   {
     key = 'p',
     help = 'project',
@@ -1472,9 +1474,9 @@ local open_hydra = hydra.create({
       if util.get_project_root() then io.quick_open(nil) end
     end,
   },
-  { key = 'l', help = 'lexer', action = fn_dispatch['lexer'] },
-  { key = 'm', help = 'bookmarks', action = fn_dispatch['bookmarks'] },
-  { key = 'v', help = 'favorites', action = fn_dispatch['favorites'] },
+  { key = 'l', help = 'lexer', action = dispatch['lexer'] },
+  { key = 'm', help = 'bookmarks', action = dispatch['bookmarks'] },
+  { key = 'v', help = 'favorites', action = dispatch['favorites'] },
   {
     key = 'e',
     help = 'enter filepath',
@@ -1590,9 +1592,9 @@ local run_hydra = hydra.create({
 })
 
 local ctags_hydra = hydra.create({
-  { key = 'c', help = 'ctags: find current', action = fn_dispatch['ctags_global'] },
-  { key = 's', help = 'ctags: find symbol', action = fn_dispatch['ctags_symbol'] },
-  { key = 'f', help = 'ctags: file only', action = fn_dispatch['ctags_fileonly'] },
+  { key = 'c', help = 'ctags: find current', action = dispatch['ctags_global'] },
+  { key = 's', help = 'ctags: find symbol', action = dispatch['ctags_symbol'] },
+  { key = 'f', help = 'ctags: file only', action = dispatch['ctags_fileonly'] },
   {
     key = 'i',
     help = 'ctags: init',
@@ -1803,3 +1805,5 @@ snippets.lua.fli = 'for $1 in ipairs($2) do\n\t$0\nend'
 snippets.lua.fn = '${1:local }function${2:()}\n\t$0\nend'
 snippets.lua.ins = 'table.insert($0)'
 snippets.lua['if'] = 'if $1 then\n\t$0\nend'
+
+if textredux then textredux.hijack() end
