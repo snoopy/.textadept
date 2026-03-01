@@ -130,18 +130,6 @@ local function m(labels)
   return menu[2]
 end
 
--- unbind some defaults
-keys['ctrl+alt+\\'] = nil
-keys['ctrl+alt+|'] = nil
-keys['ctrl+r'] = nil
-keys['ctrl+f'] = nil
-keys['ctrl+p'] = nil
-keys['ctrl+o'] = nil
-keys['ctrl+d'] = nil
-keys['ctrl+u'] = nil
-keys['ctrl+\t'] = nil
-keys['shift+ctrl+\t'] = nil
-
 -- stylua: ignore start
 local dispatch = {
   ['open'] = textredux and textredux.fs.open_file
@@ -174,7 +162,6 @@ events.connect(events.CHAR_ADDED, function(_code)
   if buffer.current_pos - buffer:word_start_position(buffer.current_pos, true) < 3 then return end
   if textadept.editing.autocomplete(buffer:get_lexer(true)) then return end
   if textadept.editing.autocomplete('word') then return end
-  if textadept.editing.autocomplete('ctag') then return end
 end)
 
 -- stylua: ignore start
@@ -194,6 +181,13 @@ local function handle_tab(next)
   end
   return false
 end
+
+-- unbind some defaults
+keys['ctrl+alt+\\'] = nil
+keys['ctrl+alt+|'] = nil
+keys['ctrl+p'] = nil
+keys['ctrl+u'] = nil
+keys['shift+ctrl+\t'] = nil
 
 keys['\t'] = function()
   return handle_tab(true)
@@ -217,10 +211,13 @@ keys['shift+ctrl+\t'] = function()
   end
 end
 
+keys['shift+\n'] = function()
+  buffer:line_end_display()
+  buffer:new_line()
+end
+
 keys.f4 = cpp.toggle_header
 keys.f6 = util.goto_last_buffer
-
--- editing
 
 keys.f9 = function()
   spellcheck.check_spelling(true)
@@ -228,6 +225,44 @@ end
 
 keys.f8 = buffer.undo
 keys.f5 = buffer.redo
+
+keys['ctrl+d'] = buffer.line_duplicate
+keys['alt+d'] = buffer.line_delete
+
+keys['ctrl+f'] = function()
+  ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false, whole_word = false })
+end
+
+keys['ctrl+o'] = function()
+  dispatch['open']()
+end
+
+keys['alt+w'] = function()
+  textadept.editing.select_word()
+  local s, e = buffer.selection_start, buffer.selection_end
+  buffer:delete_range(s, e - s)
+end
+
+keys['ctrl+r'] = buffer.reload
+
+keys['ctrl+t'] = function()
+  view:toggle_fold(buffer:line_from_position(buffer.current_pos), view.FOLDACTION_TOGGLE)
+end
+
+keys['ctrl+j'] = function()
+  textadept.editing.goto_line()
+  view:vertical_center_caret()
+  buffer:vc_home()
+end
+
+keys['alt+y'] = view.vertical_center_caret
+
+keys['ctrl+1'] = function()
+  util.enclose_or_add("'", "'")
+end
+keys['ctrl+2'] = function()
+  util.enclose_or_add('"', '"')
+end
 
 keys['alt+4'] = function()
   util.enclose_or_add('<', '>')
@@ -241,30 +276,8 @@ end
 keys['alt+1'] = function()
   util.enclose_or_add('{', '}')
 end
-keys['alt+s'] = function()
-  util.enclose_or_add("'", "'")
-end
-keys['alt+d'] = function()
-  util.enclose_or_add('"', '"')
-end
 keys['alt+c'] = function()
   util.custom_comment(false)
-end
-keys['alt+f'] = buffer.line_delete
-keys['alt+v'] = buffer.line_duplicate
-keys['alt+r'] = function()
-  buffer:vc_home()
-  local _, caret_pos = buffer:get_cur_line()
-  if caret_pos == 1 then buffer:vc_home() end
-  buffer:line_end_extend()
-  buffer:delete_back()
-end
-keys['alt+q'] = buffer.del_word_left
-keys['alt+e'] = buffer.del_word_right
-keys['alt+w'] = function()
-  textadept.editing.select_word()
-  local s, e = buffer.selection_start, buffer.selection_end
-  buffer:delete_range(s, e - s)
 end
 
 keys['alt+a'] = function()
@@ -275,10 +288,6 @@ keys['alt+a'] = function()
 end
 
 keys['alt+x'] = textadept.editing.select_word
-keys['alt+y'] = function()
-  buffer:drop_selection_n(buffer.selections)
-  view:vertical_center_caret()
-end
 
 keys['alt+\b'] = function()
   buffer:line_up()
@@ -292,32 +301,9 @@ keys['alt+,'] = function()
   buffer:end_undo_action()
 end
 
-keys['alt+m'] = function()
-  buffer:begin_undo_action()
-  buffer:line_end_display()
-  buffer:add_text(',')
-  buffer:end_undo_action()
-end
-
-keys['ctrl+\n'] = function()
-  buffer:line_end_display()
-  buffer:new_line()
-end
-
--- movement
-
 keys.f3 = ui.find.find_next
 keys['shift+f3'] = ui.find.find_prev
 
-keys['alt+h'] = function()
-  buffer:char_left()
-end
-keys['alt+j'] = function()
-  buffer:line_down()
-end
-keys['alt+k'] = function()
-  buffer:line_up()
-end
 keys['alt+l'] = function()
   if buffer.char_at[buffer.current_pos] ~= 0xA then buffer:char_right() end
 end
@@ -341,11 +327,6 @@ end
 
 keys['ctrl+alt+right'] = buffer.word_part_right
 keys['ctrl+alt+left'] = buffer.word_part_left
-
-keys['alt+shift+\n'] = function()
-  buffer:line_down()
-  buffer:line_end()
-end
 
 keys['alt+\n'] = function()
   buffer:begin_undo_action()
@@ -441,8 +422,23 @@ local edit_hydra = hydra.create({
   { key = 'up', help = 'move up', action = buffer.move_selected_lines_up, persistent = true },
   { key = 'down', help = 'move down', action = buffer.move_selected_lines_down, persistent = true },
 
+  {
+    key = 'e',
+    help = 'erase line',
+    action = function()
+      buffer:vc_home()
+      local _, caret_pos = buffer:get_cur_line()
+      if caret_pos == 1 then buffer:vc_home() end
+      buffer:line_end_extend()
+      buffer:delete_back()
+    end,
+  },
+
   { key = 'home', help = 'del start', action = buffer.del_line_left },
   { key = 'end', help = 'del end', action = buffer.del_line_right },
+
+  { key = 'j', help = 'del left', action = buffer.del_word_left, persistent = true },
+  { key = 'l', help = 'del right', action = buffer.del_word_right, persistent = true },
 
   {
     key = 'p',
@@ -463,7 +459,7 @@ local edit_hydra = hydra.create({
     end,
   },
   {
-    key = 'l',
+    key = 'i',
     help = 'lower case',
     action = function()
       if buffer.selection_empty then textadept.editing.select_word() end
@@ -472,7 +468,7 @@ local edit_hydra = hydra.create({
   },
 
   {
-    key = 's',
+    key = 'z',
     help = 'sort',
     action = function()
       textadept.editing.filter_through('sort')
@@ -649,22 +645,6 @@ local target_select_hydra = hydra.create({
   },
   {
     key = 'l',
-    help = 'select right to',
-    action = function()
-      select_functions[select_action]()
-    end,
-    persistent = true,
-  },
-  {
-    key = 'left',
-    help = 'select left to',
-    action = function()
-      select_functions[select_action](true)
-    end,
-    persistent = true,
-  },
-  {
-    key = 'right',
     help = 'select right to',
     action = function()
       select_functions[select_action]()
@@ -1245,6 +1225,11 @@ local buffer_hydra = hydra.create({
 
 local project_hydra = hydra.create({
   {
+    key = 'i',
+    help = 'ctags: init',
+    action = textadept.menu.menubar[_L['Search']][_L['Ctags']][_L['Generate Project Tags']][2],
+  },
+  {
     key = 'k',
     help = 'close all',
     action = function()
@@ -1283,7 +1268,7 @@ local git_hydra = hydra.create({
   { key = 'h', help = 'heat map', action = git.heatmap },
 })
 
-local window_hydra = hydra.create({
+local view_hydra = hydra.create({
   { key = 'n', help = 'new buffer', action = buffer.new },
   {
     key = 's',
@@ -1307,21 +1292,20 @@ local window_hydra = hydra.create({
     end,
   },
   {
-    key = 'q',
-    help = 'unsplit&close',
+    key = 'c',
+    help = 'close & unsplit',
     action = function()
       buffer:close()
       view:unsplit()
     end,
   },
   {
-    key = 'x',
+    key = 'f',
     help = 'force close',
     action = function()
       buffer:close(true)
     end,
   },
-  { key = 'c', help = 'center', action = view.vertical_center_caret },
   {
     key = 'k',
     help = 'unsplit all',
@@ -1331,7 +1315,7 @@ local window_hydra = hydra.create({
     end,
   },
   {
-    key = 'd',
+    key = 'l',
     help = 'next view',
     action = function()
       ui.goto_view(1)
@@ -1339,7 +1323,7 @@ local window_hydra = hydra.create({
     persistent = true,
   },
   {
-    key = 'a',
+    key = 'j',
     help = 'prev view',
     action = function()
       ui.goto_view(-1)
@@ -1460,8 +1444,8 @@ local open_hydra = hydra.create({
     end,
   },
   {
-    key = 'i',
-    help = 'install home',
+    key = 't',
+    help = 'textadept home',
     action = function()
       io.quick_open(_HOME)
     end,
@@ -1512,25 +1496,28 @@ local find_hydra = hydra.create({
   },
   {
     key = 'r',
-    help = 'find regex',
+    help = 'regex',
     action = function()
       ui.find.focus({ in_files = false, incremental = true, regex = true, match_case = false, whole_word = false })
     end,
   },
   {
-    key = 'c',
-    help = 'find case sensitive',
+    key = 'm',
+    help = 'match case',
     action = function()
       ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = true, whole_word = false })
     end,
   },
   {
     key = 'w',
-    help = 'find word',
+    help = 'whole word',
     action = function()
       ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false, whole_word = true })
     end,
   },
+  { key = 'c', help = 'ctags: under cursor', action = dispatch['ctags_global'] },
+  { key = 's', help = 'ctags: symbol', action = dispatch['ctags_symbol'] },
+  { key = 'v', help = 'ctags: list view only', action = dispatch['ctags_fileonly'] },
 })
 
 local run_hydra = hydra.create({
@@ -1604,17 +1591,6 @@ local run_hydra = hydra.create({
   },
 })
 
-local ctags_hydra = hydra.create({
-  { key = 'c', help = 'ctags: find current', action = dispatch['ctags_global'] },
-  { key = 's', help = 'ctags: find symbol', action = dispatch['ctags_symbol'] },
-  { key = 'f', help = 'ctags: file only', action = dispatch['ctags_fileonly'] },
-  {
-    key = 'i',
-    help = 'ctags: init',
-    action = textadept.menu.menubar[_L['Search']][_L['Ctags']][_L['Generate Project Tags']][2],
-  },
-})
-
 local toggle_folding_hydra = hydra.create({
   {
     key = 't',
@@ -1659,7 +1635,7 @@ local toggle_folding_hydra = hydra.create({
   },
 
   {
-    key = 'shift+left',
+    key = 'home',
     help = 'collapse all',
     action = function()
       view:fold_all(view.FOLDACTION_CONTRACT)
@@ -1667,7 +1643,7 @@ local toggle_folding_hydra = hydra.create({
     persistent = true,
   },
   {
-    key = 'shift+right',
+    key = 'end',
     help = 'expand all',
     action = function()
       view:fold_all(view.FOLDACTION_EXPAND)
@@ -1713,36 +1689,22 @@ local toggle_folding_hydra = hydra.create({
   },
 })
 
-local main_hydra = hydra.create({
-  { key = 'o', help = 'open', action = open_hydra },
-  { key = 'j', help = 'jump to', action = jump_hydra },
-  { key = 'e', help = 'edit', action = edit_hydra },
-  { key = 's', help = 'select', action = selection_hydra },
-  { key = 'i', help = 'insert', action = insert_hydra },
-  { key = 'n', help = 'snippets', action = textadept.snippets.select },
-  { key = 'w', help = 'window', action = window_hydra },
-  { key = 'c', help = 'ctags', action = ctags_hydra },
-  { key = 'p', help = 'project', action = project_hydra },
-  { key = 'g', help = 'git', action = git_hydra },
-  { key = 't', help = 'toggle lines', action = toggle_folding_hydra },
-  { key = 'b', help = 'buffer', action = buffer_hydra },
-  { key = 'f', help = 'find', action = find_hydra },
-  { key = 'm', help = 'bookmark', action = bookmark_hydra },
-  { key = 'q', help = 'quick access', action = quicknav_hydra },
-  { key = 'r', help = 'run', action = run_hydra },
-})
-
--- map f10/triggerkey to capslock
--- linux ~/.Xmodmap:
--- clear Lock
--- keycode 66 = F10
--- windows:
--- Capslock::F10
--- F10::Capslock
--- ctrl+shift+H to check keys
 hydra.keys = hydra.create({
-  { key = 'f10', help = 'Hydra', action = main_hydra },
-  { key = 'ctrl+ ', help = 'Hydra', action = main_hydra },
+  { key = 'alt+o', help = 'open', action = open_hydra },
+  { key = 'alt+j', help = 'jump to', action = jump_hydra },
+  { key = 'alt+e', help = 'edit', action = edit_hydra },
+  { key = 'alt+s', help = 'select', action = selection_hydra },
+  { key = 'alt+i', help = 'insert', action = insert_hydra },
+  { key = 'alt+n', help = 'snippets', action = textadept.snippets.select },
+  { key = 'alt+v', help = 'view', action = view_hydra },
+  { key = 'alt+p', help = 'project', action = project_hydra },
+  { key = 'alt+g', help = 'git', action = git_hydra },
+  { key = 'alt+t', help = 'toggle lines', action = toggle_folding_hydra },
+  { key = 'alt+b', help = 'buffer', action = buffer_hydra },
+  { key = 'alt+f', help = 'find', action = find_hydra },
+  { key = 'alt+m', help = 'bookmark', action = bookmark_hydra },
+  { key = 'alt+q', help = 'quick access', action = quicknav_hydra },
+  { key = 'alt+r', help = 'run', action = run_hydra },
 })
 
 snippets.cpp.arr = 'std::array<${1:bool}, ${2:8}> $0'
@@ -1765,7 +1727,7 @@ snippets.cpp.rcst = 'reinterpret_cast<$1>($0)'
 snippets.cpp.scst = 'static_cast<${1:std::size_t}>($0)'
 snippets.cpp.sizet = 'std::size_t'
 snippets.cpp.slp = 'std::this_thread::sleep_for(std::chrono::${1:seconds}($0));'
-snippets.cpp.spdlog = 'spdlog::${1:debug}("${2:\\{\\}}", $0);'
+snippets.cpp.spdlog = 'spdlog::${1:debug}("[{}] ${2:\\{\\}}", __func__,$0);'
 snippets.cpp.sptr = 'std::shared_ptr<$1>'
 snippets.cpp.str = 'std::string'
 snippets.cpp.svw = 'std::string_view'
