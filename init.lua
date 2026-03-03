@@ -35,6 +35,8 @@ end)
 ui.tabs = false
 view.h_scroll_bar = false
 view.v_scroll_bar = false
+-- increase marker margin for better visibility
+view.margin_width_n[2] = 8
 
 ui.command_entry.caret_period = 0
 ui.command_entry.caret_style = view.CARETSTYLE_BLOCK
