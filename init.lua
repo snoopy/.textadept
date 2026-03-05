@@ -1,4 +1,4 @@
-view:set_theme('everforest', { font = 'JetBrains Mono NL ExtraLight', size = 17 })
+view:set_theme('everforest', { font = 'Iosevka', size = 19 })
 
 local run = require('run')
 local format = require('format')
