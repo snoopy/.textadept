@@ -4,3 +4,6 @@
 [submodule "modules/hydra"]
 	path = modules/hydra
 	url = https://github.com/snoopy/textadept-hydra.git
+[submodule "modules/format"]
+	path = modules/format
+	url = https://github.com/orbitalquark/textadept-format.git

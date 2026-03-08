@@ -1,7 +1,6 @@
 view:set_theme('everforest', { font = 'Iosevka', size = 19 })
 
 local run = require('run')
-local format = require('format')
 local git = require('git')
 local hydra = require('hydra')
 local quicknav = require('quicknav')
@@ -10,6 +9,13 @@ local origin = require('origin')
 local favorites = require('favorites')
 local cpp = require('cpp')
 local ctags = require('ctags')
+
+local format = require('format')
+format.commands.lua =
+  'stylua --syntax lua54 --indent-width 2 --indent-type Spaces --quote-style AutoPreferSingle --collapse-simple-statement ConditionalOnly -'
+format.commands.cpp = 'clang-format -style=file -fallback-style=none'
+format.commands.python = 'ruff format --line-length 120'
+format.commands.rust = 'rustfmt'
 
 local spellcheck = require('spellcheck')
 spellcheck.spellcheckable_styles[lexer.FUNCTION] = true
@@ -1140,15 +1146,14 @@ local formatting_hydra = hydra.create({
   {
     key = 'f',
     help = 'format',
-    action = function()
-      format.run(buffer.filename)
-    end,
+    action = format.code,
   },
   {
     key = 't',
     help = 'toggle format on save',
     action = function()
-      format.toggle_on_save()
+      format.on_save = not format.on_save
+      ui.statusbar_text = 'on_save formatting is now: ' .. (format.on_save and 'ON' or 'OFF')
     end,
   },
   {
