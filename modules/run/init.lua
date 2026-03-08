@@ -28,9 +28,11 @@ local function run_and_mark(cmd, cwd)
     if not filepath or not line_num or not msg then goto continue end
 
     local filepath_abs = lfs.abspath(filepath, cwd)
-    if not messages[filepath_abs] then messages[filepath_abs] = {} end
-    if not messages[filepath_abs][line_num] then messages[filepath_abs][line_num] = {} end
-    table.insert(messages[filepath_abs][line_num], msg)
+    if lfs.attributes(filepath_abs) then
+      if not messages[filepath_abs] then messages[filepath_abs] = {} end
+      if not messages[filepath_abs][line_num] then messages[filepath_abs][line_num] = {} end
+      table.insert(messages[filepath_abs][line_num], msg)
+    end
 
     issues = issues + 1
 
@@ -92,7 +94,7 @@ end
 function M.next_issue(next)
   local pos = buffer:line_from_position(buffer.current_pos)
   local get_line = next and buffer.marker_next or buffer.marker_previous
-  local line = get_line(pos + (next and 1 or -1), 1 << textadept.run.MARK_WARNING - 1)
+  local line = get_line(pos + (next and 1 or -1), 1 << (textadept.run.MARK_WARNING - 1))
   buffer:goto_line(line)
   view:vertical_center_caret()
 end

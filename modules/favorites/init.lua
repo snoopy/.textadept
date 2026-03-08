@@ -15,7 +15,7 @@ events.connect(events.INITIALIZED, function()
 end)
 
 events.connect(events.QUIT, function()
-  if next(favorites) == nil then return end
+  if not next(favorites) then return end
 
   local f = io.open(save_location, 'w')
   if not f then return end

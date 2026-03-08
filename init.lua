@@ -1757,4 +1757,5 @@ snippets.lua.fn = '${1:local }function${2:()}\n\t$0\nend'
 snippets.lua.ins = 'table.insert($0)'
 snippets.lua['if'] = 'if $1 then\n\t$0\nend'
 
+-- hijack after all keybinds have been set
 if textredux then textredux.hijack() end

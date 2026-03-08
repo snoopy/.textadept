@@ -121,8 +121,8 @@ function M.heatmap()
       month = month,
       day = day,
       hour = hour,
-      min = minute,
-      sec = second,
+      min = min,
+      sec = sec,
     })
     local time_diff = os.difftime(today, timestamp)
     buffer:marker_add(current_line, get_heatmap_value(time_diff))
@@ -160,7 +160,6 @@ function M.show_rev()
   local rootpath = get_project_root()
   if not rootpath then return end
   local file = buffer.filename
-  if not rootpath then return end
   rootpath = rootpath:gsub('%-', '%%-')
   file = file:gsub(rootpath, '')
   file = file:gsub('^[/\\]', '')
