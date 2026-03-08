@@ -1,12 +1,20 @@
 local M = {}
 
-local function get_project_root()
+local path_ignore_list = {
+  ['external'] = true,
+  ['build'] = true,
+}
+
+local function is_valid(path)
   local rootpath = io.get_project_root(true)
-  if not rootpath then
-    ui.statusbar_text = 'Not a project'
-    return nil
+  if not rootpath then return end
+
+  if not path:match(rootpath) then return end
+
+  for k, _ in pairs(path_ignore_list) do
+    if path:match(k) then return false end
   end
-  return rootpath
+  return true
 end
 
 local function run_and_mark(cmd, cwd)
@@ -24,28 +32,31 @@ local function run_and_mark(cmd, cwd)
   local messages = {}
 
   for line in stdout:gmatch('[^\r\n]+') do
-    local filepath, line_num, msg = line:match('^%s*(.-):(%d+)(.+)$')
-    if not filepath or not line_num or not msg then goto continue end
+    -- Expect lines in the form: <path>:<line>: <message>
+    local filepath, line_num_str, msg = line:match('^%s*(.-):(%d+)(.+)$')
+    if not filepath or not line_num_str or not msg then goto continue end
+    local line_num = tonumber(line_num_str)
+    if not line_num then goto continue end
 
     local filepath_abs = lfs.abspath(filepath, cwd)
-    if lfs.attributes(filepath_abs) then
+    if lfs.attributes(filepath_abs) and is_valid(filepath_abs) then
       if not messages[filepath_abs] then messages[filepath_abs] = {} end
       if not messages[filepath_abs][line_num] then messages[filepath_abs][line_num] = {} end
       table.insert(messages[filepath_abs][line_num], msg)
+      -- Only count issues for valid files
+      issues = issues + 1
     end
-
-    issues = issues + 1
 
     ::continue::
   end
 
-  for filepath, line_table in pairs(messages) do
+  for filepath_abs, line_table in pairs(messages) do
     for line_num, msg_table in pairs(line_table) do
       local all_messages = ''
       for _, msg in pairs(msg_table) do
         all_messages = all_messages .. msg .. '\n'
       end
-      io.open_file(filepath)
+      io.open_file(filepath_abs)
       buffer:goto_line(line_num)
       buffer.annotation_text[line_num] = all_messages:gsub('\n$', '')
       buffer.annotation_style[line_num] = buffer:style_of_name(lexer.COMMENT)
@@ -57,8 +68,13 @@ local function run_and_mark(cmd, cwd)
 end
 
 function M.run(mode)
-  local rootpath = get_project_root()
+  local rootpath = io.get_project_root(true)
   if not rootpath then rootpath = buffer.filename:match('^(.+)[/\\][^/\\]+$') end
+  -- If we still have no root, abort with a clear message
+  if not rootpath or rootpath == '' then
+    ui.statusbar_text = 'ERROR - unable to determine project root'
+    return
+  end
 
   local linter_commands = {}
   -- stylua: ignore start
