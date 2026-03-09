@@ -1,4 +1,4 @@
-view:set_theme('everforest', { font = 'Iosevka', size = 19 })
+view:set_theme('everforest', { font = 'Iosevka Custom', size = 19 })
 
 local run = require('run')
 local git = require('git')
