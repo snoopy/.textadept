@@ -887,25 +887,6 @@ local jump_hydra = hydra.create({
   },
 
   {
-    key = 'w',
-    help = 'word',
-    action = function()
-      jump_action = 1
-      jump_args = '\\b\\w+\\b'
-    end,
-    persistent = true,
-  },
-  {
-    key = ' ',
-    help = 'space',
-    action = function()
-      jump_action = 1
-      jump_args = '[\\s\\S]\\s{1,1}\\S'
-    end,
-    persistent = true,
-  },
-
-  {
     key = '1',
     help = '{}',
     action = function()
