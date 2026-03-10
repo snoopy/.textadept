@@ -95,8 +95,12 @@ textadept.run.run_commands.python = 'python3 -u "%f"'
 textadept.run.run_commands.lua = _HOME .. '/textadept -L "%f"'
 
 textadept.run.compile_commands.cpp = 'g++ -std=c++23 -O2 "%f"'
-textadept.run.build_commands.cpp = 'cmake -B build -S . -G Ninja && ninja -C build'
-textadept.run.test_commands.cpp = 'ctest --test-dir build'
+textadept.run.build_commands.cpp = function()
+  return 'ninja -C build', io.get_project_root()
+end
+textadept.run.test_commands.cpp = function()
+  return 'ctest --test-dir build', io.get_project_root()
+end
 
 textadept.run.compile_commands.rust = 'cargo build'
 textadept.run.run_commands.rust = 'cargo run --message-format short'
