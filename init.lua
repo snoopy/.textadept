@@ -5,7 +5,6 @@ local git = require('git')
 local hydra = require('hydra')
 local quicknav = require('quicknav')
 local util = require('util')
-local origin = require('origin')
 local favorites = require('favorites')
 local cpp = require('cpp')
 local ctags = require('ctags')
@@ -970,8 +969,24 @@ local jump_hydra = hydra.create({
     persistent = true,
   },
 
-  { key = 'o', help = 'back', action = origin.back, persistent = true },
-  { key = 'i', help = 'forward', action = origin.forward, persistent = true },
+  {
+    key = 'o',
+    help = 'back',
+    action = function()
+      textadept.history.back()
+      view.vertical_center_caret()
+    end,
+    persistent = true,
+  },
+  {
+    key = 'i',
+    help = 'forward',
+    action = function()
+      textadept.history.forward()
+      view.vertical_center_caret()
+    end,
+    persistent = true,
+  },
 
   {
     key = '0',
