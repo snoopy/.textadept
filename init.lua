@@ -13,7 +13,7 @@ local format = require('format')
 format.commands.lua =
   'stylua --syntax lua54 --indent-width 2 --indent-type Spaces --quote-style AutoPreferSingle --collapse-simple-statement ConditionalOnly -'
 format.commands.cpp = 'clang-format -style=file -fallback-style=none'
-format.commands.python = 'ruff format --line-length 120'
+format.commands.python = 'ruff format --line-length 120 -'
 format.commands.rust = 'rustfmt'
 
 local spellcheck = require('spellcheck')
