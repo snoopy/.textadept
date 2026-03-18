@@ -5,6 +5,7 @@
     * custom c++ lexer which adds a rule for highlighting the last part of a namespace (e.g. in foo::bar::baz baz will be highlighted)
 
 * modules
+    * clippy - clipboard history manager
     * color - helper module for converting rgb to bgr
     * cpp - adds keyword autocompletion
     * ctags - modified ctags module based on the [official](https://github.com/orbitalquark/textadept-ctags) one

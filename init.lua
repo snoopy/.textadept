@@ -8,6 +8,7 @@ local util = require('util')
 local favorites = require('favorites')
 local cpp = require('cpp')
 local ctags = require('ctags')
+local clippy = require('clippy')
 
 local format = require('format')
 format.commands.lua =
@@ -166,6 +167,10 @@ local dispatch = {
     or util.show_project_buffers,
   ['favorites'] = textredux and textredux.core.filteredlist.wrap(favorites.show)
     or favorites.show,
+  ['clippy'] = textredux and textredux.core.filteredlist.wrap(clippy.show)
+    or clippy.show,
+  ['clippy_del'] = textredux and textredux.core.filteredlist.wrap(clippy.remove)
+    or clippy.remove,
 }
 -- stylua: ignore end
 
@@ -200,6 +205,12 @@ keys['ctrl+u'] = nil
 keys['shift+ctrl+\t'] = nil
 
 keys['ctrl+v'] = textadept.editing.paste_reindent
+
+keys['ctrl+c'] = clippy.copy
+keys['ctrl+x'] = clippy.cut
+keys['ctrl+ins'] = dispatch['clippy']
+keys['shift+ins'] = dispatch['clippy_del']
+keys['shift+del'] = clippy.clear
 
 keys['\t'] = function()
   return handle_tab(true)
