@@ -199,6 +199,8 @@ keys['ctrl+alt+|'] = nil
 keys['ctrl+u'] = nil
 keys['shift+ctrl+\t'] = nil
 
+keys['ctrl+v'] = textadept.editing.paste_reindent
+
 keys['\t'] = function()
   return handle_tab(true)
 end
@@ -287,13 +289,6 @@ keys['alt+1'] = function()
 end
 keys['alt+c'] = function()
   util.custom_comment(false)
-end
-
-keys['alt+a'] = function()
-  buffer:vc_home()
-  local _, caret_pos = buffer:get_cur_line()
-  if caret_pos == 1 then buffer:vc_home() end
-  buffer:line_end_extend()
 end
 
 keys['alt+x'] = textadept.editing.select_word
