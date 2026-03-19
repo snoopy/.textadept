@@ -1,19 +1,12 @@
 local M = {}
 
-M.max_size = 60
+M.max_entries = 60
+M.snippet_size = 150
+M.trim_eol = true
 
--- each entry: { content = "...", snippet = "..." }
 local entries = {}
 
-function M.add(input)
-  if not input then return end
-
-  local content = tostring(input)
-  if content == '' then return end
-  local snippet = content:gsub('[\r\n]+', '')
-  snippet = snippet:gsub('%s+', ' ')
-  snippet = snippet:sub(1, 200)
-
+local function add(content, snippet, lines)
   -- dedupe by content
   for i = #entries, 1, -1 do
     if entries[i].content == content then
@@ -22,25 +15,54 @@ function M.add(input)
     end
   end
 
-  table.insert(entries, 1, { content = content, snippet = snippet })
+  table.insert(entries, 1, {
+    content = content,
+    lines = lines,
+    snippet = snippet,
+  })
 
-  if #entries > M.max_size then table.remove(entries) end
+  if #entries > M.max_entries then table.remove(entries) end
+end
+
+local function parse_input(input)
+  if not input then return end
+
+  local content = tostring(input)
+  if content == '' then return end
+
+  if M.trim_eol then
+    content = content:gsub('\r?\n+$', '')
+    buffer:copy_text(content)
+  end
+
+  local lines = 1
+  for _ in content:gmatch('\n') do
+    lines = lines + 1
+  end
+
+  local snippet = content:gsub('\r?\n+', '')
+  snippet = snippet:gsub('%s+', ' ')
+  snippet = snippet:gsub('^%s', '')
+  snippet = snippet:sub(1, M.snippet_size)
+
+  add(content, snippet, lines)
 end
 
 function M.copy()
   buffer:copy_allow_line()
-  M.add(ui.get_clipboard_text())
+  parse_input(ui.get_clipboard_text())
 end
 
 function M.cut()
   buffer:cut_allow_line()
-  M.add(ui.get_clipboard_text())
+  parse_input(ui.get_clipboard_text())
 end
 
 local function get_items()
   local items = {}
   for i = 1, #entries do
-    items[i] = entries[i].snippet
+    table.insert(items, entries[i].lines)
+    table.insert(items, entries[i].snippet)
   end
   return items
 end
@@ -51,10 +73,11 @@ function M.show(remove)
     return
   end
 
-  local items = get_items()
   local index = ui.dialogs.list({
     title = 'clippy ' .. (remove and 'REMOVE' or 'INSERT'),
-    items = items,
+    columns = { 'Lines', 'Snippet' },
+    search_column = 2,
+    items = get_items(),
   })
 
   if not index then return end
