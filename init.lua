@@ -81,9 +81,6 @@ textadept.editing.autocomplete_all_words = true
 
 buffer.virtual_space_options = buffer.VS_RECTANGULARSELECTION
 
--- paste into every selection when multiple selections are active
-buffer.multi_paste = buffer.MULTIPASTE_EACH
-
 lexer.detect_extensions.conf = 'ini'
 lexer.detect_extensions.csv = 'ini'
 lexer.detect_extensions.config = 'ini'
