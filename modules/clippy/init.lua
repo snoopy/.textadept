@@ -3,6 +3,8 @@ local M = {}
 M.max_entries = 60
 M.snippet_size = 150
 M.trim_eol = true
+M.persist = true
+M.save_location = _USERHOME .. '/modules/clippy/session'
 
 local entries = {}
 
@@ -116,5 +118,28 @@ function M.clear()
   })
   if button == 1 then entries = {} end
 end
+
+local function serialize()
+  if not M.persist then return end
+
+  local file, err = io.open(M.save_location, 'w')
+  if not file then return end
+
+  file:write('return {\n')
+  for _, entry in ipairs(entries) do
+    file:write(('{content=%q,lines=%d,snippet=%q},\n'):format(entry.content, entry.lines, entry.snippet))
+  end
+  file:write('}\n')
+  file:close()
+end
+
+local function deserialize()
+  local ok, data = pcall(dofile, M.save_location)
+  if ok and type(data) == 'table' then entries = data end
+end
+
+events.connect(events.INITIALIZED, deserialize)
+
+events.connect(events.QUIT, serialize, 1)
 
 return M
