@@ -626,8 +626,8 @@ local target_select_hydra = hydra.create({
     persistent = true,
   },
   {
-    key = 'x',
-    help = 'special',
+    key = 'c',
+    help = 'special character',
     action = function()
       select_action = 1
       select_args = '[/\\.:,;]'
@@ -636,8 +636,8 @@ local target_select_hydra = hydra.create({
   },
 
   {
-    key = 'w',
-    help = 'word',
+    key = 'x',
+    help = 'current word',
     action = function()
       select_action = 3
     end,
@@ -715,7 +715,7 @@ local selection_hydra = hydra.create({
   },
 
   {
-    key = 'w',
+    key = 'a',
     help = 'word (all)',
     action = function()
       textadept.editing.select_word(true)
@@ -739,11 +739,11 @@ local selection_hydra = hydra.create({
     persistent = true,
   },
   {
-    key = 'x',
-    help = 'custom',
+    key = 'u',
+    help = 'user input',
     action = function()
       local value, button = ui.dialogs.input({
-        title = 'Select between custom',
+        title = 'Select between user input',
         text = '',
         button1 = 'OK',
         button2 = 'Cancel',
@@ -834,7 +834,7 @@ local selection_hydra = hydra.create({
   { key = 'h', help = 'buffer start', action = buffer.document_start_extend },
   { key = 'g', help = 'buffer end', action = buffer.document_end_extend },
 
-  { key = 'a', help = 'to target', action = target_select_hydra },
+  { key = 'x', help = 'variable', action = target_select_hydra },
 
   {
     key = 'r',
@@ -944,8 +944,8 @@ local jump_hydra = hydra.create({
     persistent = true,
   },
   {
-    key = 'x',
-    help = 'special',
+    key = 'c',
+    help = 'special character',
     action = function()
       jump_action = 1
       jump_args = '[/\\.:,;]'
