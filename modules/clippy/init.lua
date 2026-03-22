@@ -5,6 +5,7 @@ M.snippet_size = 150
 M.trim_eol = true
 M.persist = true
 M.save_location = _USERHOME .. '/modules/clippy/session'
+M.bump_on_paste = true
 
 local entries = {}
 
@@ -92,6 +93,10 @@ function M.show(remove)
       buffer:replace_target(entries[index].content)
     end
     buffer:end_undo_action()
+    if M.bump_on_paste and index ~= 1 then
+      local entry = table.remove(entries, index)
+      table.insert(entries, 1, entry)
+    end
   else
     local button = ui.dialogs.message({
       title = "It looks like you're trying to delete a clippy entry",
