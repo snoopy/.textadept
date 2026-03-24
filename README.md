@@ -13,7 +13,6 @@
         * diff for specific line
         * show file at revision
     * [hydra](https://github.com/mhwombat/textadept-hydra) - enhanced keychains
-    * origin - thin wrapper around textadept.history
     * perl - adds keyword auto-completion
     * quicknav - set and jump to locations in files quickly (saved per project)
     * run - run build and linter commands inline
