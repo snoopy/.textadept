@@ -195,20 +195,6 @@ local function handle_tab(next)
   return false
 end
 
--- unbind some defaults
-keys['ctrl+alt+\\'] = nil
-keys['ctrl+alt+|'] = nil
-keys['ctrl+u'] = nil
-keys['shift+ctrl+\t'] = nil
-
-keys['ctrl+v'] = textadept.editing.paste_reindent
-
-keys['ctrl+c'] = clippy.copy
-keys['ctrl+x'] = clippy.cut
-keys['ctrl+ins'] = dispatch['clippy']
-keys['shift+ins'] = dispatch['clippy_del']
-keys['shift+del'] = clippy.clear
-
 keys['\t'] = function()
   return handle_tab(true)
 end
@@ -236,15 +222,29 @@ keys['shift+\n'] = function()
   buffer:new_line()
 end
 
+-- unbind some defaults
+keys['ctrl+alt+\\'] = nil
+keys['ctrl+alt+|'] = nil
+keys['ctrl+u'] = nil
+keys['shift+ctrl+\t'] = nil
+
 keys.f4 = cpp.toggle_header
 keys.f6 = util.goto_last_buffer
 
-keys.f9 = function()
+keys['ctrl+-'] = function()
   spellcheck.check_spelling(true)
 end
 
 keys.f8 = buffer.undo
 keys.f5 = buffer.redo
+
+keys['ctrl+v'] = textadept.editing.paste_reindent
+
+keys['ctrl+c'] = clippy.copy
+keys['ctrl+x'] = clippy.cut
+keys['ctrl+ins'] = dispatch['clippy']
+keys['shift+ins'] = dispatch['clippy_del']
+keys['shift+del'] = clippy.clear
 
 keys['ctrl+d'] = buffer.line_duplicate
 keys['alt+d'] = buffer.line_delete
@@ -253,11 +253,12 @@ keys['ctrl+f'] = function()
   ui.find.focus({ in_files = false, incremental = true, regex = false, match_case = false, whole_word = false })
 end
 
-keys['alt+w'] = function()
+keys['alt+x'] = function()
   textadept.editing.select_word()
-  local s, e = buffer.selection_start, buffer.selection_end
-  buffer:delete_range(s, e - s)
+  clippy.cut()
 end
+
+keys['ctrl+g'] = git.heatmap
 
 keys['ctrl+r'] = buffer.reload
 keys['ctrl+b'] = dispatch['saveas']
@@ -299,8 +300,6 @@ keys['alt+c'] = function()
   util.custom_comment(false)
 end
 
-keys['alt+x'] = textadept.editing.select_word
-
 keys['alt+\b'] = function()
   buffer:line_up()
   buffer:line_delete()
@@ -328,6 +327,14 @@ keys.f11 = function()
 end
 keys.f12 = function()
   util.find_word_under_cursor(true)
+end
+
+keys.f9 = function()
+  buffer:drop_selection_n(buffer.selections)
+  view:scroll_caret()
+end
+keys.f10 = function()
+  textadept.editing.select_word()
 end
 
 keys['alt+left'] = function()
@@ -551,14 +558,6 @@ local select_functions = {
   [2] = function(reverse)
     util.select_until(select_args, reverse)
   end,
-  [3] = function(reverse)
-    if reverse then
-      buffer:drop_selection_n(buffer.selections)
-    else
-      textadept.editing.select_word()
-    end
-    view:scroll_caret()
-  end,
 }
 
 local target_select_hydra = hydra.create({
@@ -636,15 +635,6 @@ local target_select_hydra = hydra.create({
   },
 
   {
-    key = 'x',
-    help = 'current word',
-    action = function()
-      select_action = 3
-    end,
-    persistent = true,
-  },
-
-  {
     key = 'j',
     help = 'select left to',
     action = function()
@@ -715,7 +705,7 @@ local selection_hydra = hydra.create({
   },
 
   {
-    key = 'a',
+    key = 'w',
     help = 'word (all)',
     action = function()
       textadept.editing.select_word(true)
@@ -1680,7 +1670,7 @@ hydra.keys = hydra.create({
   { key = 'alt+s', help = 'select', action = selection_hydra },
   { key = 'alt+i', help = 'insert', action = insert_hydra },
   { key = 'alt+n', help = 'snippets', action = textadept.snippets.select },
-  { key = 'alt+v', help = 'view', action = view_hydra },
+  { key = 'alt+w', help = 'view', action = view_hydra },
   { key = 'alt+p', help = 'project', action = project_hydra },
   { key = 'alt+g', help = 'git', action = git_hydra },
   { key = 'alt+t', help = 'toggle lines', action = toggle_folding_hydra },
