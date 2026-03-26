@@ -9,7 +9,7 @@ local function is_valid(path)
   local rootpath = io.get_project_root(true)
   if not rootpath then return end
 
-  if not path:match(rootpath) then return end
+  if not path:find(rootpath, 1, true) then return end
 
   for k, _ in pairs(path_ignore_list) do
     if path:match(k) then return false end
@@ -84,7 +84,7 @@ function M.run(mode)
     .. ' 2>&1'
   -- stylua: ignore end
   -- ruff check --fix --select I001
-  linter_commands['python'] = 'ruff check --line-length 120 --select ALL --ignore D200,D205,D209,D212,D213,D400,D415 --output-format pylint '
+  linter_commands['python'] = 'ruff check --line-length 120 --select ALL --ignore D200,D203,D205,D209,D212,D213,D400,D415 --output-format pylint '
     .. buffer.filename
     .. (_G.WIN32 and ' 2>&1' or '')
   linter_commands['lua'] = 'luacheck --no-color ' .. buffer.filename
