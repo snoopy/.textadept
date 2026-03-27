@@ -105,7 +105,10 @@ function M.show(remove)
       button1 = 'Yes',
       button2 = 'No',
     })
-    if button == 1 then table.remove(entries, index) end
+    if button == 1 then
+      table.remove(entries, index)
+      ui.statusbar_text = 'clippy entry deleted'
+    end
   end
 end
 
@@ -121,7 +124,10 @@ function M.clear()
     button1 = 'Yes',
     button2 = 'No',
   })
-  if button == 1 then entries = {} end
+  if button == 1 then
+    entries = {}
+    ui.statusbar_text = 'clippy cache cleared'
+  end
 end
 
 local function serialize()
