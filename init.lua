@@ -1224,7 +1224,10 @@ local project_hydra = hydra.create({
   {
     key = 'i',
     help = 'ctags: init',
-    action = textadept.menu.menubar[_L['Search']][_L['Ctags']][_L['Generate Project Tags']][2],
+    action = function()
+      textadept.menu.menubar[_L['Search']][_L['Ctags']][_L['Generate Project Tags']][2]()
+      ui.statusbar_text = 'CTAGS initialized'
+    end,
   },
   {
     key = 'k',
