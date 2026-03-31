@@ -101,38 +101,36 @@ M.api_commands = {} -- legacy
 -- Combine this with other flags in [`ctags.ctags_flags`]() if Lua files will be parsed.
 
 M.LUA_FLAGS = table.concat({
-  '--langdef=luax',
-  '--langmap=luax:.lua',
-  [[--regex-luax="/^\s*function\s+([[:alnum:]_]+[.:])*([[:alnum:]_]+)\(/\2/f/"]],
-  [[--regex-luax="/^\s*local\s+function\s+([[:alnum:]_]+)\(/\1/f/"]],
-  [[--regex-luax="/^([[:alnum:]_]+\.)*([[:alnum:]_]+)\s*=\s*[{]/\2/t/"]],
+  '--languages=Lua',
+  '--fields=+iaS',
+  '--extras=+fq',
+  '--kinds-Lua=+f',
+  '--output-format=u-ctags',
 }, ' ')
 
 M.CPP_FLAGS = table.concat({
   '--languages=C++',
   '--langmap=C++:+.h',
-  '--fields=+{line}{end}{kind}{scope}{signature}',
-  '--extras=+q',
+  '--fields=+iaS{line}{end}{kind}{scope}{signature}',
+  '--extras=+fq',
   '--tag-relative=yes',
-  '--kinds-c++="*"',
+  '--kinds-C++=*',
   '--output-format=u-ctags',
 }, ' ')
 
 M.PYTHON_FLAGS = table.concat({
   '--languages=Python',
   '--langmap=Python:+.py',
-  '--extras=+r',
-  '--fields=+riK',
-  '--fields-Python=+{nameref}',
-  '--kinds-Python=+cfmp',
+  '--fields=+iaSK',
+  '--extras=+fq',
+  '--kinds-Python=+cfmvi',
   '--output-format=u-ctags',
 }, ' ')
 
 M.DEFAULT_FLAGS = table.concat({
-  -- Include inheritance, access, and signature information
   '--fields=+iaS',
-  -- Add qualified tags (class.member) and macro definitions
   '--extras=+fq',
+  '--output-format=u-ctags',
 })
 
 local LANG_FLAGS = {
