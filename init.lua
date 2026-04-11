@@ -260,10 +260,21 @@ keys['alt+x'] = function()
   clippy.cut()
 end
 
-keys['ctrl+g'] = git.heatmap
+keys['alt+y'] = function()
+  local pos = buffer.current_pos
+  textadept.editing.select_word()
+  buffer:copy_text(buffer:get_sel_text())
+  buffer:set_empty_selection(pos)
+end
+
+keys['ctrl+h'] = git.heatmap
 
 keys['ctrl+r'] = buffer.reload
-keys['ctrl+b'] = dispatch['saveas']
+keys['ctrl+b'] = function()
+  if buffer.filename == nil then return end
+  buffer:copy_text(buffer.filename)
+  ui.statusbar_text = 'Copied buffer name to clipboard.'
+end
 
 keys['ctrl+t'] = function()
   view:toggle_fold(buffer:line_from_position(buffer.current_pos), view.FOLDACTION_TOGGLE)
@@ -277,7 +288,7 @@ end
 
 keys['ctrl+m'] = textadept.bookmarks.toggle
 
-keys['alt+y'] = view.vertical_center_caret
+keys['alt+a'] = view.vertical_center_caret
 
 keys['ctrl+1'] = function()
   util.enclose_or_add("'", "'")
@@ -1177,15 +1188,6 @@ local buffer_hydra = hydra.create({
     action = buffer.reload,
   },
   { key = 's', help = 'save as', action = dispatch['saveas'] },
-  {
-    key = 'n',
-    help = 'copy name',
-    action = function()
-      if buffer.filename == nil then return end
-      buffer:copy_text(buffer.filename)
-      ui.statusbar_text = 'Copied buffer name to clipboard.'
-    end,
-  },
   { key = 'f', help = 'formatting', action = formatting_hydra },
   { key = 'v', help = 'favorite', action = favorites.toggle },
   {
