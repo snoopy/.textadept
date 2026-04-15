@@ -1246,9 +1246,9 @@ local project_hydra = hydra.create({
       })
       if button == 2 then return end
 
-      for i = #_G._BUFFERS, 1, -1 do
-        if _G._BUFFERS[i].filename then
-          if _G._BUFFERS[i].filename:match(rootpath) then _G._BUFFERS[i]:close() end
+      for i = #_BUFFERS, 1, -1 do
+        if _BUFFERS[i].filename then
+          if _BUFFERS[i].filename:match(rootpath) then _BUFFERS[i]:close() end
         end
       end
     end,
