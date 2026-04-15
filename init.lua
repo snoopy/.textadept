@@ -571,9 +571,6 @@ local select_functions = {
   [1] = function(reverse)
     util.select_until(select_args, reverse)
   end,
-  [2] = function(reverse)
-    util.select_until(select_args, reverse)
-  end,
 }
 
 local target_select_hydra = hydra.create({
