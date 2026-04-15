@@ -228,7 +228,6 @@ end
 keys['ctrl+alt+\\'] = nil
 keys['ctrl+alt+|'] = nil
 keys['ctrl+u'] = nil
-keys['shift+ctrl+\t'] = nil
 
 keys.f4 = cpp.toggle_header
 keys.f6 = util.goto_last_buffer
