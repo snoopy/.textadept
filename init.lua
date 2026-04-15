@@ -961,7 +961,7 @@ local jump_hydra = hydra.create({
     help = 'back',
     action = function()
       textadept.history.back()
-      view.vertical_center_caret()
+      view:vertical_center_caret()
     end,
     persistent = true,
   },
@@ -970,7 +970,7 @@ local jump_hydra = hydra.create({
     help = 'forward',
     action = function()
       textadept.history.forward()
-      view.vertical_center_caret()
+      view:vertical_center_caret()
     end,
     persistent = true,
   },
