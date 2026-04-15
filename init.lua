@@ -1412,7 +1412,6 @@ local quicknav_hydra = hydra.create({
 })
 
 local open_hydra = hydra.create({
-  -- { key = 'o', help = 'open', action = dispatch['open'] },
   { key = 'o', help = 'open', action = io.open_file },
   {
     key = 'f',
@@ -1660,8 +1659,6 @@ local toggle_folding_hydra = hydra.create({
     key = 'ctrl+down',
     help = 'next contracted node',
     action = function()
-      -- local pos = view:contracted_fold_next(buffer:line_from_position(buffer.current_pos) + 1)
-      -- if pos > 0 then buffer:goto_line(pos) end
       util.goto_fold_point(true)
     end,
     persistent = true,
