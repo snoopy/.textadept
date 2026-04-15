@@ -482,16 +482,20 @@ local edit_hydra = hydra.create({
     key = 'u',
     help = 'upper case',
     action = function()
+      buffer:begin_undo_action()
       if buffer.selection_empty then textadept.editing.select_word() end
       buffer.upper_case()
+      buffer:end_undo_action()
     end,
   },
   {
     key = 'l',
     help = 'lower case',
     action = function()
+      buffer:begin_undo_action()
       if buffer.selection_empty then textadept.editing.select_word() end
       buffer.lower_case()
+      buffer:end_undo_action()
     end,
   },
 
