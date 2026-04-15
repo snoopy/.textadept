@@ -363,7 +363,6 @@ keys['alt+\n'] = function()
   buffer:begin_undo_action()
   buffer:vc_home()
   local _, caret_pos = buffer:get_cur_line()
-  if caret_pos == 1 then buffer:vc_home() end
   buffer:new_line()
   buffer:line_up()
   buffer:end_undo_action()
@@ -459,7 +458,6 @@ local edit_hydra = hydra.create({
     action = function()
       buffer:vc_home()
       local _, caret_pos = buffer:get_cur_line()
-      if caret_pos == 1 then buffer:vc_home() end
       buffer:line_end_extend()
       buffer:delete_back()
     end,
