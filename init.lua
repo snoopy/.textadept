@@ -270,7 +270,7 @@ keys['ctrl+h'] = git.heatmap
 
 keys['ctrl+r'] = buffer.reload
 keys['ctrl+b'] = function()
-  if buffer.filename == nil then return end
+  if not buffer.filename then return end
   buffer:copy_text(buffer.filename)
   ui.statusbar_text = 'Copied buffer name to clipboard.'
 end
