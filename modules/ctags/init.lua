@@ -188,7 +188,7 @@ local function find_tags(pattern)
   local tmpfile
   ::retry::
   for _, filename in ipairs(tag_files) do
-    local dir = filename:match('^.+[/\\]'), false
+    local dir = filename:match('^.+[/\\]')
     local f = io.open(filename)
     if not f then goto continue end
     for line in f:lines() do

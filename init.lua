@@ -362,7 +362,6 @@ keys['ctrl+alt+left'] = buffer.word_part_left
 keys['alt+\n'] = function()
   buffer:begin_undo_action()
   buffer:vc_home()
-  local _, caret_pos = buffer:get_cur_line()
   buffer:new_line()
   buffer:line_up()
   buffer:end_undo_action()
@@ -395,12 +394,8 @@ keys['ins'] = function()
   end
 end
 
-keys['home'] = function()
-  buffer.vc_home_wrap()
-end
-keys['end'] = function()
-  buffer.line_end_wrap()
-end
+keys['home'] = buffer.vc_home_wrap
+keys['end'] = buffer.line_end_wrap
 
 local insert_hydra = hydra.create({
   {
@@ -457,7 +452,6 @@ local edit_hydra = hydra.create({
     help = 'erase line',
     action = function()
       buffer:vc_home()
-      local _, caret_pos = buffer:get_cur_line()
       buffer:line_end_extend()
       buffer:delete_back()
     end,

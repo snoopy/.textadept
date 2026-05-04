@@ -133,7 +133,7 @@ end
 local function serialize()
   if not M.persist then return end
 
-  local file, err = io.open(M.save_location, 'w')
+  local file = io.open(M.save_location, 'w')
   if not file then return end
 
   file:write('return {\n')
