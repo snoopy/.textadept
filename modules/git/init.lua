@@ -8,7 +8,7 @@ local heatmap_active = {}
 
 local SECONDS_PER_DAY = 86400
 local SECONDS_PER_WEEK = SECONDS_PER_DAY * 7
-local SECONDS_PER_MONTH = SECONDS_PER_WEEK * 30
+local SECONDS_PER_MONTH = SECONDS_PER_DAY * 30
 local HEATMAP_TIMESTEPS = {
   SECONDS_PER_DAY,
   SECONDS_PER_WEEK,
@@ -77,7 +77,7 @@ function M.line_diff()
   local result = assert(file:read('*a'))
   file:close()
   ui.print(result)
-  buffer.document_start()
+  buffer:document_start()
   buffer:set_lexer('diff')
 end
 
@@ -136,6 +136,7 @@ function M.blame()
   if not rootpath then return end
   local filepath = buffer.filename
 
+  blame_lines = {}
   if blame_active then
     blame_active = false
     buffer:eol_annotation_clear_all()

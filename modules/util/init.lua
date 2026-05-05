@@ -290,7 +290,7 @@ function M.goto_fold_point(next)
   end
 
   if pos > 0 then
-    buffer.goto_line(pos)
+    buffer:goto_line(pos)
     view:vertical_center_caret()
   end
 end
