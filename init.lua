@@ -1428,7 +1428,17 @@ local open_hydra = hydra.create({
       io.quick_open(_HOME)
     end,
   },
-  { key = 'r', help = 'recent', action = dispatch['recent'] },
+  {
+    key = 'r',
+    help = 'recent',
+    action = function()
+      if #io.recent_files == 0 then
+        ui.statusbar_text = 'no recent files'
+        return
+      end
+      dispatch['recent']()
+    end,
+  },
   {
     key = 'p',
     help = 'project',
