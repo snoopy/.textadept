@@ -83,10 +83,11 @@ textadept.editing.autocomplete_all_words = true
 
 buffer.virtual_space_options = buffer.VS_RECTANGULARSELECTION
 
+lexer.detect_extensions.ep = 'html'
+-- use ini as approximate lexer
 lexer.detect_extensions.conf = 'ini'
 lexer.detect_extensions.csv = 'ini'
 lexer.detect_extensions.config = 'ini'
-lexer.detect_extensions.ep = 'html'
 
 textadept.editing.auto_pairs = nil
 
@@ -127,6 +128,8 @@ events.connect(events.BUFFER_AFTER_SWITCH, set_buffer_options)
 events.connect(events.VIEW_AFTER_SWITCH, set_buffer_options)
 events.connect(events.VIEW_NEW, set_buffer_options)
 
+-- automatically reload changed buffers
+-- and prevent TA handler from running
 events.connect(events.FILE_CHANGED, function()
   buffer:reload()
   ui.statusbar_text = 'buffer reloaded'
@@ -476,7 +479,7 @@ local edit_hydra = hydra.create({
     action = function()
       buffer:begin_undo_action()
       if buffer.selection_empty then textadept.editing.select_word() end
-      buffer.upper_case()
+      buffer:upper_case()
       buffer:end_undo_action()
     end,
   },
@@ -486,7 +489,7 @@ local edit_hydra = hydra.create({
     action = function()
       buffer:begin_undo_action()
       if buffer.selection_empty then textadept.editing.select_word() end
-      buffer.lower_case()
+      buffer:lower_case()
       buffer:end_undo_action()
     end,
   },
@@ -548,8 +551,8 @@ local edit_hydra = hydra.create({
       buffer:begin_undo_action()
       for i = 1, buffer.selections do
         local s, e = buffer.selection_n_start[i], buffer.selection_n_end[i]
-        buffer:delete_range(s - 1, 1)
         buffer:delete_range(e - 1, 1)
+        buffer:delete_range(s - 1, 1)
       end
       buffer:end_undo_action()
     end,
@@ -1229,7 +1232,6 @@ local project_hydra = hydra.create({
     action = function()
       local rootpath = util.get_project_root()
       if not rootpath then return end
-      rootpath = rootpath:gsub('%-', '%%-')
 
       local button = ui.dialogs.message({
         title = 'Close all project buffers?',
@@ -1242,7 +1244,7 @@ local project_hydra = hydra.create({
 
       for i = #_BUFFERS, 1, -1 do
         if _BUFFERS[i].filename then
-          if _BUFFERS[i].filename:match(rootpath) then _BUFFERS[i]:close() end
+          if _BUFFERS[i].filename:find(rootpath, 1, true) then _BUFFERS[i]:close() end
         end
       end
     end,
@@ -1411,6 +1413,7 @@ local open_hydra = hydra.create({
     key = 'f',
     help = 'flat open',
     action = function()
+      if not buffer.filename then return end
       io.quick_open(buffer.filename:match('^(.+)[/\\]'))
     end,
   },
