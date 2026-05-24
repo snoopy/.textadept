@@ -153,11 +153,21 @@ if not rawget(_L, 'Ctags') then
   _L['Generate Project Tags'] = 'Generate _Project Tags'
 end
 
+local function paths_match(a, b)
+  a = a:gsub('[/\\]', '/'):gsub('/+', '/')
+  b = b:gsub('[/\\]', '/'):gsub('/+', '/')
+  if WIN32 then
+    a, b = a:lower(), b:lower()
+  end
+  return a == b
+end
+
 -- Searches all available tags files tag *tag* and returns a table of tags found.
 -- All Ctags in tags files must be sorted.
 -- @param tag Tag to find.
+-- @param filepath Optional full file path to filter results to only tags from that file.
 -- @return table of tags found with each entry being a table that contains the 4 ctags fields
-local function find_tags(pattern)
+local function find_tags(pattern, filepath)
   -- TODO: binary search?
   local tags = {}
   -- Determine the tag files to search in.
@@ -194,9 +204,10 @@ local function find_tags(pattern)
     for line in f:lines() do
       local name, file, ex_cmd, ext_fields = line:match(pattern)
       if name then
-        if not file:find('^%a?:?[/\\]') then file = dir .. file end
+        if not file:find('^%a?:?[/\\]') then file = (dir or '') .. file end
         if ex_cmd:find('^/') then ex_cmd = ex_cmd:match('^/^?(.-)$?/$') end
-        tags[#tags + 1] = { name, file:gsub('\\\\', '\\'), ex_cmd, ext_fields }
+        file = file:gsub('\\\\', '\\')
+        if not filepath or paths_match(file, filepath) then tags[#tags + 1] = { name, file, ex_cmd, ext_fields } end
       end
     end
     f:close()
@@ -207,9 +218,10 @@ local function find_tags(pattern)
     tmpfile = os.tmpname()
     if WIN32 then tmpfile = os.getenv('TEMP') .. tmpfile end
     local cmd = string.format('%s -o "%s" "%s"', M.ctags, tmpfile, buffer.filename)
-    os.spawn(cmd):wait()
-    tag_files = { tmpfile }
-    goto retry
+    if os.spawn(cmd):wait() == 0 then
+      tag_files = { tmpfile }
+      goto retry
+    end
   end
   if tmpfile then os.remove(tmpfile) end
   return tags
@@ -230,13 +242,12 @@ function M.goto_tag(tag, file_only, from_dialog)
 
   -- Search for potential tags to go to.
 
-  local fileonly_pattern = '^([^\t]+)\t(%S+[/\\]'
-    .. buffer.filename:match('[^/\\]+$'):gsub('%-', '%%-')
-    .. ')\t(.-);"\t?(.*)$'
+  local escaped = buffer.filename:match('[^/\\]+$'):gsub('[%^%$%(%)%%%.%[%]%*%+%-%?]', '%%%1')
+  local fileonly_pattern = '^([^\t]+)\t(.-' .. escaped .. ')\t(.-);"\t?(.*)$'
   local def_pattern = file_only and fileonly_pattern or '^(' .. tag .. ')\t([^\t]+)\t(.-);"\t?(.*)$'
   -- use a more lenient pattern when searching via input dialog
   local pattern = from_dialog and '^([^\t]*' .. tag .. '[^\t]*)\t([^\t]+)\t(.-);"\t?(.*)$' or def_pattern
-  local tags = find_tags(pattern)
+  local tags = find_tags(pattern, file_only and buffer.filename)
 
   if #tags == 0 then return false end
   -- Prompt the user to select a tag from multiple candidates or automatically pick the only one.
@@ -292,7 +303,8 @@ textadept.editing.autocompleters.ctag = function()
   local completions = {}
   local s = buffer:word_start_position(buffer.current_pos, true)
   local e = buffer:word_end_position(buffer.current_pos, true)
-  local tags = find_tags('^([^\t]*' .. buffer:text_range(s, e) .. '[^\t]*)\t([^\t]+)\t(.-);"\t?(.*)$')
+  local word = buffer:text_range(s, e):gsub('[%^%$%(%)%%%.%[%]%*%+%-%?]', '%%%1')
+  local tags = find_tags('^([^\t]*' .. word .. '[^\t]*)\t([^\t]+)\t(.-);"\t?(.*)$')
   for i = 1, #tags do
     completions[#completions + 1] = tags[i][1]
   end
@@ -335,7 +347,11 @@ m_search[#m_search + 1] = {
         ctags_flags = string.format('%s %s', M.ctags_flags, M.DEFAULT_FLAGS)
       end
 
-      os.spawn(string.format('%s %s', M.ctags, ctags_flags), root_directory):wait()
+      if os.spawn(string.format('%s %s', M.ctags, ctags_flags), root_directory):wait() ~= 0 then
+        ui.statusbar_text = 'Ctags not found'
+      else
+        ui.statusbar_text = 'Tags generated'
+      end
     end,
   },
 }
