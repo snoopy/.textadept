@@ -131,6 +131,7 @@ events.connect(events.VIEW_NEW, set_buffer_options)
 -- automatically reload changed buffers
 -- and prevent TA handler from running
 events.connect(events.FILE_CHANGED, function()
+  if buffer.modify then return end
   buffer:reload()
   ui.statusbar_text = 'buffer reloaded'
   return true
@@ -551,8 +552,8 @@ local edit_hydra = hydra.create({
       buffer:begin_undo_action()
       for i = 1, buffer.selections do
         local s, e = buffer.selection_n_start[i], buffer.selection_n_end[i]
-        buffer:delete_range(e - 1, 1)
         buffer:delete_range(s - 1, 1)
+        buffer:delete_range(e - 1, 1)
       end
       buffer:end_undo_action()
     end,
@@ -1085,7 +1086,7 @@ local eol_hydra = hydra.create({
         return_button = true,
       })
       if button ~= 1 then return end
-      buffer.edge_column = value
+      buffer.edge_column = tonumber(value)
     end,
   },
 })
@@ -1136,7 +1137,7 @@ local whitespace_hydra = hydra.create({
         return_button = true,
       })
       if button == 1 then
-        buffer.tab_width = value
+        buffer.tab_width = tonumber(value)
         events.emit(events.UPDATE_UI, 1) -- for updating statusbar
       end
     end,
