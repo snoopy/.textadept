@@ -1,6 +1,31 @@
 local M = {}
 
-local last_buffer = _BUFFERS[#_BUFFERS]
+-- stack of visited non-textredux buffers (most recent last)
+local buf_history = {}
+
+events.connect(events.BUFFER_BEFORE_SWITCH, function()
+  if buffer._textredux then return end
+  -- Add to history, removing old duplicate if present
+  for i = #buf_history, 1, -1 do
+    if buf_history[i] == buffer then
+      table.remove(buf_history, i)
+      break
+    end
+  end
+  buf_history[#buf_history + 1] = buffer
+  if #buf_history > 50 then table.remove(buf_history, 1) end
+end)
+
+function M.goto_last_buffer()
+  -- Scan history backward for valid, non-current, non-textredux buffer
+  for i = #buf_history, 1, -1 do
+    local b = buf_history[i]
+    if b ~= buffer and _BUFFERS[b] and not b._textredux then
+      view:goto_buffer(b)
+      return
+    end
+  end
+end
 
 function M.get_project_root()
   local rootpath = io.get_project_root(true)
@@ -65,16 +90,6 @@ function M.move_to(target, reverse)
 
   buffer.search_flags = buffer.FIND_REGEXP
   if buffer:search_in_target(target) ~= -1 then buffer:goto_pos(buffer.target_start) end
-end
-
--- lastbuffer
-events.connect(events.BUFFER_BEFORE_SWITCH, function()
-  last_buffer = view.buffer
-end)
-
--- Switch to last buffer.
-function M.goto_last_buffer()
-  view:goto_buffer(last_buffer)
 end
 
 function M.add_braces(style, append, tab)
