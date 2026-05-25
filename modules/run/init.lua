@@ -11,8 +11,9 @@ local function is_valid(path)
 
   if not path:find(rootpath, 1, true) then return end
 
-  for k, _ in pairs(path_ignore_list) do
-    if path:match(k) then return false end
+  local normalized = path:gsub('\\', '/')
+  for component in normalized:gmatch('[^/]+') do
+    if path_ignore_list[component] then return false end
   end
   return true
 end
@@ -50,19 +51,23 @@ local function run_and_mark(cmd, cwd)
     ::continue::
   end
 
+  local original_filename = buffer.filename and buffer.filename:gsub('\\', '/')
+
   for filepath_abs, line_table in pairs(messages) do
+    io.open_file(filepath_abs)
     for line_num, msg_table in pairs(line_table) do
       local all_messages = ''
       for _, msg in pairs(msg_table) do
         all_messages = all_messages .. msg .. '\n'
       end
-      io.open_file(filepath_abs)
       buffer:goto_line(line_num)
       buffer.annotation_text[line_num] = all_messages:gsub('\n$', '')
       buffer.annotation_style[line_num] = buffer:style_of_name(lexer.COMMENT)
       buffer:marker_add(line_num, textadept.run.MARK_WARNING)
     end
   end
+
+  if messages[original_filename] and buffer.filename ~= original_filename then io.open_file(original_filename) end
 
   ui.statusbar_text = issues .. ' issues found'
 end
