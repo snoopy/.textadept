@@ -8,18 +8,18 @@ local heatmap_active = {}
 
 local SECONDS_PER_DAY = 86400
 local SECONDS_PER_WEEK = SECONDS_PER_DAY * 7
-local SECONDS_PER_MONTH = SECONDS_PER_DAY * 30
+
 local HEATMAP_TIMESTEPS = {
-  SECONDS_PER_DAY,
-  SECONDS_PER_WEEK,
-  SECONDS_PER_MONTH,
-  SECONDS_PER_MONTH * 2,
-  SECONDS_PER_MONTH * 3,
-  SECONDS_PER_MONTH * 5,
-  SECONDS_PER_MONTH * 8,
-  SECONDS_PER_MONTH * 13,
-  SECONDS_PER_MONTH * 21,
-  SECONDS_PER_MONTH * 34,
+  SECONDS_PER_DAY, -- < 1 day
+  SECONDS_PER_DAY * 3, -- < 3 days
+  SECONDS_PER_WEEK, -- < 1 week
+  SECONDS_PER_WEEK * 2, -- < 2 weeks
+  SECONDS_PER_DAY * 30, -- < 1 month
+  SECONDS_PER_DAY * 60, -- < 2 months
+  SECONDS_PER_DAY * 90, -- < 3 months
+  SECONDS_PER_DAY * 180, -- < 6 months
+  SECONDS_PER_DAY * 365, -- < 1 year
+  SECONDS_PER_DAY * 730, -- < 2 years
 }
 
 local HEATMAP_COLORS = {
@@ -41,8 +41,8 @@ local function make_heatmap()
     HEATMAP_LEVELS[i] = {}
     HEATMAP_LEVELS[i]['time'] = HEATMAP_TIMESTEPS[i]
     HEATMAP_LEVELS[i]['color'] = HEATMAP_COLORS[i]
-    HEATMAP_LEVELS[i]['marker'] = view.new_marker_number()
-    view.marker_define(HEATMAP_LEVELS[i]['marker'], view.MARK_FULLRECT)
+    HEATMAP_LEVELS[i]['marker'] = view:new_marker_number()
+    view:marker_define(HEATMAP_LEVELS[i]['marker'], view.MARK_FULLRECT)
     view.marker_back[HEATMAP_LEVELS[i]['marker']] = HEATMAP_LEVELS[i]['color']
   end
 end
@@ -113,7 +113,7 @@ function M.heatmap()
       line:match('^(........).+(%d%d%d%d)%-(%d%d)%-(%d%d) (%d%d):(%d%d):(%d%d)')
     if not commit or not year or not month or not day or not hour or not min or not sec then
       ui.print('heatmap: failed to parse line: ' .. line)
-      return
+      goto continue
     end
     if commit == '00000000' then goto continue end
     local timestamp = os.time({
@@ -150,8 +150,8 @@ function M.blame()
   proc:close()
 
   for line in result:gmatch('[^\r\n]+') do
-    local blame_info = line:match('%(%s*(.+)%s+%d+%)')
-    if blame_info ~= nil then table.insert(blame_lines, blame_info) end
+    local author, date = line:match('%(%s*(.-)%s+(%d%d%d%d%-%d%d%-%d%d [%d:]+ [%+%-]%d+)%s+%d+%)')
+    if author then table.insert(blame_lines, author .. ' ' .. date) end
   end
 
   show_git_blame()
@@ -161,10 +161,9 @@ function M.show_rev()
   local rootpath = get_project_root()
   if not rootpath then return end
   local file = buffer.filename
-  rootpath = rootpath:gsub('%-', '%%-')
-  file = file:gsub(rootpath, '')
+  if file:sub(1, #rootpath) == rootpath then file = file:sub(#rootpath + 1) end
   file = file:gsub('^[/\\]', '')
-  file = file:gsub('[\\]', '/')
+  file = file:gsub('\\', '/')
 
   local revision, button = ui.dialogs.input({
     title = 'Enter git revision',
@@ -177,7 +176,7 @@ end
 
 events.connect(events.UPDATE_UI, function(updated)
   if not blame_active then return end
-  if not (updated & buffer.UPDATE_H_SCROLL) then return end
+  if not (updated & buffer.UPDATE_V_SCROLL) then return end
   if #blame_lines == 0 then return end
   show_git_blame()
 end)
