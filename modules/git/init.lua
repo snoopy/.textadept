@@ -23,16 +23,16 @@ local HEATMAP_TIMESTEPS = {
 }
 
 local HEATMAP_COLORS = {
+  color.rgb2bgr('ff2d2d'),
   color.rgb2bgr('fbdc07'),
   color.rgb2bgr('e38915'),
   color.rgb2bgr('c76b34'),
   color.rgb2bgr('a75454'),
   color.rgb2bgr('8a3f63'),
-  color.rgb2bgr('6f2a63'),
-  color.rgb2bgr('4b1a56'),
-  color.rgb2bgr('2a0f3f'),
-  color.rgb2bgr('140d2b'),
-  color.rgb2bgr('000004'),
+  color.rgb2bgr('4b2d7a'),
+  color.rgb2bgr('1e3a5f'),
+  color.rgb2bgr('1a3344'),
+  color.rgb2bgr('1c2530'),
 }
 
 local HEATMAP_LEVELS = {}
