@@ -101,33 +101,32 @@ function M.heatmap()
     return
   end
 
-  local file = assert(io.popen('git -C ' .. rootpath .. ' blame -c ' .. filepath, 'r'))
-  local lines = assert(file:read('*a'))
+  local file = assert(io.popen('git -C ' .. rootpath .. ' blame --line-porcelain ' .. filepath, 'r'))
+  local output = assert(file:read('*a'))
   file:close()
 
   local today = os.time()
-  local current_line = 0
-  for line in lines:gmatch('[^\r\n]+') do
-    current_line = current_line + 1
-    local commit, year, month, day, hour, min, sec =
-      line:match('^(........).+(%d%d%d%d)%-(%d%d)%-(%d%d) (%d%d):(%d%d):(%d%d)')
-    if not commit or not year or not month or not day or not hour or not min or not sec then
-      ui.print('heatmap: failed to parse line: ' .. line)
-      goto continue
+  local current_line = nil
+  local committer_time = nil
+  local is_committed = false
+  for line in output:gmatch('[^\r\n]+') do
+    local sha, final_line = line:match('(%x+) %d+ (%d+)')
+    if sha then
+      current_line = tonumber(final_line)
+      is_committed = (sha:match('^0+$') == nil)
+      committer_time = nil
     end
-    if commit == '00000000' then goto continue end
-    local timestamp = os.time({
-      year = year,
-      month = month,
-      day = day,
-      hour = hour,
-      min = min,
-      sec = sec,
-    })
-    local time_diff = os.difftime(today, timestamp)
-    buffer:marker_add(current_line, get_heatmap_value(time_diff))
-    ::continue::
+
+    local ct = line:match('^committer%-time (%d+)')
+    if ct then committer_time = tonumber(ct) end
+    if line:match('^\t') then
+      if current_line and committer_time and is_committed then
+        local time_diff = today - committer_time
+        buffer:marker_add(current_line, get_heatmap_value(time_diff))
+      end
+    end
   end
+
   heatmap_active[filepath] = true
 end
 
