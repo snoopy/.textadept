@@ -88,18 +88,20 @@ local function get_heatmap_value(time_diff)
   return HEATMAP_LEVELS[#HEATMAP_LEVELS]['marker']
 end
 
+function M.clear_heatmap()
+  if not heatmap_active[buffer.filename] then return end
+  for _, value in ipairs(HEATMAP_LEVELS) do
+    buffer:marker_delete_all(value['marker'])
+  end
+  heatmap_active[buffer.filename] = false
+end
+
 function M.heatmap()
   local rootpath = get_project_root()
   if not rootpath then return end
   local filepath = buffer.filename
 
-  if heatmap_active[filepath] then
-    for _, value in ipairs(HEATMAP_LEVELS) do
-      buffer:marker_delete_all(value['marker'])
-    end
-    heatmap_active[filepath] = false
-    return
-  end
+  M.clear_heatmap()
 
   local file = assert(io.popen('git -C ' .. rootpath .. ' blame --line-porcelain ' .. filepath, 'r'))
   local output = assert(file:read('*a'))

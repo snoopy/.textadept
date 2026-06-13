@@ -1262,7 +1262,7 @@ local git_hydra = hydra.create({
   },
   { key = 'l', help = 'diff of current line', action = git.line_diff },
   { key = 'r', help = 'show file at revision', action = git.show_rev },
-  { key = 'h', help = 'heat map', action = git.heatmap },
+  { key = 'h', help = 'clear heat map', action = git.clear_heatmap },
 })
 
 local view_hydra = hydra.create({
