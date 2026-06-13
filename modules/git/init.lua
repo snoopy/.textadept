@@ -48,16 +48,6 @@ local function make_heatmap()
 end
 make_heatmap()
 
-local function show_git_blame()
-  local current_line = buffer:line_from_position(buffer.current_pos)
-  local blame_value = blame_lines[current_line]
-  if blame_value == nil then return end
-
-  buffer:eol_annotation_clear_all()
-  buffer.eol_annotation_text[current_line] = blame_value
-  buffer.eol_annotation_style[current_line] = buffer:style_of_name(lexer.COMMENT)
-end
-
 local function get_project_root()
   local rootpath = io.get_project_root(true)
   if not rootpath then
@@ -132,32 +122,6 @@ function M.heatmap()
   heatmap_active[filepath] = true
 end
 
-function M.blame()
-  local rootpath = get_project_root()
-  if not rootpath then return end
-  local filepath = buffer.filename
-
-  blame_lines = {}
-  if blame_active then
-    blame_active = false
-    buffer:eol_annotation_clear_all()
-    return
-  end
-
-  blame_active = true
-
-  local proc = assert(io.popen('git -C ' .. rootpath .. ' blame -c ' .. filepath, 'r'))
-  local result = assert(proc:read('*a'))
-  proc:close()
-
-  for line in result:gmatch('[^\r\n]+') do
-    local author, date = line:match('%(%s*(.-)%s+(%d%d%d%d%-%d%d%-%d%d [%d:]+ [%+%-]%d+)%s+%d+%)')
-    if author then table.insert(blame_lines, author .. ' ' .. date) end
-  end
-
-  show_git_blame()
-end
-
 function M.show_rev()
   local rootpath = get_project_root()
   if not rootpath then return end
@@ -174,12 +138,5 @@ function M.show_rev()
 
   textadept.run.run_project(nil, 'git show ' .. revision .. ':' .. file)
 end
-
-events.connect(events.UPDATE_UI, function(updated)
-  if not blame_active then return end
-  if not (updated & buffer.UPDATE_V_SCROLL) then return end
-  if #blame_lines == 0 then return end
-  show_git_blame()
-end)
 
 return M
