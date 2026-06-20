@@ -49,6 +49,8 @@
 -- @module ctags
 local M = {}
 
+local WIN32 = OS == 'windows'
+
 ---
 -- Path to the ctags executable.
 -- The default value is `'ctags'`.
