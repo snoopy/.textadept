@@ -62,7 +62,14 @@ function M.line_diff()
   if not rootpath then return end
   local filename = buffer.filename
   local current_line = buffer:line_from_position(buffer.current_pos)
-  local cmd = 'git -C ' .. rootpath .. ' log -p -L' .. current_line .. ',' .. current_line .. ':' .. filename
+  local cmd = 'git -C '
+    .. rootpath
+    .. ' log --patch --pretty="format:commit: %H%na: %ad %aN%nc: %cd %cN" -L'
+    .. current_line
+    .. ','
+    .. current_line
+    .. ':'
+    .. filename
   local file = assert(io.popen(cmd, 'r'))
   local result = assert(file:read('*a'))
   file:close()
