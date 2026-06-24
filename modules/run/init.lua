@@ -1,5 +1,7 @@
 local M = {}
 
+local WIN32 = OS == 'windows'
+
 local path_ignore_list = {
   ['external'] = true,
   ['build'] = true,
@@ -91,7 +93,7 @@ function M.run(mode)
   -- ruff check --fix --select I001
   linter_commands['python'] = 'ruff check --line-length 120 --select ALL --ignore D200,D203,D205,D209,D212,D213,D400,D415 --output-format pylint '
     .. buffer.filename
-    .. (_G.WIN32 and ' 2>&1' or '')
+    .. (WIN32 and ' 2>&1' or '')
   linter_commands['lua'] = 'luacheck --no-color ' .. buffer.filename
   linter_commands['rust'] = 'cargo clippy --message-format short 2>&1'
 
