@@ -1617,7 +1617,7 @@ local toggle_folding_hydra = hydra.create({
     key = 'home',
     help = 'collapse all',
     action = function()
-      view:fold_all(view.FOLDACTION_CONTRACT)
+      view:fold_all(view.FOLDACTION_CONTRACT_EVERY_LEVEL)
     end,
     persistent = true,
   },
