@@ -1,16 +1,33 @@
 local M = {}
 
+local ctags = require('ctags')
+
 function M.toggle_header()
-  local filename, ext = buffer.filename:match('^(.+%.)(.+)$')
-  if not ext then return end
-  local extensions = ext:find('^h') and { 'cpp', 'cc', 'c', 'cxx' } or { 'h', 'hpp', 'hxx' }
+  local filepath, ext = buffer.filename:match('^(.+%.)(.+)$')
+  if not filepath or not ext then return end
+  local is_header = ext:find('^h')
+  local extensions = is_header and { 'cpp', 'cc', 'c', 'cxx' } or { 'h', 'hpp', 'hxx' }
   for _, ex in pairs(extensions) do
-    local fn = filename .. ex
+    local fn = filepath .. ex
     if lfs.attributes(fn) then
       io.open_file(fn)
       return
     end
   end
+
+  local stem = filepath:match('[/\\]([^/\\]+)%.$')
+  local ext_filter = is_header and { cpp = true, cc = true, c = true, cxx = true }
+    or { h = true, hpp = true, hxx = true }
+
+  local textredux = require('textredux')
+  local goto_tag = textredux
+      and textredux.core.filteredlist.wrap(function()
+        ctags.goto_tag(stem, false, true, ext_filter)
+      end)
+    or function()
+      ctags.goto_tag(stem, false, true, ext_filter)
+    end
+  goto_tag()
 end
 
 textadept.editing.autocompleters.cpp = function()

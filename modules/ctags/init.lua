@@ -1,5 +1,6 @@
 -- Copyright 2007-2023 Mitchell. See LICENSE.
 
+-- [[
 ---
 -- Utilize Ctags with Textadept.
 --
@@ -47,6 +48,8 @@
 -- F12 | F12 | F12 | Go to Ctag
 -- Shift+F12 | ⇧F12 | S-F12 | Go to Ctag...
 -- @module ctags
+-- ]]
+
 local M = {}
 
 local WIN32 = OS == 'windows'
@@ -234,7 +237,7 @@ end
 -- Prompts the user when multiple sources are found.
 -- @param tag The tag to go to the source of.
 -- @return whether or not a tag was found and jumped to.
-function M.goto_tag(tag, file_only, from_dialog)
+function M.goto_tag(tag, file_only, from_dialog, ext_filter)
   if not tag then
     local s = buffer:word_start_position(buffer.current_pos, true)
     local e = buffer:word_end_position(buffer.current_pos, true)
@@ -251,7 +254,15 @@ function M.goto_tag(tag, file_only, from_dialog)
   local pattern = from_dialog and '^([^\t]*' .. tag .. '[^\t]*)\t([^\t]+)\t(.-);"\t?(.*)$' or def_pattern
   local tags = find_tags(pattern, file_only and buffer.filename)
 
-  if #tags == 0 then return false end
+  if ext_filter and #tags > 0 then
+    local filtered = {}
+    for _, t in ipairs(tags) do
+      local ext = t[2]:match('%.([^.]*)$')
+      if ext and ext_filter[ext] then filtered[#filtered + 1] = t end
+    end
+    tags = filtered
+    if #tags == 0 then return false end
+  end
   -- Prompt the user to select a tag from multiple candidates or automatically pick the only one.
   if #tags > 1 then
     local items = {}
