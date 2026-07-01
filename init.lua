@@ -1461,6 +1461,21 @@ local open_hydra = hydra.create({
   },
 })
 
+local _find_dir
+local function select_dir_cb(path, exists, list)
+  list:close()
+  if not exists or not path then return end
+  if lfs.attributes(path, 'mode') ~= 'directory' then
+    ui.statusbar_text = 'Not a directory!'
+    return
+  end
+  _find_dir = path
+  local s = buffer:word_start_position(buffer.current_pos, true)
+  local e = buffer:word_end_position(buffer.current_pos, true)
+  ui.find.find_entry_text = buffer:text_range(s, e)
+  ui.find.focus({ in_files = true, incremental = false, regex = false, match_case = false, whole_word = false })
+end
+
 local find_hydra = hydra.create({
   {
     key = 'f',
@@ -1473,10 +1488,7 @@ local find_hydra = hydra.create({
     key = 'i',
     help = 'in files',
     action = function()
-      local s = buffer:word_start_position(buffer.current_pos, true)
-      local e = buffer:word_end_position(buffer.current_pos, true)
-      ui.find.find_entry_text = buffer:text_range(s, e)
-      ui.find.focus({ in_files = true, incremental = false, regex = false, match_case = false, whole_word = false })
+      textredux.fs.select_directory(select_dir_cb)
     end,
   },
   {
@@ -1504,6 +1516,24 @@ local find_hydra = hydra.create({
   { key = 's', help = 'ctags: symbol', action = dispatch['ctags_symbol'] },
   { key = 'l', help = 'ctags: list view only', action = dispatch['ctags_fileonly'] },
 })
+
+events.connect(events.FIND, function(text)
+  if not _find_dir or not ui.find.in_files then return end
+  if text == '' then
+    _find_dir = nil
+    return
+  end
+  local orig = ui.dialogs.open
+  ui.dialogs.open = function(opts)
+    ui.dialogs.open = orig
+    if opts.only_dirs then
+      local dir = _find_dir
+      _find_dir = nil
+      return dir
+    end
+    return orig(opts)
+  end
+end, 1)
 
 local run_hydra = hydra.create({
   {
