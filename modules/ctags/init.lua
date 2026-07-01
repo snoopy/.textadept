@@ -283,7 +283,7 @@ function M.goto_tag(tag, file_only, from_dialog, ext_filter)
   else
     tag = tags[1]
   end
-  if not lfs.attributes(tag[2]) then return false end
+  if not tag or not lfs.attributes(tag[2]) then return false end
   -- Store the current position in the jump history, if applicable.
   textadept.history.record()
   -- Jump to the tag.
