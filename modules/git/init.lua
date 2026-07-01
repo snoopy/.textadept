@@ -64,7 +64,7 @@ function M.line_diff()
   local current_line = buffer:line_from_position(buffer.current_pos)
   local cmd = 'git -C '
     .. rootpath
-    .. ' log --patch --pretty="format:commit: %H%na: %ad %aN%nc: %cd %cN" -L'
+    .. ' log --patch --pretty="format:commit: %H%na: %ad %aN%nc: %cd %cN%n%s" -L'
     .. current_line
     .. ','
     .. current_line
