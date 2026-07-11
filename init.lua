@@ -96,9 +96,15 @@ textadept.run.run_commands.lua = _HOME .. '/textadept -L "%f"'
 
 textadept.run.compile_commands.cpp = 'g++ -std=c++23 -O2 "%f"'
 textadept.run.build_commands.cpp = function()
-  return 'ninja -C build', io.get_project_root()
+  local dir = io.get_project_root()
+  if lfs.attributes(dir .. '/CMakePresets.json') then
+    return 'cmake --preset debug && cmake --build --preset debug', dir
+  end
+  return 'cmake -B build -S . && cmake --build build', dir
 end
 textadept.run.test_commands.cpp = function()
+  local dir = io.get_project_root()
+  if lfs.attributes(dir .. '/CMakePresets.json') then return 'ctest --preset debug', dir end
   return 'ctest --test-dir build', io.get_project_root()
 end
 
