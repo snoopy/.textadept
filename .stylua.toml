@@ -1,0 +1,5 @@
+syntax = "Lua54"
+indent_type = "Spaces"
+indent_width = 2
+quote_style = "AutoPreferSingle"
+collapse_simple_statement = "ConditionalOnly"
