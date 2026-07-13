@@ -18,6 +18,7 @@
     * [spellcheck](https://github.com/orbitalquark/textadept-spellcheck)
     * [My fork of Textredux](https://github.com/snoopy/textredux) - TUI dialogs for many Textadept features
     * util - utility functions
+    * tagit - git module inspired by emac's magit
 
 * lexers
     * custom c++ lexer which adds a rule for highlighting the last part of a namespace (e.g. in foo::bar::baz baz will be highlighted)

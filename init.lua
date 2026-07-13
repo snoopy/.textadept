@@ -9,6 +9,7 @@ local favorites = require('favorites')
 local cpp = require('cpp')
 local ctags = require('ctags')
 local clippy = require('clippy')
+local tagit = require('tagit')
 
 local format = require('format')
 format.commands.lua =
@@ -1259,9 +1260,12 @@ local project_hydra = hydra.create({
 })
 
 local git_hydra = hydra.create({
-  { key = 'l', help = 'diff of current line', action = git.line_diff },
-  { key = 'r', help = 'show file at revision', action = git.show_rev },
+  { key = 't', help = 'diff only this line', action = git.line_diff },
+  { key = 'v', help = 'show file at revision', action = git.show_rev },
   { key = 'h', help = 'clear heat map', action = git.clear_heatmap },
+  { key = 's', help = 'tagit: status', action = tagit.status },
+  { key = 'l', help = 'tagit: log', action = tagit.log },
+  { key = 'b', help = 'tagit: list branches', action = tagit.branch_list },
 })
 
 local view_hydra = hydra.create({
