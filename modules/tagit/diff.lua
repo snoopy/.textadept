@@ -220,6 +220,7 @@ function M.show_commit(sha, root, mode_id)
   end
   buffer:goto_pos(1)
   buffer:set_save_point()
+  buffer.read_only = true
   keys.mode = 'tagit_' .. mode_id .. '_diff'
 end
 
