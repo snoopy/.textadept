@@ -25,6 +25,9 @@ keys[STATUS_DIFF_MODE] = setmetatable({
   esc = function()
     buffer:close(true)
   end,
+  o = function()
+    require('tagit.diff').visit_file()
+  end,
 }, { __index = keys })
 
 local function update_diff_keys_mode()

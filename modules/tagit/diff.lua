@@ -5,6 +5,7 @@
 -- fed to `git apply` to stage, unstage or discard just that hunk.
 
 local git = require('tagit.git')
+local common = require('tagit.common')
 
 local M = {}
 
@@ -196,6 +197,8 @@ function M.show_commit(sha, root, mode_id)
   if not out then return end
   buffer.new()
   buffer['_tagit_' .. mode_id .. '_diff'] = true
+  buffer['_tagit_sha'] = sha
+  buffer['_tagit_root'] = root
   buffer:set_lexer('diff')
   -- Split at the first diff line so the file list sits between commit info and the diff.
   local diff_pos = out:find('\ndiff ', 1, true)
@@ -218,6 +221,32 @@ function M.show_commit(sha, root, mode_id)
   buffer:goto_pos(1)
   buffer:set_save_point()
   keys.mode = 'tagit_' .. mode_id .. '_diff'
+end
+
+--- Picks a file from the commit diff's changed files and opens it.
+-- @param sha Optional commit hash (defaults to buffer._tagit_sha).
+-- @param root Optional repository root (defaults to buffer._tagit_root).
+function M.visit_file(sha, root)
+  sha = sha or buffer._tagit_sha
+  root = root or buffer._tagit_root
+  if not sha or not root then
+    ui.statusbar_text = 'Not a commit diff buffer'
+    return
+  end
+  local out = git.run('diff-tree --no-commit-id -c -r --name-only ' .. git.quote(sha), root)
+  if not out then return end
+  local files = {}
+  for f in (out .. '\n'):gmatch('(.-)\n') do
+    local trimmed = f:gsub('\r$', '')
+    if trimmed ~= '' then files[#files + 1] = trimmed end
+  end
+  if #files == 0 then
+    ui.statusbar_text = 'No files in commit'
+    return
+  end
+  common.pick('Files in ' .. sha:sub(1, 9), files, function(file)
+    if file then io.open_file(root .. '/' .. file) end
+  end)
 end
 
 return M

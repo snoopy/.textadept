@@ -45,6 +45,9 @@ keys[DIFF_MODE] = setmetatable({
   esc = function()
     buffer:close(true)
   end,
+  o = function()
+    require('tagit.diff').visit_file()
+  end,
 }, { __index = keys })
 
 local function update_diff_keys_mode()
@@ -62,6 +65,15 @@ local function commit_at_cursor()
   local line = buf:line_from_position(buf.current_pos)
   local hashes = buf.data.hashes
   return hashes and hashes[line]
+end
+
+local function open_commit_files()
+  local hash = commit_at_cursor()
+  if not hash then
+    ui.statusbar_text = 'No commit at cursor'
+    return
+  end
+  require('tagit.diff').visit_file(hash, buf.data.root)
 end
 
 local function add_commit_line(b, hash, date, rel, author, subject, refs)
@@ -200,6 +212,7 @@ bind('V', 'Actions', 'revert commit', function()
   revert.revert_from_log(hash)
   refresh()
 end)
+bind('o', 'Actions', 'visit files', open_commit_files)
 
 ---
 -- The log buffer instance.
