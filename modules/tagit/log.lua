@@ -203,6 +203,32 @@ bind('R', 'Actions', 'rebase interactive here', function()
   require('tagit').rebase_interactive(hash .. '^')
   refresh()
 end)
+bind('B', 'Actions', 'blame file at revision', function()
+  local hash = commit_at_cursor()
+  if not hash then
+    ui.statusbar_text = 'No commit at cursor'
+    return
+  end
+  local root = buf.data.root
+  if not root then return end
+  local files = git.run('diff-tree --no-commit-id -c -r --name-only ' .. git.quote(hash), root)
+  if not files or files == '' then
+    ui.statusbar_text = 'No files in commit'
+    return
+  end
+  local file_list = {}
+  for f in (files .. '\n'):gmatch('(.-)\n') do
+    if f ~= '' then file_list[#file_list + 1] = f end
+  end
+  if #file_list == 0 then
+    ui.statusbar_text = 'No files in commit'
+    return
+  end
+  common.pick('Blame file at ' .. hash:sub(1, 9), file_list, function(file)
+    if file then require('tagit.blame').show(file, root, hash) end
+  end)
+end)
+
 bind('V', 'Actions', 'revert commit', function()
   local hash = commit_at_cursor()
   if not hash then

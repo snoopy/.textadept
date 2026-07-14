@@ -1274,6 +1274,7 @@ local git_hydra = hydra.create({
   { key = 's', help = 'tagit: status', action = tagit.status },
   { key = 'l', help = 'tagit: log...', action = git_log_hydra },
   { key = 'b', help = 'tagit: list branches', action = tagit.branch_list },
+  { key = 'B', help = 'tagit: blame file', action = tagit.blame },
 })
 
 local view_hydra = hydra.create({

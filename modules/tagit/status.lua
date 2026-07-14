@@ -15,7 +15,6 @@ local git = require('tagit.git')
 local diff = require('tagit.diff')
 local help = require('tagit.help')
 local log = require('tagit.log')
-
 -- Keys mode for diff buffers opened from the status buffer.
 local STATUS_DIFF_MODE = 'tagit_status_diff'
 keys[STATUS_DIFF_MODE] = setmetatable({
@@ -749,6 +748,19 @@ M.bind('?', 'Help', 'help', show_help)
 M.bind('l', 'Log', 'log', function()
   log.menu()
 end)
+
+-- Blame the file under the cursor.
+local function blame_file()
+  local entry = entry_at_point()
+  if not entry or entry.kind ~= 'file' then
+    ui.statusbar_text = 'Not on a file'
+    return
+  end
+  local root = buf.data.root
+  if not root then return end
+  require('tagit.blame').show(entry.path, root)
+end
+M.bind('B', 'Blame', 'blame file', blame_file)
 
 -- Command transient menus
 -- stylua: ignore start

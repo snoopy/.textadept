@@ -7,6 +7,7 @@ local M = {}
 -- Truncate `s` to `width` and pad it with spaces to that width.
 -- Backs off so a multibyte UTF-8 sequence is never split.
 function M.fit(s, width)
+  s = s or ''
   if #s > width then
     s = s:sub(1, width)
     while #s > 0 and s:byte(#s) >= 0x80 and s:byte(#s) < 0xC0 do

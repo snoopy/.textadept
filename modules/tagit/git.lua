@@ -530,4 +530,58 @@ function M.branch_commits(branch, count, root)
   return commits
 end
 
+---
+-- Runs git blame on a file and returns per-line annotation data.
+-- Each entry: { sha, orig_line, final_line, author, author_time,
+--               committer_time, summary, content }
+-- Returns nil, error_message on failure.
+-- @param path File path relative to the repository root.
+-- @param root Optional repository root.
+-- @param revision Optional revision to blame against (default: HEAD).
+function M.blame(path, root, revision)
+  root = root or M.root()
+  if not root then return nil, 'not a git repository' end
+  local rev_arg = revision and ' ' .. shquote(revision) or ''
+  local out, code = M.run('blame --line-porcelain' .. rev_arg .. ' -- ' .. shquote(path), root)
+  if not out or code ~= 0 then return nil, trim(out or 'git blame failed') end
+  local result = {}
+  local entry = nil
+  for line in (out .. '\n'):gmatch('(.-)\n') do
+    local sha1, _, final_ln = line:match('^(%x+) (%d+) (%d+)')
+    if sha1 and sha1:match('^%x+$') then
+      entry = {
+        sha = sha1,
+        final_line = tonumber(final_ln),
+        author = '',
+        author_time = 0,
+        committer_time = 0,
+        summary = '',
+        content = '',
+      }
+      result[#result + 1] = entry
+    elseif entry and entry.content == '' and not line:match('^\t') then
+      local val
+      val = line:match('^author (.+)$')
+      if val then entry.author = val end
+      val = line:match('^author%-time (%d+)')
+      if val then entry.author_time = tonumber(val) or 0 end
+      val = line:match('^committer%-time (%d+)')
+      if val then entry.committer_time = tonumber(val) or 0 end
+      val = line:match('^summary (.+)$')
+      if val then entry.summary = val end
+    end
+    if entry and line:match('^\t') then entry.content = line:sub(2) end
+  end
+  return result
+end
+
+---
+-- Returns the parent SHA of a commit, or nil if it has no parent (root commit).
+function M.parent_sha(sha, root)
+  if not sha then return nil end
+  local out, code = M.run('rev-parse ' .. shquote(sha .. '^'), root)
+  if code ~= 0 or not out then return nil end
+  return trim(out)
+end
+
 return M

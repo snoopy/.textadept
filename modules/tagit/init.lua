@@ -145,4 +145,32 @@ end
 -- @param base Optional base revision for the rebase.
 M.rebase_interactive = operation.rebase_interactive
 
+---
+-- Opens a blame buffer for the current file.
+function M.blame()
+  local root = common.root()
+  if not root then
+    ui.statusbar_text = 'Not a git repository'
+    return
+  end
+  local filepath = buffer.filename
+  if not filepath then
+    ui.statusbar_text = 'Buffer has no filename'
+    return
+  end
+  local root_norm = root:gsub('\\', '/'):gsub('/+$', '') .. '/'
+  local file_norm = filepath:gsub('\\', '/')
+  if OS == 'windows' then
+    if file_norm:lower():sub(1, #root_norm) ~= root_norm:lower() then
+      ui.statusbar_text = 'File is not in the repository'
+      return
+    end
+  elseif file_norm:sub(1, #root_norm) ~= root_norm then
+    ui.statusbar_text = 'File is not in the repository'
+    return
+  end
+  local relative = file_norm:sub(#root_norm + 1)
+  require('tagit.blame').show(relative, root, nil, buffer:line_from_position(buffer.current_pos))
+end
+
 return M
