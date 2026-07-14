@@ -13,6 +13,7 @@ local help = require('tagit.help')
 local diff = require('tagit.diff')
 local cherry = require('tagit.cherry_pick')
 local revert = require('tagit.revert')
+local transient = require('tagit.transient')
 
 local M = {
   --- Maximum number of commits to display in the log buffer.
@@ -218,5 +219,107 @@ function M.show(ref, extra_args, file_path)
   buf.data.file_path = file_path or nil
   buf:show()
 end
+
+-- Log filtering helpers used by the transient menu.
+
+local function log_normal()
+  local root = common.root()
+  if not root then
+    ui.statusbar_text = 'Not a git repository'
+    return
+  end
+  M.show()
+end
+
+local function log_by_author()
+  local root = common.root()
+  if not root then
+    ui.statusbar_text = 'Not a git repository'
+    return
+  end
+  local input, button = ui.dialogs.input({
+    title = 'Filter by author',
+    button1 = 'OK',
+    button2 = 'Cancel',
+    return_button = true,
+  })
+  if button ~= 1 or not input or input == '' then return end
+  M.show(nil, '--regexp-ignore-case --author=' .. git.quote(input))
+end
+
+local function log_by_pickaxe()
+  local root = common.root()
+  if not root then
+    ui.statusbar_text = 'Not a git repository'
+    return
+  end
+  local input, button = ui.dialogs.input({
+    title = 'Pickaxe search (-G)',
+    button1 = 'OK',
+    button2 = 'Cancel',
+    return_button = true,
+  })
+  if button ~= 1 or not input or input == '' then return end
+  M.show(nil, '--regexp-ignore-case -G' .. git.quote(input))
+end
+
+local function log_by_grep()
+  local root = common.root()
+  if not root then
+    ui.statusbar_text = 'Not a git repository'
+    return
+  end
+  local input, button = ui.dialogs.input({
+    title = 'Grep commit messages',
+    button1 = 'OK',
+    button2 = 'Cancel',
+    return_button = true,
+  })
+  if button ~= 1 or not input or input == '' then return end
+  M.show(nil, '--regexp-ignore-case --grep=' .. git.quote(input))
+end
+
+local function log_by_file()
+  local root = common.root()
+  if not root then
+    ui.statusbar_text = 'Not a git repository'
+    return
+  end
+  local out = git.run('ls-files', root)
+  if not out then return end
+  local files = {}
+  for f in (out .. '\n'):gmatch('(.-)\n') do
+    if f ~= '' then files[#files + 1] = f end
+  end
+  common.pick('Tracked files', files, function(file)
+    if file then M.show(nil, nil, file) end
+  end)
+end
+
+--- Opens a transient log filtering menu.
+function M.menu()
+  transient.open('Log', {
+    { key = 'l', help = 'log', action = log_normal },
+    { key = 'a', help = 'filter log by author', action = log_by_author },
+    { key = 'd', help = 'filter log by diff (-G)', action = log_by_pickaxe },
+    { key = 'm', help = 'filter log by message', action = log_by_grep },
+    { key = 'f', help = 'filter log by file', action = log_by_file },
+  })
+end
+
+--- Shows the log buffer (unfiltered).
+M.show_log = log_normal
+
+--- Shows the log buffer filtered by author (prompts for input).
+M.show_by_author = log_by_author
+
+--- Shows the log buffer filtered by pickaxe --diff (-G, prompts for input).
+M.show_by_pickaxe = log_by_pickaxe
+
+--- Shows the log buffer filtered by commit message (prompts for input).
+M.show_by_grep = log_by_grep
+
+--- Shows the log buffer filtered by file (picks from tracked files).
+M.show_by_file = log_by_file
 
 return M

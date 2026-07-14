@@ -3,6 +3,11 @@
 -- Public entry points:
 --   require('tagit').status()           -- open the status buffer
 --   require('tagit').log([ref])         -- open the log buffer
+--   require('tagit').log_by_author()    -- log filtered by author
+--   require('tagit').log_by_pickaxe()   -- log filtered by diff (-G)
+--   require('tagit').log_by_grep()      -- log filtered by commit message
+--   require('tagit').log_by_file()      -- log filtered by file
+--   require('tagit').log_menu()         -- open the log filtering menu (transient)
 --   require('tagit').commit([amend])    -- start a commit
 --   require('tagit').stash_list()       -- open the stash list buffer
 --   require('tagit').branch_list([mode]) -- open the branch list buffer
@@ -43,6 +48,28 @@ end
 -- Opens the tagit log buffer for the current project.
 function M.log(ref)
   log.show(ref)
+end
+
+function M.log_by_author()
+  log.show_by_author()
+end
+
+function M.log_by_pickaxe()
+  log.show_by_pickaxe()
+end
+
+function M.log_by_grep()
+  log.show_by_grep()
+end
+
+function M.log_by_file()
+  log.show_by_file()
+end
+
+---
+-- Opens the tagit log filtering transient menu (for status buffer context).
+function M.log_menu()
+  log.menu()
 end
 
 ---

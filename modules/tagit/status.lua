@@ -15,7 +15,6 @@ local git = require('tagit.git')
 local diff = require('tagit.diff')
 local help = require('tagit.help')
 local log = require('tagit.log')
-local transient = require('tagit.transient')
 
 -- Keys mode for diff buffers opened from the status buffer.
 local STATUS_DIFF_MODE = 'tagit_status_diff'
@@ -706,73 +705,6 @@ local function next_section_h()
   next_section(1)
 end
 
--- Open the tagit log buffer (unfiltered).
-local function log_normal()
-  if not buf.data.root then return end
-  log.show()
-end
-
--- Open the log buffer filtered by author (--regexp-ignore-case --author).
-local function log_by_author()
-  local root = buf.data.root
-  if not root then return end
-  local git = require('tagit.git')
-  local input, button = ui.dialogs.input({
-    title = 'Filter by author',
-    button1 = 'OK',
-    button2 = 'Cancel',
-    return_button = true,
-  })
-  if button ~= 1 or not input or input == '' then return end
-  log.show(nil, '--regexp-ignore-case --author=' .. git.quote(input))
-end
-
--- Open the log buffer filtered by pickaxe (--regexp-ignore-case -G).
-local function log_by_pickaxe()
-  local root = buf.data.root
-  if not root then return end
-  local git = require('tagit.git')
-  local input, button = ui.dialogs.input({
-    title = 'Pickaxe search (-G)',
-    button1 = 'OK',
-    button2 = 'Cancel',
-    return_button = true,
-  })
-  if button ~= 1 or not input or input == '' then return end
-  log.show(nil, '--regexp-ignore-case -G' .. git.quote(input))
-end
-
--- Open the log buffer filtered by commit message (--regexp-ignore-case --grep).
-local function log_by_grep()
-  local root = buf.data.root
-  if not root then return end
-  local git = require('tagit.git')
-  local input, button = ui.dialogs.input({
-    title = 'Grep commit messages',
-    button1 = 'OK',
-    button2 = 'Cancel',
-    return_button = true,
-  })
-  if button ~= 1 or not input or input == '' then return end
-  log.show(nil, '--regexp-ignore-case --grep=' .. git.quote(input))
-end
-
--- Open the log buffer filtered by file (--follow -- <file>).
-local function log_by_file()
-  local root = buf.data.root
-  if not root then return end
-  local git = require('tagit.git')
-  local out = git.run('ls-files', root)
-  if not out then return end
-  local files = {}
-  for f in (out .. '\n'):gmatch('(.-)\n') do
-    if f ~= '' then files[#files + 1] = f end
-  end
-  common.pick('Tracked files', files, function(file)
-    if file then log.show(nil, nil, file) end
-  end)
-end
-
 -- Key registry. Bindings are recorded here so the `?` help overlay stays in sync with what is actually bound.
 -- The init module adds the command-menu keys via M.bind too.
 local keymap = {}
@@ -811,17 +743,9 @@ M.bind('end', 'Navigate', 'expand all hunks', expand_all_hunks)
 M.bind('home', 'Navigate', 'collapse all hunks', collapse_all_hunks)
 M.bind('?', 'Help', 'help', show_help)
 
--- Log transient menu.
-local function log_menu()
-  transient.open('Log', {
-    { key = 'l', help = 'log', action = log_normal },
-    { key = 'a', help = 'filter log by author', action = log_by_author },
-    { key = 'd', help = 'filter log by diff (-G)', action = log_by_pickaxe },
-    { key = 'm', help = 'filter log by message', action = log_by_grep },
-    { key = 'f', help = 'filter log by file', action = log_by_file },
-  })
-end
-M.bind('l', 'Log', 'log', log_menu)
+M.bind('l', 'Log', 'log', function()
+  log.menu()
+end)
 
 -- Command transient menus
 -- stylua: ignore start

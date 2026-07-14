@@ -1259,12 +1259,20 @@ local project_hydra = hydra.create({
   },
 })
 
+local git_log_hydra = hydra.create({
+  { key = 'l', help = 'log', action = tagit.log },
+  { key = 'a', help = 'by author', action = tagit.log_by_author },
+  { key = 'd', help = 'by diff (-G)', action = tagit.log_by_pickaxe },
+  { key = 'm', help = 'by message', action = tagit.log_by_grep },
+  { key = 'f', help = 'by file', action = tagit.log_by_file },
+})
+
 local git_hydra = hydra.create({
   { key = 't', help = 'diff only this line', action = git.line_diff },
   { key = 'v', help = 'show file at revision', action = git.show_rev },
   { key = 'h', help = 'clear heat map', action = git.clear_heatmap },
   { key = 's', help = 'tagit: status', action = tagit.status },
-  { key = 'l', help = 'tagit: log', action = tagit.log },
+  { key = 'l', help = 'tagit: log...', action = git_log_hydra },
   { key = 'b', help = 'tagit: list branches', action = tagit.branch_list },
 })
 
