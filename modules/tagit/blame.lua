@@ -53,6 +53,7 @@ end
 local buf = reduxbuffer.new('*tagit: blame*')
 buf.data = {}
 buf.data.revision_stack = {}
+buf.data.blame_cache = {}
 
 buf.on_refresh = function(b)
   b.data.root = b.data.root or common.root(b.origin_buffer and b.origin_buffer.filename)
@@ -68,7 +69,13 @@ buf.on_refresh = function(b)
   local revision = b.data.revision
   b.name = revision and '*tagit: blame (' .. filepath .. ' @ ' .. revision .. ')*'
     or '*tagit: blame (' .. filepath .. ')*'
-  local blame_data, err = git.blame(filepath, b.data.root, revision)
+  local cache_key = revision or false
+  local blame_data = b.data.blame_cache[cache_key]
+  local err
+  if not blame_data then
+    blame_data, err = git.blame(filepath, b.data.root, revision)
+    if blame_data then b.data.blame_cache[cache_key] = blame_data end
+  end
   if not blame_data then
     b:add_text('git blame error: ' .. tostring(err) .. '\n', reduxstyle.tagit_blame_sep)
     return
@@ -275,6 +282,7 @@ function M.show(filepath, root, revision, lineno)
     buf.data.revision_stack = {}
     buf.data.initial_revision = revision or nil
   end
+  if filepath ~= buf.data.filepath then buf.data.blame_cache = {} end
   buf.data.filepath = filepath
   buf.data.root = root
   buf.data.revision = revision or nil
