@@ -147,6 +147,47 @@ function M.run_async(argv, root, on_done)
 end
 
 ---
+-- Runs a git command interactively (e.g. rebase --interactive) without blocking the UI.
+-- Uses non-blocking os.spawn with callbacks, so Textadept's main thread stays responsive.
+-- @param args Already-quoted git arguments, e.g. 'rebase --interactive HEAD~3'.
+-- @param root Optional repository root.
+-- @param env Optional table of environment variables (same format as @{M.run}).
+-- @param on_done Callback invoked as `on_done(output, code)` when the process finishes.
+function M.run_interactive(args, root, env, on_done)
+  root = root or M.root()
+  if not root then
+    on_done('not a git repository', -1)
+    return
+  end
+  local parts = {}
+  if OS == 'windows' then
+    if env then
+      for k, v in pairs(env) do
+        local val = tostring(v):gsub('"', '""')
+        parts[#parts + 1] = 'set "' .. k .. '=' .. val .. '"'
+      end
+    end
+    parts[#parts + 1] = 'git -C ' .. shquote(root) .. ' ' .. args
+  else
+    if env then
+      for k, v in pairs(env) do
+        parts[#parts + 1] = k .. '=' .. shquote(tostring(v))
+      end
+    end
+    parts[#parts + 1] = 'git -C ' .. shquote(root) .. ' ' .. args
+  end
+  local sep = OS == 'windows' and ' && ' or ' '
+  local cmd = table.concat(parts, sep)
+  local chunks = {}
+  local function collect(chunk)
+    chunks[#chunks + 1] = chunk
+  end
+  os.spawn(cmd, root, collect, collect, function(code)
+    on_done(table.concat(chunks), code)
+  end)
+end
+
+---
 -- Collects repository status into a structured table.
 -- @param root Optional repository root.
 -- @return a table with `branch` (table with `head`, `upstream`, `ahead`, `behind`),

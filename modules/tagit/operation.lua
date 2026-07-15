@@ -11,12 +11,15 @@ local M = {}
 local function merge_branch()
   local root = common.root()
   common.pick('Merge branch', common.branches(root), function(name)
-    common.report_git(git.run('merge ' .. git.quote(name), root, git.date_env()))
-    common.refresh_status()
+    ui.statusbar_text = 'Merging...'
+    git.run_interactive('merge ' .. git.quote(name), root, git.date_env(), function(out, code)
+      common.report_git(out, code)
+      common.refresh_status()
+    end)
   end)
 end
 
-local function rebase_interactive(base)
+local function rebase_interactive(base, on_done)
   local root = common.root()
   if not base then
     local name, button = ui.dialogs.input({
@@ -28,8 +31,13 @@ local function rebase_interactive(base)
     if button ~= 1 or not name or name == '' then return end
     base = name
   end
-  common.report_git(git.run('rebase --interactive ' .. git.quote(base), root, git.date_env()))
-  common.refresh_status()
+  if not root then return end
+  ui.statusbar_text = 'Rebase in progress...'
+  git.run_interactive('rebase --interactive ' .. git.quote(base), root, git.date_env(), function(out, code)
+    common.report_git(out, code)
+    common.refresh_status()
+    if on_done then on_done(code) end
+  end)
 end
 
 local function continue_operation()
@@ -40,12 +48,14 @@ local function continue_operation()
     return
   end
   if op.type == 'rebase' then
-    common.report_git(git.run('rebase --continue', root, git.date_env()))
+    ui.statusbar_text = 'Continuing rebase...'
+    git.run_interactive('rebase --continue', root, git.date_env(), function(out, code)
+      common.report_git(out, code)
+      common.refresh_status()
+    end)
   else
     commit.start(false)
-    return
   end
-  common.refresh_status()
 end
 
 local function abort_operation()

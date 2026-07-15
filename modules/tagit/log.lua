@@ -201,8 +201,13 @@ bind('R', 'Actions', 'rebase interactive here', function()
     ui.statusbar_text = 'No commit at cursor'
     return
   end
-  require('tagit').rebase_interactive(hash .. '~1')
-  refresh()
+  local ok = xpcall(function()
+    require('tagit').rebase_interactive(hash .. '~1', function()
+      refresh()
+    end)
+  end, function(e)
+    ui.statusbar_text = 'Rebase error: ' .. tostring(e)
+  end)
 end)
 bind('B', 'Actions', 'blame file at revision', function()
   local hash = commit_at_cursor()

@@ -16,8 +16,11 @@ local function do_pick(sha_or_ref, root)
   then
     return
   end
-  common.report_git(git.cherry_pick(sha_or_ref, root))
-  common.refresh_status()
+  ui.statusbar_text = 'Cherry-picking...'
+  git.run_interactive('cherry-pick ' .. git.quote(sha_or_ref), root, git.date_env(), function(out, code)
+    common.report_git(out, code)
+    common.refresh_status()
+  end)
 end
 
 --- Prompt the user for a commit hash or ref and cherry-pick it.
@@ -80,8 +83,11 @@ function M.continue()
     ui.statusbar_text = 'Not a git repository'
     return
   end
-  common.report_git(git.cherry_pick_continue(root))
-  common.refresh_status()
+  ui.statusbar_text = 'Continuing cherry-pick...'
+  git.run_interactive('cherry-pick --continue', root, git.date_env(), function(out, code)
+    common.report_git(out, code)
+    common.refresh_status()
+  end)
 end
 
 --- Abort a cherry-pick in progress.

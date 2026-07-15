@@ -123,8 +123,10 @@ local function stash_push(extra_args)
   local cmd = 'stash push'
   if msg ~= '' then cmd = cmd .. ' -m ' .. git.quote(msg) end
   if extra_args then cmd = cmd .. ' ' .. extra_args end
-  common.report_git(git.run(cmd, root, git.date_env()))
-  common.refresh_status()
+  git.run_interactive(cmd, root, git.date_env(), function(out, code)
+    common.report_git(out, code)
+    common.refresh_status()
+  end)
 end
 
 ---
