@@ -367,6 +367,10 @@ local function render_header(b, status)
     elseif op.type == 'rebase' then
       local prog = (op.progress and op.total) and (op.progress .. '/' .. op.total) or ''
       line(b, 'Rebase:   replaying onto ' .. (op.branch or '?') .. (prog ~= '' and ' (' .. prog .. ')' or ''))
+    elseif op.type == 'cherry-pick' then
+      line(b, 'Cherry:   picking ' .. (op.subject or '') .. ' onto ' .. (op.branch or '?'))
+    elseif op.type == 'revert' then
+      line(b, 'Revert:   reverting ' .. (op.subject or '') .. ' on ' .. (op.branch or '?'))
     end
   end
   line(b, '')

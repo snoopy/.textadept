@@ -70,11 +70,13 @@ local function abort_operation()
       common.report_git(git.run('rebase --abort', root))
       common.refresh_status()
     end
-  else
+  elseif op.type == 'merge' then
     if common.confirm('Abort merge?', 'Abort the current merge?', 'Abort') then
       common.report_git(git.run('merge --abort', root))
       common.refresh_status()
     end
+  else
+    ui.statusbar_text = 'Nothing to abort for ' .. op.type
   end
 end
 
@@ -86,6 +88,32 @@ local function skip_operation()
     return
   end
   common.report_git(git.run('rebase --skip', root, git.date_env()))
+  common.refresh_status()
+end
+
+local function revert_continue()
+  local root = common.root()
+  if not root then return end
+  ui.statusbar_text = 'Continuing revert...'
+  git.run_interactive('revert --continue', root, git.date_env(), function(out, code)
+    common.report_git(out, code)
+    common.refresh_status()
+  end)
+end
+
+local function revert_abort()
+  local root = common.root()
+  if not root then return end
+  if common.confirm('Abort revert?', 'Abort the current revert operation?', 'Abort') then
+    common.report_git(git.revert_abort(root))
+    common.refresh_status()
+  end
+end
+
+local function revert_skip()
+  local root = common.root()
+  if not root then return end
+  common.report_git(git.revert_skip(root))
   common.refresh_status()
 end
 
@@ -104,6 +132,13 @@ function M.menu()
         { key = 'c', help = 'continue', action = cherry.continue },
         { key = 'a', help = 'abort', action = cherry.abort },
         { key = 's', help = 'skip', action = cherry.skip },
+      }
+    elseif op.type == 'revert' then
+      title = 'Revert (in progress)'
+      bindings = {
+        { key = 'c', help = 'continue', action = revert_continue },
+        { key = 'a', help = 'abort', action = revert_abort },
+        { key = 's', help = 'skip', action = revert_skip },
       }
     else
       title = op.type == 'rebase' and 'Rebase' or 'Merge'

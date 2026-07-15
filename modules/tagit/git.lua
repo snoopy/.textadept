@@ -67,6 +67,44 @@ local function file_exists(path)
   return attr ~= nil and attr.mode == 'file'
 end
 
+-- Guards against running dangerous commands while a merge, rebase, cherry-pick, or revert is in progress.
+local dangerous_commands = {
+  switch = true,
+  checkout = true,
+  merge = true,
+  rebase = true,
+  ['cherry-pick'] = true,
+  revert = true,
+  reset = true,
+  branch = true,
+  stash = true,
+}
+
+local safe_prefixes = {
+  checkout = { '--ours ', '--theirs ', '-- ' },
+  merge = { '--abort' },
+  rebase = { '--continue', '--abort', '--skip' },
+  ['cherry-pick'] = { '--continue', '--abort', '--skip' },
+  revert = { '--continue', '--abort', '--skip' },
+  branch = { '--show-current', '--remotes', '--move', '--set-upstream-to', '--unset-upstream', '--format', '--list' },
+  stash = { 'list', 'show' },
+}
+
+local function guard(args, root)
+  local cmd = args:match('^(%S+)')
+  if not cmd or not dangerous_commands[cmd] then return nil end
+  local safe_list = safe_prefixes[cmd]
+  if safe_list then
+    for _, prefix in ipairs(safe_list) do
+      if args:match('^' .. cmd .. '%s+' .. prefix) then return nil end
+    end
+  end
+  if cmd == 'reset' and not args:match('^reset%s+--hard') then return nil end
+  local op = M.operation(root)
+  if not op then return nil end
+  return 'cannot ' .. cmd .. ' while ' .. op.type .. ' is in progress'
+end
+
 ---
 -- Runs a git command synchronously inside `root` (defaults to @{M.root}).
 -- @param args A string of already-quoted git arguments, e.g. `'status -s'`.
@@ -77,6 +115,8 @@ end
 function M.run(args, root, env)
   root = root or M.root()
   if not root then return nil, 'not a git repository' end
+  local err = guard(args, root)
+  if err then return err, 1 end
   local env_prefix = ''
   if env then
     if OS == 'windows' then
@@ -136,6 +176,11 @@ function M.run_async(argv, root, on_done)
     on_done('not a git repository', -1)
     return
   end
+  local err = guard(argv, root)
+  if err then
+    on_done(err, 1)
+    return
+  end
   local chunks = {}
   local function collect(chunk)
     chunks[#chunks + 1] = chunk
@@ -157,6 +202,11 @@ function M.run_interactive(args, root, env, on_done)
   root = root or M.root()
   if not root then
     on_done('not a git repository', -1)
+    return
+  end
+  local err = guard(args, root)
+  if err then
+    on_done(err, 1)
     return
   end
   local parts = {}
@@ -254,12 +304,13 @@ function M.status(root)
 end
 
 ---
--- Detects an in-progress merge, rebase, or cherry-pick operation.
+-- Detects an in-progress merge, rebase, cherry-pick, or revert operation.
 -- @param root Optional repository root.
--- @return nil when idle, or a table with `type` (`'merge'`, `'rebase'`, or `'cherry-pick'`).
+-- @return nil when idle, or a table with `type` (`'merge'`, `'rebase'`, `'cherry-pick'`, or `'revert'`).
 -- For merge: includes `head` (current branch) and `branch` (merge subject).
 -- For rebase: includes `branch` (onto), `progress`, `total`.
 -- For cherry-pick: includes `branch` (current branch) and `subject` (commit subject).
+-- For revert: includes `branch` (current branch) and `subject` (commit subject).
 function M.operation(root)
   root = root or M.root()
   if not root then return nil end
@@ -319,6 +370,13 @@ function M.operation(root)
     local msg = M.run('log --oneline -1 CHERRY_PICK_HEAD', root) or ''
     local subject = trim(msg:gsub('^%S+%s+', ''))
     return { type = 'cherry-pick', branch = onto, subject = subject }
+  end
+  -- Check for revert state.
+  if file_exists(git_dir .. '/REVERT_HEAD') then
+    local onto = trim((M.run('symbolic-ref HEAD', root) or ''):gsub('^refs/heads/', ''))
+    local msg = M.run('log --oneline -1 REVERT_HEAD', root) or ''
+    local subject = trim(msg:gsub('^%S+%s+', ''))
+    return { type = 'revert', branch = onto, subject = subject }
   end
   return nil
 end
@@ -558,6 +616,21 @@ end
 -- Skip the current commit and continue the cherry-pick sequence.
 function M.cherry_pick_skip(root)
   return M.run('cherry-pick --skip', root, M.date_env())
+end
+
+--- Continue a revert after resolving conflicts.
+function M.revert_continue(root)
+  return M.run('revert --continue', root, M.date_env())
+end
+
+--- Abort a revert in progress.
+function M.revert_abort(root)
+  return M.run('revert --abort', root)
+end
+
+--- Skip the current commit during a revert.
+function M.revert_skip(root)
+  return M.run('revert --skip', root, M.date_env())
 end
 
 ---
