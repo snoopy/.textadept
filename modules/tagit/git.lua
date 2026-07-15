@@ -167,7 +167,7 @@ function M.status(root)
     files = {},
   }
 
-  for line in (out .. '\n'):gmatch('(.-)\n') do
+  for line in out:gmatch('[^\n]+') do
     if line:match('^## ') then
       local rest = line:match('^## (.+)$')
       if rest then
@@ -314,7 +314,7 @@ function M.recent_commits(count, root)
   local out, code = M.run('log --no-color --pretty=' .. shquote('format:%h%x1f%s') .. ' -n ' .. count, root)
   if not out or code ~= 0 then return {} end
   local commits = {}
-  for line in (out .. '\n'):gmatch('(.-)\n') do
+  for line in out:gmatch('[^\n]+') do
     local sha, subject = line:match('^(%S+)' .. SEP .. '(.*)$')
     if sha then commits[#commits + 1] = { sha = sha, subject = subject } end
   end
@@ -328,7 +328,7 @@ function M.stashes(root)
   local out, code = M.run('stash list --pretty=' .. shquote('format:%gd%x1f%s'), root)
   if not out or code ~= 0 or out == '' then return {} end
   local stashes = {}
-  for line in (out .. '\n'):gmatch('(.-)\n') do
+  for line in out:gmatch('[^\n]+') do
     local ref, subject = line:match('^(%S+)' .. SEP .. '(.*)$')
     if ref then stashes[#stashes + 1] = { ref = ref, subject = subject } end
   end
@@ -523,7 +523,7 @@ function M.branch_commits(branch, count, root)
   )
   if not out or code ~= 0 then return {} end
   local commits = {}
-  for line in (out .. '\n'):gmatch('(.-)\n') do
+  for line in out:gmatch('[^\n]+') do
     local sha, subject = line:match('^(%S+)' .. SEP .. '(.*)$')
     if sha then commits[#commits + 1] = { sha = sha, subject = subject } end
   end
@@ -546,7 +546,7 @@ function M.blame(path, root, revision)
   if not out or code ~= 0 then return nil, trim(out or 'git blame failed') end
   local result = {}
   local entry = nil
-  for line in (out .. '\n'):gmatch('(.-)\n') do
+  for line in out:gmatch('[^\n]+') do
     local sha1, _, final_ln = line:match('^(%x+) (%d+) (%d+)')
     if sha1 and sha1:match('^%x+$') then
       entry = {

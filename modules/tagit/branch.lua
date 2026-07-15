@@ -56,7 +56,7 @@ end
 local function remote_branches(root)
   local out = git.run('branch --remotes ' .. git.quote('--format=%(refname:short)'), root) or ''
   local list = {}
-  for name in (out .. '\n'):gmatch('(.-)\n') do
+  for name in out:gmatch('[^\n]+') do
     if name ~= '' then list[#list + 1] = name end
   end
   return list
@@ -66,7 +66,7 @@ end
 local function origin_branch_names(root)
   local out = git.run("for-each-ref --format='%(refname:lstrip=3)' refs/remotes/origin", root) or ''
   local list = {}
-  for name in (out .. '\n'):gmatch('(.-)\n') do
+  for name in out:gmatch('[^\n]+') do
     if name ~= '' then list[#list + 1] = name end
   end
   return list
@@ -283,7 +283,7 @@ buf.on_refresh = function(b)
     return
   end
   b.data.branch_names = {}
-  for l in (out .. '\n'):gmatch('(.-)\n') do
+  for l in out:gmatch('[^\n]+') do
     if l ~= '' then
       local fields = {}
       for field in (l .. SEP):gmatch('(.-)' .. SEP) do

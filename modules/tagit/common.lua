@@ -91,7 +91,7 @@ function M.branches(root)
   local git = require('tagit.git')
   local out = git.run('branch --format=' .. git.quote('%(refname:short)'), root) or ''
   local list = {}
-  for name in (out .. '\n'):gmatch('(.-)\n') do
+  for name in out:gmatch('[^\n]+') do
     if name ~= '' then list[#list + 1] = name end
   end
   return list

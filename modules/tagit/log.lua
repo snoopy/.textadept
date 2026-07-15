@@ -131,7 +131,7 @@ buf.on_refresh = function(b)
     return
   end
   b.data.hashes = {}
-  for l in (out .. '\n'):gmatch('(.-)\n') do
+  for l in out:gmatch('[^\n]+') do
     if l ~= '' then
       local fields = {}
       for field in (l .. SEP):gmatch('(.-)' .. SEP) do
@@ -327,7 +327,7 @@ local function log_by_file()
   local out = git.run('ls-files', root)
   if not out then return end
   local files = {}
-  for f in (out .. '\n'):gmatch('(.-)\n') do
+  for f in out:gmatch('[^\n]+') do
     if f ~= '' then files[#files + 1] = f end
   end
   common.pick('Tracked files', files, function(file)

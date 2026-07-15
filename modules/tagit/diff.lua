@@ -237,7 +237,7 @@ function M.visit_file(sha, root)
   local out = git.run('diff-tree --no-commit-id -c -r --name-only ' .. git.quote(sha), root)
   if not out then return end
   local files = {}
-  for f in (out .. '\n'):gmatch('(.-)\n') do
+  for f in out:gmatch('[^\n]+') do
     local trimmed = f:gsub('\r$', '')
     if trimmed ~= '' then files[#files + 1] = trimmed end
   end

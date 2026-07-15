@@ -325,7 +325,7 @@ local function render_recent_commits(b)
     fold_default = 'expanded',
   })
 
-  for l in (out .. '\n'):gmatch('(.-)\n') do
+  for l in out:gmatch('[^\n]+') do
     if l ~= '' then
       local fields = {}
       for field in (l .. SEP):gmatch('(.-)' .. SEP) do
