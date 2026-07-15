@@ -358,7 +358,8 @@ local function render_header(b, status)
     local ab = ''
     if br.ahead > 0 then ab = ab .. ' ahead ' .. br.ahead end
     if br.behind > 0 then ab = ab .. ' behind ' .. br.behind end
-    line(b, 'Upstream: ' .. br.upstream .. ab)
+    local gone = br.gone and ' [gone]' or ''
+    line(b, 'Upstream: ' .. br.upstream .. ab .. gone)
   end
   local op = buf.data.operation
   if op then

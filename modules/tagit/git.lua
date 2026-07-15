@@ -259,7 +259,7 @@ function M.status(root)
   if not out or code ~= 0 then return nil, out or 'git status failed' end
 
   local status = {
-    branch = { head = nil, upstream = nil, ahead = 0, behind = 0 },
+    branch = { head = nil, upstream = nil, ahead = 0, behind = 0, gone = false },
     staged = {},
     unstaged = {},
     untracked = {},
@@ -275,6 +275,7 @@ function M.status(root)
         if head then
           status.branch.head = head
           if upstream then
+            if upstream:match('%[gone%]') then status.branch.gone = true end
             upstream = upstream:gsub(' %[.+%]$', ''):gsub(' %+[^%+]+%+$', '')
             status.branch.upstream = upstream
           end
