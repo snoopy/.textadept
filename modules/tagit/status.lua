@@ -15,6 +15,16 @@ local git = require('tagit.git')
 local diff = require('tagit.diff')
 local help = require('tagit.help')
 local log = require('tagit.log')
+local blame = require('tagit.blame')
+local commit = require('tagit.commit')
+local push = require('tagit.push')
+local fetch = require('tagit.fetch')
+local branch = require('tagit.branch')
+local operation = require('tagit.operation')
+local cherry_pick = require('tagit.cherry_pick')
+local stash = require('tagit.stash')
+local reset = require('tagit.reset')
+local console = require('tagit.console')
 -- Keys mode for diff buffers opened from the status buffer.
 local STATUS_DIFF_MODE = 'tagit_status_diff'
 keys[STATUS_DIFF_MODE] = setmetatable({
@@ -25,7 +35,7 @@ keys[STATUS_DIFF_MODE] = setmetatable({
     buffer:close(true)
   end,
   o = function()
-    require('tagit.diff').visit_file()
+    diff.visit_file()
   end,
 }, { __index = keys })
 
@@ -760,21 +770,21 @@ local function blame_file()
   end
   local root = buf.data.root
   if not root then return end
-  require('tagit.blame').show(entry.path, root)
+  blame.show(entry.path, root)
 end
 M.bind('B', 'Blame', 'blame file', blame_file)
 
 -- Command transient menus
 -- stylua: ignore start
-M.bind('c', 'Commands', 'commit', require('tagit.commit').menu)
-M.bind('p', 'Commands', 'push', require('tagit.push').menu)
-M.bind('f', 'Commands', 'fetch', require('tagit.fetch').menu)
-M.bind('b', 'Commands', 'branch', require('tagit.branch').menu)
-M.bind('R', 'Commands', 'merge/rebase', require('tagit.operation').menu)
-M.bind('C', 'Commands', 'cherry-pick', require('tagit.cherry_pick').menu)
-M.bind('S', 'Commands', 'stash', require('tagit.stash').menu)
-M.bind('r', 'Commands', 'reset/clean', require('tagit.reset').menu)
-M.bind('!', 'Commands', 'git console', require('tagit.console').show)
+M.bind('c', 'Commands', 'commit', commit.menu)
+M.bind('p', 'Commands', 'push', push.menu)
+M.bind('f', 'Commands', 'fetch', fetch.menu)
+M.bind('b', 'Commands', 'branch', branch.menu)
+M.bind('R', 'Commands', 'merge/rebase', operation.menu)
+M.bind('C', 'Commands', 'cherry-pick', cherry_pick.menu)
+M.bind('S', 'Commands', 'stash', stash.menu)
+M.bind('r', 'Commands', 'reset/clean', reset.menu)
+M.bind('!', 'Commands', 'git console', console.show)
 -- stylua: ignore end
 
 ---

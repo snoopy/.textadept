@@ -4,6 +4,7 @@ local git = require('tagit.git')
 local common = require('tagit.common')
 local transient = require('tagit.transient')
 local cherry = require('tagit.cherry_pick')
+local commit = require('tagit.commit')
 
 local M = {}
 
@@ -41,7 +42,7 @@ local function continue_operation()
   if op.type == 'rebase' then
     common.report_git(git.run('rebase --continue', root, git.date_env()))
   else
-    require('tagit.commit').start(false)
+    commit.start(false)
     return
   end
   common.refresh_status()

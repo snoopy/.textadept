@@ -8,6 +8,7 @@ local git = require('tagit.git')
 local common = require('tagit.common')
 local help = require('tagit.help')
 local transient = require('tagit.transient')
+local log = require('tagit.log')
 
 local M = {}
 
@@ -401,7 +402,7 @@ local function show_log_at_cursor()
     ui.statusbar_text = 'Not on a branch line'
     return
   end
-  require('tagit.log').show(name)
+  log.show(name)
 end
 
 events.connect(events.BUFFER_BEFORE_SWITCH, function()

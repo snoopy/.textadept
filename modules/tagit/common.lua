@@ -1,6 +1,7 @@
 -- Shared utilities for the tagit module.
 
 local filteredlist = require('textredux.core.filteredlist')
+local git = require('tagit.git')
 
 local M = {}
 
@@ -56,7 +57,6 @@ end
 -- Run a (possibly slow) git command asynchronously,
 -- reporting progress in the status bar and refreshing the status buffer on completion.
 function M.run_async(args, label)
-  local git = require('tagit.git')
   local root = M.root()
   if not root then
     ui.statusbar_text = 'Not a git repository'
@@ -88,7 +88,6 @@ end
 
 -- Return the repository's local branch names.
 function M.branches(root)
-  local git = require('tagit.git')
   local out = git.run('branch --format=' .. git.quote('%(refname:short)'), root) or ''
   local list = {}
   for name in out:gmatch('[^\n]+') do
@@ -104,7 +103,6 @@ end
 
 -- Get project root for given path or use various fallbacks
 function M.root(path)
-  local git = require('tagit.git')
   if path then
     local root_from_path = git.root(path)
     if root_from_path then return root_from_path end

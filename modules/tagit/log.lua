@@ -11,6 +11,7 @@ local common = require('tagit.common')
 local git = require('tagit.git')
 local help = require('tagit.help')
 local diff = require('tagit.diff')
+local blame = require('tagit.blame')
 local cherry = require('tagit.cherry_pick')
 local revert = require('tagit.revert')
 local transient = require('tagit.transient')
@@ -46,7 +47,7 @@ keys[DIFF_MODE] = setmetatable({
     buffer:close(true)
   end,
   o = function()
-    require('tagit.diff').visit_file()
+    diff.visit_file()
   end,
 }, { __index = keys })
 
@@ -73,7 +74,7 @@ local function open_commit_files()
     ui.statusbar_text = 'No commit at cursor'
     return
   end
-  require('tagit.diff').visit_file(hash, buf.data.root)
+  diff.visit_file(hash, buf.data.root)
 end
 
 local function add_commit_line(b, hash, date, rel, author, subject, refs)
@@ -225,7 +226,7 @@ bind('B', 'Actions', 'blame file at revision', function()
     return
   end
   common.pick('Blame file at ' .. hash:sub(1, 9), file_list, function(file)
-    if file then require('tagit.blame').show(file, root, hash) end
+    if file then blame.show(file, root, hash) end
   end)
 end)
 

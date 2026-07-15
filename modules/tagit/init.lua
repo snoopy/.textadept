@@ -27,6 +27,7 @@ local branch = require('tagit.branch')
 local stash = require('tagit.stash')
 local operation = require('tagit.operation')
 local console = require('tagit.console')
+local blame = require('tagit.blame')
 
 local M = {}
 
@@ -170,7 +171,7 @@ function M.blame()
     return
   end
   local relative = file_norm:sub(#root_norm + 1)
-  require('tagit.blame').show(relative, root, nil, buffer:line_from_position(buffer.current_pos))
+  blame.show(relative, root, nil, buffer:line_from_position(buffer.current_pos))
 end
 
 return M

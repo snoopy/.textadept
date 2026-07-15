@@ -7,6 +7,8 @@ local reduxbuffer = require('textredux.core.buffer')
 local reduxstyle = require('textredux.core.style')
 local common = require('tagit.common')
 local git = require('tagit.git')
+local diff = require('tagit.diff')
+local help = require('tagit.help')
 
 local M = {}
 
@@ -141,7 +143,7 @@ local function show_commit()
     ui.statusbar_text = 'Not on a committed line'
     return
   end
-  require('tagit.diff').show_commit(entry.sha, buf.data.root, 'blame')
+  diff.show_commit(entry.sha, buf.data.root, 'blame')
 end
 
 -- Re-blame at the parent of the current line's commit.
@@ -251,7 +253,7 @@ bind('q', 'Navigate', 'quit', function()
 end)
 bind('esc', 'Navigate', 'quit')
 bind('?', 'Help', 'help', function()
-  require('tagit.help').show('tagit blame', keymap)
+  help.show('tagit blame', keymap)
 end)
 bind('b', 'Blame', 'blame parent commit', blame_parent)
 bind('r', 'Blame', 'blame at revision', blame_revision)
