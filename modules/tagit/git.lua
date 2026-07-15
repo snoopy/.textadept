@@ -347,6 +347,31 @@ function M.file_diff(path, staged, root)
 end
 
 ---
+-- Runs a single `git diff` and returns per-file diff text keyed by path.
+-- @param staged When true, returns the staged (index) diffs; otherwise the working-tree diffs.
+-- @param root Repository root.
+-- @return { [path] = raw_diff_text } or {}.
+function M.file_diffs(staged, root)
+  local args = 'diff --no-color' .. (staged and ' --cached' or '')
+  local out, code = M.run(args, root)
+  if code ~= 0 or not out then return {} end
+  local result = {}
+  local path, text
+  for line in out:gmatch('[^\n]+') do
+    local p = line:match('^diff %-%-git a/.+ b/(.+)$')
+    if p then
+      if path then result[path] = text end
+      path = p
+      text = line .. '\n'
+    elseif path then
+      text = text .. line .. '\n'
+    end
+  end
+  if path then result[path] = text end
+  return result
+end
+
+---
 -- Returns an env table with GIT_COMMITTER_DATE set when M.commit_date is configured,
 -- or nil when no date override is in effect.
 -- Intended for passing as the env argument to M.run() for any command that creates a commit

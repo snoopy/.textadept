@@ -115,8 +115,8 @@ local function status_line(b, short, path, meta, command)
 end
 
 -- Render the diff hunks for a file as fold children. Returns true when hunks were rendered (i.e. the file is foldable).
-local function render_hunks(b, file, section)
-  local text = git.file_diff(file.path, section == 'staged', b.data.root)
+local function render_hunks(b, file, section, diff_text)
+  local text = diff_text or git.file_diff(file.path, section == 'staged', b.data.root)
   local parsed = diff.parse(text)
   if not parsed then return false end
   for _, hunk in ipairs(parsed.hunks) do
@@ -137,7 +137,7 @@ local function render_hunks(b, file, section)
 end
 
 -- Render a section of changed files (staged/unstaged) with their hunks.
-local function render_file_section(b, title, id, files, section)
+local function render_file_section(b, title, id, files, section, diffs)
   if #files == 0 then return end
   line(b, title .. ' (' .. #files .. ')', {
     kind = 'section',
@@ -162,7 +162,7 @@ local function render_file_section(b, title, id, files, section)
       fold_default = 'collapsed',
     }
     local lnum = status_line(b, short, display_path, meta, visit_file)
-    local has_hunks = render_hunks(b, file, section)
+    local has_hunks = render_hunks(b, file, section, diffs and diffs[file.path])
     meta.fold_header = has_hunks
     b.data.lines[lnum] = meta
     -- Non-header separator at L_CHILD level terminates the file-level fold
@@ -441,8 +441,10 @@ buf.on_refresh = function(b)
   render_list_section(b, 'Files', 'files', truncate(tracked_files), 'files')
   render_list_section(b, 'Untracked', 'untracked', truncate(status.untracked), 'untracked')
   render_unmerged_section(b, status.unmerged)
-  render_file_section(b, 'Unstaged changes', 'unstaged', truncate(status.unstaged), 'unstaged')
-  render_file_section(b, 'Staged changes', 'staged', truncate(status.staged), 'staged')
+  local unstaged_diffs = git.file_diffs(false, root)
+  local staged_diffs = git.file_diffs(true, root)
+  render_file_section(b, 'Unstaged changes', 'unstaged', truncate(status.unstaged), 'unstaged', unstaged_diffs)
+  render_file_section(b, 'Staged changes', 'staged', truncate(status.staged), 'staged', staged_diffs)
 
   line(b, '')
   line(b, 'Press ? for keybindings', { kind = 'hint' })
