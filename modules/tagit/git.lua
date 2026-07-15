@@ -604,7 +604,7 @@ end
 -- Returns the parent SHA of a commit, or nil if it has no parent (root commit).
 function M.parent_sha(sha, root)
   if not sha then return nil end
-  local out, code = M.run('rev-parse ' .. shquote(sha .. '^'), root)
+  local out, code = M.run('rev-parse ' .. shquote(sha .. '~1'), root)
   if code ~= 0 or not out then return nil end
   return trim(out)
 end

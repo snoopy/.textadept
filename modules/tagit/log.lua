@@ -200,7 +200,7 @@ bind('R', 'Actions', 'rebase interactive here', function()
     ui.statusbar_text = 'No commit at cursor'
     return
   end
-  require('tagit').rebase_interactive(hash .. '^')
+  require('tagit').rebase_interactive(hash .. '~1')
   refresh()
 end)
 bind('B', 'Actions', 'blame file at revision', function()
