@@ -209,32 +209,41 @@ function M.run_interactive(args, root, env, on_done)
     on_done(err, 1)
     return
   end
-  local parts = {}
+  local cmd = 'git -C ' .. shquote(root) .. ' ' .. args
+  local chunks = {}
+  local function collect(chunk)
+    chunks[#chunks + 1] = chunk
+  end
   if OS == 'windows' then
+    local parts = {}
     if env then
       for k, v in pairs(env) do
         local val = tostring(v):gsub('"', '""')
         parts[#parts + 1] = 'set "' .. k .. '=' .. val .. '"'
       end
     end
-    parts[#parts + 1] = 'git -C ' .. shquote(root) .. ' ' .. args
+    parts[#parts + 1] = cmd
+    os.spawn(table.concat(parts, ' && '), root, collect, collect, function(code)
+      on_done(table.concat(chunks), code)
+    end)
   else
+    local proc = os.spawn('env')
+    local env_out = proc:read('a') or ''
+    proc:wait()
+    local merged_env = {}
+    for line in env_out:gmatch('[^\n]+') do
+      local k, v = line:match('^([^=]+)=(.*)$')
+      if k then merged_env[k] = v end
+    end
     if env then
       for k, v in pairs(env) do
-        parts[#parts + 1] = k .. '=' .. shquote(tostring(v))
+        merged_env[k] = tostring(v)
       end
     end
-    parts[#parts + 1] = 'git -C ' .. shquote(root) .. ' ' .. args
+    os.spawn(cmd, root, merged_env, collect, collect, function(code)
+      on_done(table.concat(chunks), code)
+    end)
   end
-  local sep = OS == 'windows' and ' && ' or ' '
-  local cmd = table.concat(parts, sep)
-  local chunks = {}
-  local function collect(chunk)
-    chunks[#chunks + 1] = chunk
-  end
-  os.spawn(cmd, root, collect, collect, function(code)
-    on_done(table.concat(chunks), code)
-  end)
 end
 
 ---
