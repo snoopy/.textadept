@@ -279,7 +279,10 @@ end
 
 keys['ctrl+h'] = git.heatmap
 
-keys['ctrl+r'] = buffer.reload
+keys['ctrl+r'] = function()
+  local ok, err = pcall(buffer.reload, buffer)
+  if not ok then ui.statusbar_text = 'Reload failed: ' .. tostring(err) end
+end
 keys['ctrl+b'] = function()
   if not buffer.filename then return end
   buffer:copy_text(buffer.filename)
