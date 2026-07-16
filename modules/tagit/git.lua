@@ -86,7 +86,16 @@ local safe_prefixes = {
   rebase = { '--continue', '--abort', '--skip' },
   ['cherry-pick'] = { '--continue', '--abort', '--skip' },
   revert = { '--continue', '--abort', '--skip' },
-  branch = { '--show-current', '--remotes', '--move', '--set-upstream-to', '--unset-upstream', '--format', '--list' },
+  branch = {
+    '--show-current',
+    '--remotes',
+    '--move',
+    '--set-upstream-to',
+    '--unset-upstream',
+    '--format',
+    '--list',
+    '--sort',
+  },
   stash = { 'list', 'show' },
 }
 
