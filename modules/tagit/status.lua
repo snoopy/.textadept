@@ -299,7 +299,7 @@ local function add_commit_line(b, hash, date, rel, author, subject, refs)
   offset = offset + #author_text + #subject
   if refs ~= '' then pending_styles[#pending_styles + 1] = { start + offset, #refs_text, 'type' } end
 
-  local lnum = b.line_count
+  local lnum = b.line_count - 1
   b.data.lines[lnum] = { kind = 'commit', hash = hash, level = L_CHILD }
 end
 
