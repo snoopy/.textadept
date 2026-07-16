@@ -145,7 +145,7 @@ function M.run(args, root, env)
   end
   local cmd = env_prefix .. 'git -C ' .. shquote(root) .. ' ' .. args
   if OS == 'windows' then
-    local proc = os.spawn(cmd, root)
+    local proc = os.spawn(cmd .. ' 2>&1', root)
     if not proc then return nil, 'failed to spawn git' end
     local out = proc:read('a') or ''
     local code = proc:wait()
