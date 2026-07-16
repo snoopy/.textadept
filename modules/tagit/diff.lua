@@ -85,15 +85,26 @@ function M.discard_hunk(header, hunk, root)
 end
 
 --- Finds a conflict marker (`<<<<<<< `, `||||||| `, `=======`, `>>>>>>> `)
--- ensuring it is at the start of a line (followed by newline, CRLF, or end-of-string).
+-- ensuring it is at the start of a line.
+-- For markers without a trailing space (`=======`), also requires nothing follows on the same line.
 -- Returns the position of the marker, or nil.
 local function find_marker(text, marker, pos)
   local s = text:find(marker, pos)
   if not s then return nil end
   local after = s + #marker
-  local ch = text:sub(after, after)
-  if ch == '' or ch == '\n' or (ch == '\r' and text:sub(after + 1, after + 1) == '\n') then return s end
-  return find_marker(text, marker, after)
+  -- Must be at start of a line
+  if s > 1 then
+    local prev = text:sub(s - 1, s - 1)
+    if prev ~= '\n' and prev ~= '\r' then return find_marker(text, marker, after) end
+  end
+  -- For markers without trailing space (=======), nothing must follow
+  if marker:sub(-1) ~= ' ' then
+    local ch = text:sub(after, after)
+    if ch ~= '' and ch ~= '\n' and not (ch == '\r' and text:sub(after + 1, after + 1) == '\n') then
+      return find_marker(text, marker, after)
+    end
+  end
+  return s
 end
 
 local function line_end(text, pos)
