@@ -244,6 +244,24 @@ bind('V', 'Actions', 'revert commit', function()
   revert.revert_from_log(hash)
   refresh()
 end)
+bind('c', 'Actions', 'checkout commit', function()
+  local hash = commit_at_cursor()
+  if not hash then
+    ui.statusbar_text = 'No commit at cursor'
+    return
+  end
+  local root = buf.data.root
+  if not root then return end
+  ui.statusbar_text = 'Checking out ' .. hash:sub(1, 9) .. '...'
+  local out, code = git.run('checkout ' .. git.quote(hash), root)
+  if code == 0 then
+    ui.statusbar_text = 'Checked out ' .. hash:sub(1, 9)
+  else
+    ui.statusbar_text = 'Checkout failed: ' .. common.trim(out)
+  end
+  common.refresh_status()
+  refresh()
+end)
 bind('o', 'Actions', 'visit files', open_commit_files)
 
 ---
