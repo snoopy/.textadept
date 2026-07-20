@@ -319,6 +319,17 @@ function M.status(root)
     end
   end
 
+  -- Resolve detached HEAD to the actual commit hash.
+  local head = status.branch.head
+  if not head or head:match('^HEAD') or head:match('detached') then
+    local out, code = M.run('rev-parse --short HEAD', root)
+    if out and code == 0 then
+      status.branch.head = '(' .. trim(out) .. ')'
+    elseif not head then
+      status.branch.head = '(detached)'
+    end
+  end
+
   return status
 end
 
