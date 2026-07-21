@@ -58,7 +58,7 @@ buf.data.revision_stack = {}
 buf.data.blame_cache = {}
 
 buf.on_refresh = function(b)
-  b.data.root = b.data.root or common.root(b.origin_buffer and b.origin_buffer.filename)
+  b.data.root = b.data.root or common.root(b.origin_buffer)
   if not b.data.root then
     b:add_text('Not in a git repository.\n', reduxstyle.tagit_blame_sep)
     return

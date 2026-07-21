@@ -423,7 +423,7 @@ buf.on_refresh = function(b)
   if is_current then setup_buffer() end
   b.data.lines = {}
   b.data.fold_state = b.data.fold_state or {}
-  local root = common.root(b.origin_buffer and b.origin_buffer.filename)
+  local root = common.root(b.origin_buffer)
   b.data.root = root
   if not root then
     line(b, 'Not in a git repository.')

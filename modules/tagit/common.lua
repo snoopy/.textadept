@@ -101,25 +101,33 @@ function M.status_module()
   return require('tagit.status')
 end
 
--- Get project root for given path or use various fallbacks
-function M.root(path)
-  if path then
-    local root_from_path = git.root(path)
-    if root_from_path then return root_from_path end
+-- Get project root for given origin buffer or use various fallbacks.
+-- Tries the origin buffer's filename first, then its Textredux data,
+-- then the current buffer's Textredux data, then the bare git.root().
+function M.root(origin_buffer)
+  -- From the origin buffer's file path
+  if origin_buffer and origin_buffer.filename then
+    local root_path = git.root(origin_buffer.filename)
+    if root_path then return root_path end
   end
 
-  -- If the current buffer is a Textredux buffer (log, status, stash, branch),
-  -- use the root it discovered in its own on_refresh.
+  -- From the origin buffer's Textredux data (e.g. another tagit buffer)
+  if
+    origin_buffer
+    and origin_buffer._textredux
+    and origin_buffer._textredux.data
+    and origin_buffer._textredux.data.root
+  then
+    return origin_buffer._textredux.data.root
+  end
+
+  -- From the current buffer's Textredux data
   if buffer._textredux and buffer._textredux.data and buffer._textredux.data.root then
     return buffer._textredux.data.root
   end
 
-  local sbuf = M.status_module().buffer
-  if sbuf and sbuf.data and sbuf.data.root then return sbuf.data.root end
-
-  local root_from_cwd = git.root() -- uses current buffer's filename
-  if root_from_cwd then return root_from_cwd end
-  return nil
+  -- Fall back to the current buffer's file path
+  return git.root()
 end
 
 return M

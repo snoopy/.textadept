@@ -92,7 +92,7 @@ local function add_commit_line(b, hash, date, rel, author, subject, refs)
 end
 
 buf.on_refresh = function(b)
-  b.data.root = common.root(b.origin_buffer and b.origin_buffer.filename)
+  b.data.root = common.root(b.origin_buffer)
   if not b.data.root then
     b:add_text('Not in a git repository.\n', reduxstyle.tagit_log_dim)
     return

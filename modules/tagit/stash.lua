@@ -69,7 +69,7 @@ end
 
 buf.on_refresh = function(b)
   b.data.lines = {}
-  b.data.root = common.root(b.origin_buffer and b.origin_buffer.filename)
+  b.data.root = common.root(b.origin_buffer)
   if not b.data.root then
     b:add_text('Not in a git repository.\n', reduxstyle.tagit_stash_dim)
     return
