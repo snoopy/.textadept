@@ -4,6 +4,8 @@ A [Magit](https://magit.vc/)-inspired git porcelain for Textadept.
 
 ## Installation
 
+Requires https://github.com/snoopy/textredux
+
 Copy to `~/.textadept/modules/tagit/` and add to `init.lua`:
 
 ```lua
