@@ -347,6 +347,24 @@ local function delete_branch_at_cursor()
   end
 end
 
+local function delete_remote_branch_at_cursor()
+  local name = branch_at_cursor()
+  if not name then
+    ui.statusbar_text = 'Not on a branch line'
+    return
+  end
+  local remote_name = name:match('^origin/(.+)$')
+  if not remote_name then
+    ui.statusbar_text = 'Not a remote-tracking branch'
+    return
+  end
+  if common.confirm('Delete remote branch?', 'Delete ' .. remote_name .. ' from origin?', 'Delete') then
+    common.run_async('push origin --delete ' .. git.quote(remote_name), 'delete remote branch')
+    refresh()
+    common.refresh_status()
+  end
+end
+
 local function set_upstream_at_cursor()
   local name = branch_at_cursor()
   if not name then
@@ -428,7 +446,13 @@ bind('esc', 'Navigate', 'quit')
 bind('?', 'Help', 'help', function()
   help.show('tagit branches', keymap)
 end)
-bind('d', 'Branch', 'delete local', delete_branch_at_cursor)
+bind('d', 'Branch', 'delete', function()
+  if buf.data.mode == 'remote' then
+    delete_remote_branch_at_cursor()
+  else
+    delete_branch_at_cursor()
+  end
+end)
 bind('r', 'View', 'toggle remote', function()
   buf.data.mode = buf.data.mode == 'local' and 'remote' or 'local'
   buf.data.want_line = nil
