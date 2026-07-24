@@ -12,12 +12,12 @@ local clippy = require('clippy')
 local tagit = require('tagit')
 
 local format = require('format')
-format.commands.lua =
-  'stylua --syntax lua54 --indent-width 2 --indent-type Spaces --quote-style AutoPreferSingle --collapse-simple-statement ConditionalOnly -'
+format.commands.lua = util.get_path()
+  .. 'stylua --syntax lua54 --indent-width 2 --indent-type Spaces --quote-style AutoPreferSingle --collapse-simple-statement ConditionalOnly -'
 format.commands.cpp = function()
-  return 'clang-format -style=file -fallback-style=none -assume-filename=' .. buffer.filename
+  return util.get_path() .. 'clang-format -style=file -fallback-style=none -assume-filename=' .. buffer.filename
 end
-format.commands.python = 'ruff format --line-length 120 -'
+format.commands.python = util.get_path() .. 'ruff format --line-length 120 -'
 format.commands.rust = 'rustfmt'
 
 local spellcheck = require('spellcheck')

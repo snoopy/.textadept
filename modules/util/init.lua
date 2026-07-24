@@ -310,4 +310,10 @@ function M.goto_fold_point(next)
   end
 end
 
+local PATH = ''
+if OS == 'linux' then PATH = 'env PATH=' .. os.getenv('HOME') .. '/.local/bin:' .. os.getenv('PATH') .. ' ' end
+function M.get_path()
+  return PATH
+end
+
 return M
