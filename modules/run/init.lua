@@ -1,5 +1,7 @@
 local M = {}
 
+local util = require('util')
+
 local WIN32 = OS == 'windows'
 
 local path_ignore_list = {
@@ -85,20 +87,21 @@ function M.run(mode)
 
   local linter_commands = {}
   -- stylua: ignore start
-  linter_commands['cpp'] = 'clang-tidy -checks="*,-fuchsia*,-llvm*" -p '
+  linter_commands['cpp'] = util.get_path() .. 'clang-tidy -checks="*,-fuchsia*,-llvm*" -p '
     .. rootpath .. '/build/compile_commands.json '
     .. buffer.filename
     .. ' 2>&1'
   -- stylua: ignore end
   -- ruff check --fix --select I001
-  linter_commands['python'] = 'ruff check --line-length 120 --select ALL --ignore D200,D203,D205,D209,D212,D213,D400,D415 --output-format pylint '
+  linter_commands['python'] = util.get_path()
+    .. 'ruff check --line-length 120 --select ALL --ignore D200,D203,D205,D209,D212,D213,D400,D415 --output-format pylint '
     .. buffer.filename
     .. (WIN32 and ' 2>&1' or '')
-  linter_commands['lua'] = 'luacheck --no-color ' .. buffer.filename
+  linter_commands['lua'] = util.get_path() .. 'luacheck --no-color ' .. buffer.filename
   linter_commands['rust'] = 'cargo clippy --message-format short 2>&1'
 
   local build_commands = {}
-  build_commands['cpp'] = 'ninja -C ' .. rootpath .. '/build'
+  build_commands['cpp'] = util.get_path() .. 'ninja -C ' .. rootpath .. '/build'
   build_commands['rust'] = 'cargo build --message-format short 2>&1'
 
   local modes = {}
