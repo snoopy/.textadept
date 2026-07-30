@@ -15,6 +15,13 @@ local function execute_line()
   local text = buffer:get_line(line)
   text = text:match('^%s*(.-)%s*$')
   if not text or text == '' or text:sub(1, 1) == '#' then return end
+  -- Reject shell metacharacters. Redirection (<>) is included because the
+  -- underlying spawn goes through cmd.exe on Windows and the shell on POSIX.
+  -- '%' stays allowed so commands like `git log --format=%s` keep working.
+  if text:match('[;&|`$(){}<>]') then
+    buffer:add_text('Invalid characters in command\n')
+    return
+  end
 
   local root = common.root()
   if not root then
