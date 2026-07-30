@@ -200,6 +200,38 @@ function M.run_async(argv, root, on_done)
   end)
 end
 
+-- Base environment for spawned processes, captured once and reused.
+-- Textadept's process environment does not change at runtime, so caching is safe.
+local base_env
+
+-- Build a full environment table for os.spawn: the cached base environment plus the
+-- given overrides. os.spawn treats its env table as the child's complete environment,
+-- so without the base entries the child would lose PATH, HOME, etc.
+local function build_env(env)
+  if not base_env then
+    base_env = {}
+    local proc = os.spawn('env')
+    if proc then
+      local out = proc:read('a') or ''
+      proc:wait()
+      for line in out:gmatch('[^\n]+') do
+        local k, v = line:match('^([^=]+)=(.*)$')
+        if k then base_env[k] = v end
+      end
+    end
+  end
+  local result = {}
+  for k, v in pairs(base_env) do
+    result[k] = v
+  end
+  if env then
+    for k, v in pairs(env) do
+      result[k] = tostring(v)
+    end
+  end
+  return result
+end
+
 ---
 -- Runs a git command interactively (e.g. rebase --interactive) without blocking the UI.
 -- Uses non-blocking os.spawn with callbacks, so Textadept's main thread stays responsive.
@@ -236,20 +268,7 @@ function M.run_interactive(args, root, env, on_done)
       on_done(table.concat(chunks), code)
     end)
   else
-    local proc = os.spawn('env')
-    local env_out = proc:read('a') or ''
-    proc:wait()
-    local merged_env = {}
-    for line in env_out:gmatch('[^\n]+') do
-      local k, v = line:match('^([^=]+)=(.*)$')
-      if k then merged_env[k] = v end
-    end
-    if env then
-      for k, v in pairs(env) do
-        merged_env[k] = tostring(v)
-      end
-    end
-    os.spawn(cmd, root, merged_env, collect, collect, function(code)
+    os.spawn(cmd, root, build_env(env), collect, collect, function(code)
       on_done(table.concat(chunks), code)
     end)
   end
