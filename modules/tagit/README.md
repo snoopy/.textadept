@@ -19,6 +19,24 @@ keys['ctrl+alt+g'] = tagit.status
 keys['ctrl+alt+l'] = tagit.log
 ```
 
+## Testing
+
+Run all tagit tests from a terminal:
+
+```sh
+textadept -f -t "modules/tagit/diff,modules/tagit/git_parse,modules/tagit/common"
+```
+
+Or select a single suite:
+
+```sh
+textadept -f -t "modules/tagit/diff"
+```
+
+Tests live in `modules/tagit/*_test.lua` alongside the module they test. They use Textadept's built-in test framework (`test()` to register, `test.assert_equal`, `test.assert`, `test.mock`, etc.).
+
+Each test file prepends the real `_USERHOME/modules/` path to `package.path` so `require('tagit.*')` resolves — the `-t` flag redirects `_USERHOME` to a temp directory, making the tagit module otherwise unreachable from within the test sandbox.
+
 ## Public API
 
 | Function | Description |
