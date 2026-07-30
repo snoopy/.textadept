@@ -102,7 +102,7 @@ end
 -- Asks the user to confirm, then fetches from origin for the current branch
 -- and hard resets to @{upstream}. Both operations run asynchronously.
 function M.reload()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -149,7 +149,7 @@ M.rebase_interactive = operation.rebase_interactive
 ---
 -- Opens a blame buffer for the current file.
 function M.blame()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return

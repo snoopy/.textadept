@@ -55,7 +55,7 @@ end
 -- Opens a commit message buffer for the current repository.
 -- @param amend When true, the commit amends the previous commit.
 function M.start(amend)
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -79,7 +79,7 @@ end
 ---
 -- Squashes the current commit into the previous one by amending HEAD without editing the message.
 function M.squash()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -134,7 +134,7 @@ keys[KEYS_MODE] = setmetatable({
 }, { __index = keys })
 
 local function stage_all_and_commit()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -148,7 +148,7 @@ local function stage_all_and_commit()
 end
 
 local function stage_all_and_squash()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return

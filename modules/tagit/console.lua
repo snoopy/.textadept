@@ -23,7 +23,7 @@ local function execute_line()
     return
   end
 
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     buffer:add_text('Not a git repository\n\n')
     return
@@ -63,7 +63,7 @@ keys[KEYS_MODE] = setmetatable({
 ---
 -- Opens the git console buffer for the current project.
 function M.show()
-  local root = common.root()
+  local root = common.root(buffer)
   buffer.new()
   buffer._tagit_console = true
   buffer:set_lexer('bash')

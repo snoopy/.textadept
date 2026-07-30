@@ -9,7 +9,7 @@ local commit = require('tagit.commit')
 local M = {}
 
 local function merge_branch()
-  local root = common.root()
+  local root = common.root(buffer)
   common.pick('Merge branch', common.branches(root), function(name)
     ui.statusbar_text = 'Merging...'
     git.run_interactive('merge ' .. git.quote(name), root, git.date_env(), function(out, code)
@@ -20,7 +20,7 @@ local function merge_branch()
 end
 
 local function rebase_interactive(base, on_done)
-  local root = common.root()
+  local root = common.root(buffer)
   if not base then
     local name, button = ui.dialogs.input({
       title = 'Rebase interactive (e.g. HEAD~3)',
@@ -41,7 +41,7 @@ local function rebase_interactive(base, on_done)
 end
 
 local function continue_operation()
-  local root = common.root()
+  local root = common.root(buffer)
   local op = git.operation(root)
   if not op then
     ui.statusbar_text = 'No operation in progress'
@@ -59,7 +59,7 @@ local function continue_operation()
 end
 
 local function abort_operation()
-  local root = common.root()
+  local root = common.root(buffer)
   local op = git.operation(root)
   if not op then
     ui.statusbar_text = 'No operation in progress'
@@ -81,7 +81,7 @@ local function abort_operation()
 end
 
 local function skip_operation()
-  local root = common.root()
+  local root = common.root(buffer)
   local op = git.operation(root)
   if not op or op.type ~= 'rebase' then
     ui.statusbar_text = 'Not in a rebase'
@@ -92,7 +92,7 @@ local function skip_operation()
 end
 
 local function revert_continue()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then return end
   ui.statusbar_text = 'Continuing revert...'
   git.run_interactive('revert --continue', root, git.date_env(), function(out, code)
@@ -102,7 +102,7 @@ local function revert_continue()
 end
 
 local function revert_abort()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then return end
   if common.confirm('Abort revert?', 'Abort the current revert operation?', 'Abort') then
     common.report_git(git.revert_abort(root))
@@ -111,14 +111,14 @@ local function revert_abort()
 end
 
 local function revert_skip()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then return end
   common.report_git(git.revert_skip(root))
   common.refresh_status()
 end
 
 function M.menu()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return

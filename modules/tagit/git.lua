@@ -55,7 +55,8 @@ end
 ---
 -- Returns the absolute path of the project root,
 -- or nil when the path is not part of a git work tree.
--- When @{path} is omitted, the current buffer's directory is used.
+-- Callers should always pass an explicit path; the no-argument variant
+-- falls back to the current buffer's directory and is deprecated.
 -- @param path Optional file/directory path to find the root for.
 function M.root(path)
   return io.get_project_root(path, true)

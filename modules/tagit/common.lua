@@ -59,7 +59,7 @@ end
 -- Run a (possibly slow) git command asynchronously,
 -- reporting progress in the status bar and refreshing the status buffer on completion.
 function M.run_async(args, label)
-  local root = M.root()
+  local root = M.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -100,7 +100,7 @@ end
 
 -- Get project root for given origin buffer or use various fallbacks.
 -- Tries the origin buffer's filename first, then its Textredux data,
--- then the current buffer's Textredux data, then the bare git.root().
+-- then the current buffer's Textredux data, then the current buffer's file path.
 function M.root(origin_buffer)
   -- From the origin buffer's file path
   if origin_buffer and origin_buffer.filename then
@@ -124,7 +124,10 @@ function M.root(origin_buffer)
   end
 
   -- Fall back to the current buffer's file path
-  return git.root()
+  if buffer and buffer.filename then
+    return git.root(buffer.filename)
+  end
+  return nil
 end
 
 return M

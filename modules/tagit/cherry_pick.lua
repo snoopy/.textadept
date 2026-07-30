@@ -25,7 +25,7 @@ end
 
 --- Prompt the user for a commit hash or ref and cherry-pick it.
 function M.pick_commit()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -42,7 +42,7 @@ end
 
 --- Pick a branch, then pick one of its unpicked commits to cherry-pick.
 function M.pick_from_branch()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -68,7 +68,7 @@ end
 -- Cherry-pick a specific commit (called from the log buffer).
 -- @param sha The commit hash to cherry-pick.
 function M.pick_from_log(sha)
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -78,7 +78,7 @@ end
 
 --- Continue a conflicted cherry-pick after resolving conflicts.
 function M.continue()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -92,7 +92,7 @@ end
 
 --- Abort a cherry-pick in progress.
 function M.abort()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -105,7 +105,7 @@ end
 
 --- Skip the current commit and continue the cherry-pick sequence.
 function M.skip()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -116,7 +116,7 @@ end
 
 --- Open the cherry-pick transient menu.
 function M.menu()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return

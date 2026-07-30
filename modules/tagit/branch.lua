@@ -76,7 +76,7 @@ end
 -- Branch transient menu and operations.
 
 local function pick_branch()
-  local root = common.root()
+  local root = common.root(buffer)
   local local_branches = common.branches(root)
   local rmt_branches = remote_branches(root)
   local all_branches = {}
@@ -94,7 +94,7 @@ local function pick_branch()
 end
 
 local function create_branch()
-  local root = common.root()
+  local root = common.root(buffer)
   local name, name_btn = ui.dialogs.input({
     title = 'Create and switch branch',
     button1 = 'OK',
@@ -116,7 +116,7 @@ local function create_branch()
 end
 
 local function orphan_branch()
-  local root = common.root()
+  local root = common.root(buffer)
   local name, button = ui.dialogs.input({
     title = 'Create orphan branch',
     button1 = 'OK',
@@ -129,13 +129,13 @@ local function orphan_branch()
 end
 
 local function previous_branch()
-  local root = common.root()
+  local root = common.root(buffer)
   common.report_git(git.run('switch -', root))
   common.refresh_status()
 end
 
 local function rename_branch()
-  local root = common.root()
+  local root = common.root(buffer)
   common.pick('Rename branch', common.branches(root), function(old_name)
     local new_name, button = ui.dialogs.input({
       title = 'New name for ' .. old_name,
@@ -151,7 +151,7 @@ local function rename_branch()
 end
 
 local function delete_branch()
-  local root = common.root()
+  local root = common.root(buffer)
   local current = current_branch_name(root)
   local all_branches = common.branches(root)
   local deletable = {}
@@ -167,7 +167,7 @@ local function delete_branch()
 end
 
 local function delete_remote_branch()
-  common.pick('Delete remote branch', origin_branch_names(common.root()), function(name)
+  common.pick('Delete remote branch', origin_branch_names(common.root(buffer)), function(name)
     if common.confirm('Delete remote branch?', 'Delete ' .. name .. '?', 'Delete') then
       common.run_async('push origin --delete ' .. git.quote(name), 'delete remote branch')
     end
@@ -175,7 +175,7 @@ local function delete_remote_branch()
 end
 
 local function set_upstream()
-  local root = common.root()
+  local root = common.root(buffer)
   common.pick('Set upstream', remote_branches(root), function(name)
     common.report_git(git.run('branch --set-upstream-to ' .. git.quote(name), root))
     common.refresh_status()
@@ -183,13 +183,13 @@ local function set_upstream()
 end
 
 local function unset_upstream()
-  local root = common.root()
+  local root = common.root(buffer)
   common.report_git(git.run('branch --unset-upstream', root))
   common.refresh_status()
 end
 
 local function checkout_any_ref()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then return end
   local ref, button = ui.dialogs.input({
     title = 'Checkout ref (branch, tag, commit, HEAD~N...)',

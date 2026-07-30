@@ -20,7 +20,7 @@ function M.menu()
       help = 'nuke: reset --hard',
       action = function()
         if common.confirm('Hard reset?', 'Discard all staged and unstaged changes?', 'Nuke') then
-          common.report_git(git.reset('hard', nil, common.root()))
+          common.report_git(git.reset('hard', nil, common.root(buffer)))
           common.refresh_status()
         end
       end,
@@ -30,7 +30,7 @@ function M.menu()
       help = 'drop: reset --hard HEAD~1',
       action = function()
         if common.confirm('Drop last commit?', 'Discard the last commit and all staged/unstaged changes?', 'Drop') then
-          common.report_git(git.reset('hard', 'HEAD~1', common.root()))
+          common.report_git(git.reset('hard', 'HEAD~1', common.root(buffer)))
           common.refresh_status()
         end
       end,
@@ -40,7 +40,7 @@ function M.menu()
       help = 'undo: reset --soft HEAD~1',
       action = function()
         if common.confirm('Undo last commit?', 'Undo last commit, keeping changes staged?', 'Undo') then
-          common.report_git(git.reset('soft', 'HEAD~1', common.root()))
+          common.report_git(git.reset('soft', 'HEAD~1', common.root(buffer)))
           common.refresh_status()
         end
       end,
@@ -49,7 +49,7 @@ function M.menu()
       key = 'a',
       help = 'any ref: reset --hard',
       action = function()
-        local root = common.root()
+        local root = common.root(buffer)
         if not root then return end
         local ref, button = ui.dialogs.input({
           title = 'Reset --hard to ref (Commit hash, HEAD~N, branch name, tag...)',
@@ -76,7 +76,7 @@ function M.menu()
       help = 'clean: clean -df',
       action = function()
         if common.confirm('Clean untracked?', 'Delete untracked files and directories?', 'Clean') then
-          common.report_git(git.clean(common.root(), false))
+          common.report_git(git.clean(common.root(buffer), false))
           common.refresh_status()
         end
       end,
@@ -88,7 +88,7 @@ function M.menu()
         if
           common.confirm('Purge untracked + ignored?', 'Delete ALL untracked and ignored files/directories?', 'Purge')
         then
-          common.report_git(git.clean(common.root(), true))
+          common.report_git(git.clean(common.root(buffer), true))
           common.refresh_status()
         end
       end,

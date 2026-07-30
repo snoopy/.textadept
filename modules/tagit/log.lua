@@ -278,7 +278,7 @@ end
 -- Log filtering helpers used by the transient menu.
 
 local function log_normal()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -287,7 +287,7 @@ local function log_normal()
 end
 
 local function log_by_author()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -303,7 +303,7 @@ local function log_by_author()
 end
 
 local function log_by_pickaxe()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -319,7 +319,7 @@ local function log_by_pickaxe()
 end
 
 local function log_by_grep()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
@@ -335,7 +335,7 @@ local function log_by_grep()
 end
 
 local function log_by_file()
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return

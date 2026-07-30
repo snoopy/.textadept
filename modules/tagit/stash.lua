@@ -103,7 +103,7 @@ end
 -- Shows an input dialog for a stash message (may be left blank).
 -- @param extra_args Optional string of extra git arguments, e.g. `'--keep-index'`.
 local function stash_push(extra_args)
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then return end
   local msg, btn = ui.dialogs.input({
     title = 'Stash message (optional)',
@@ -124,7 +124,7 @@ end
 ---
 -- Opens the stash transient menu
 function M.menu()
-  local root = common.root()
+  local root = common.root(buffer)
   transient.open('Stash', {
     {
       key = 'p',

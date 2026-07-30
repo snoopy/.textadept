@@ -12,7 +12,7 @@ local M = {}
 -- Revert a specific commit (called from the log buffer).
 -- @param sha The commit hash to revert.
 function M.revert_from_log(sha)
-  local root = common.root()
+  local root = common.root(buffer)
   if not root then
     ui.statusbar_text = 'Not a git repository'
     return
