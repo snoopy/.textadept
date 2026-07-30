@@ -87,7 +87,14 @@ end
 local function visit_file(entry)
   if not entry or not entry.path then return end
   local root = buf.data.root:gsub('[/\\]+$', '')
-  io.open_file(root .. '/' .. entry.path)
+  if not root then return end
+  local full = root .. '/' .. entry.path
+  local attr = lfs.attributes(full)
+  if not attr then
+    ui.statusbar_text = 'File not found: ' .. entry.path
+    return
+  end
+  io.open_file(full)
 end
 
 -- Pick a Scintilla style name for a 2-character status code.
@@ -139,9 +146,10 @@ local function render_hunks(b, file, section, diff_text)
 end
 
 -- Render a section of changed files (staged/unstaged) with their hunks.
-local function render_file_section(b, title, id, files, section, diffs)
+local function render_file_section(b, title, id, files, section, diffs, truncated)
+  local count = #files + (truncated or 0)
   if #files == 0 then return end
-  line(b, title .. ' (' .. #files .. ')', {
+  line(b, title .. ' (' .. count .. ')', {
     kind = 'section',
     id = id,
     section = section,
@@ -171,13 +179,17 @@ local function render_file_section(b, title, id, files, section, diffs)
     -- so consecutive file folds do not merge (Scintilla's "not a fold header" rule).
     if i < #files then line(b, '', { level = L_CHILD }) end
   end
+  if truncated then
+    line(b, '  [+ ' .. truncated .. ' more files]')
+  end
   line(b, '', { level = L_SECTION })
 end
 
 -- Render a simple list section (files, untracked).
-local function render_list_section(b, title, id, files, section)
+local function render_list_section(b, title, id, files, section, truncated)
   if #files == 0 then return end
-  line(b, title .. ' (' .. #files .. ')', {
+  local count = #files + (truncated or 0)
+  line(b, title .. ' (' .. count .. ')', {
     kind = 'section',
     id = id,
     section = section,
@@ -197,6 +209,9 @@ local function render_list_section(b, title, id, files, section)
       orig = file.orig,
       level = L_CHILD,
     }, visit_file)
+  end
+  if truncated then
+    line(b, '  [+ ' .. truncated .. ' more files]')
   end
   line(b, '', { level = L_SECTION })
 end
@@ -432,11 +447,17 @@ buf.on_refresh = function(b)
   b.data.operation = git.operation(root)
   pending_styles = {}
 
-  local function truncate(items)
+  -- Return up to MAX_DISPLAY_FILES items plus how many were left out,
+  -- so large sections stay responsive and the count in the header stays accurate.
+  local function check_truncate(items)
     if #items > MAX_DISPLAY_FILES then
-      items[MAX_DISPLAY_FILES + 1] = { path = '[+ ' .. (#items - MAX_DISPLAY_FILES) .. ' more files]' }
+      local shown = {}
+      for i = 1, MAX_DISPLAY_FILES do
+        shown[i] = items[i]
+      end
+      return shown, #items - MAX_DISPLAY_FILES
     end
-    return items
+    return items, nil
   end
 
   render_header(b, status)
@@ -445,13 +466,17 @@ buf.on_refresh = function(b)
   for _, f in ipairs(status.files) do
     if f.status ~= '??' then tracked_files[#tracked_files + 1] = f end
   end
-  render_list_section(b, 'Files', 'files', truncate(tracked_files), 'files')
-  render_list_section(b, 'Untracked', 'untracked', truncate(status.untracked), 'untracked')
+  local tracked, tracked_trunc = check_truncate(tracked_files)
+  render_list_section(b, 'Files', 'files', tracked, 'files', tracked_trunc)
+  local ut, ut_trunc = check_truncate(status.untracked)
+  render_list_section(b, 'Untracked', 'untracked', ut, 'untracked', ut_trunc)
   render_unmerged_section(b, status.unmerged)
   local unstaged_diffs = git.file_diffs(false, root)
   local staged_diffs = git.file_diffs(true, root)
-  render_file_section(b, 'Unstaged changes', 'unstaged', truncate(status.unstaged), 'unstaged', unstaged_diffs)
-  render_file_section(b, 'Staged changes', 'staged', truncate(status.staged), 'staged', staged_diffs)
+  local us, us_trunc = check_truncate(status.unstaged)
+  render_file_section(b, 'Unstaged changes', 'unstaged', us, 'unstaged', unstaged_diffs, us_trunc)
+  local ss, ss_trunc = check_truncate(status.staged)
+  render_file_section(b, 'Staged changes', 'staged', ss, 'staged', staged_diffs, ss_trunc)
 
   line(b, '')
   line(b, 'Press ? for keybindings', { kind = 'hint' })
