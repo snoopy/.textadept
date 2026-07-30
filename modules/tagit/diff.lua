@@ -6,6 +6,7 @@
 
 local git = require('tagit.git')
 local common = require('tagit.common')
+local modes = require('tagit.modes')
 
 local M = {}
 
@@ -232,7 +233,7 @@ function M.show_commit(sha, root, mode_id)
   buffer:goto_pos(1)
   buffer:set_save_point()
   buffer.read_only = true
-  keys.mode = 'tagit_' .. mode_id .. '_diff'
+  modes.update()
 end
 
 --- Picks a file from the commit diff's changed files and opens it.

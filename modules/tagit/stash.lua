@@ -17,6 +17,7 @@ reduxstyle.tagit_stash_dim = reduxstyle.nothing .. {}
 local buf = reduxbuffer.new('*tagit: stashes*')
 buf.data = {}
 
+local modes = require('tagit.modes')
 -- Keys mode for diff buffers opened from the stash list.
 local DIFF_MODE = 'tagit_stash_diff'
 keys[DIFF_MODE] = setmetatable({
@@ -27,16 +28,7 @@ keys[DIFF_MODE] = setmetatable({
     buffer:close(true)
   end,
 }, { __index = keys })
-
-local function update_diff_keys_mode()
-  if buffer._tagit_stash_diff then
-    keys.mode = DIFF_MODE
-  elseif keys.mode == DIFF_MODE then
-    keys.mode = nil
-  end
-end
-events.connect(events.BUFFER_AFTER_SWITCH, update_diff_keys_mode)
-events.connect(events.VIEW_AFTER_SWITCH, update_diff_keys_mode)
+modes.register('_tagit_stash_diff', DIFF_MODE)
 
 -- Show a single stash entry's diff in a normal buffer with the diff lexer.
 local function show_stash(ref)
@@ -52,7 +44,7 @@ local function show_stash(ref)
   buffer:add_text(out)
   buffer:goto_pos(1)
   buffer:set_save_point()
-  keys.mode = DIFF_MODE
+  modes.update()
 end
 
 -- Render one stash entry as a hotspot line with metadata for cursor-based actions.

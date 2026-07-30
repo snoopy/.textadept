@@ -5,18 +5,9 @@ local common = require('tagit.common')
 
 local M = {}
 
+local modes = require('tagit.modes')
 local KEYS_MODE = 'tagit_console'
-
--- Activate console keys mode only while a console buffer is current.
-local function update_keys_mode()
-  if buffer._tagit_console then
-    keys.mode = KEYS_MODE
-  elseif keys.mode == KEYS_MODE then
-    keys.mode = nil
-  end
-end
-events.connect(events.BUFFER_AFTER_SWITCH, update_keys_mode)
-events.connect(events.VIEW_AFTER_SWITCH, update_keys_mode)
+modes.register('_tagit_console', KEYS_MODE)
 
 -- Run the current line as a git command and append its output.
 local function execute_line()
@@ -71,7 +62,7 @@ function M.show()
   buffer:set_lexer('bash')
   buffer.name = '*tagit: console*'
   clear_console()
-  keys.mode = KEYS_MODE
+  modes.update()
 end
 
 return M

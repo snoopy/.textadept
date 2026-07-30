@@ -37,6 +37,7 @@ local SEP = string.char(31)
 local buf = reduxbuffer.new('*tagit: log*')
 buf.data = {}
 
+local modes = require('tagit.modes')
 -- Keys mode for diff buffers opened from the log. `q`/`esc` close the buffer.
 local DIFF_MODE = 'tagit_log_diff'
 keys[DIFF_MODE] = setmetatable({
@@ -50,16 +51,7 @@ keys[DIFF_MODE] = setmetatable({
     diff.visit_file()
   end,
 }, { __index = keys })
-
-local function update_diff_keys_mode()
-  if buffer._tagit_log_diff then
-    keys.mode = DIFF_MODE
-  elseif keys.mode == DIFF_MODE then
-    keys.mode = nil
-  end
-end
-events.connect(events.BUFFER_AFTER_SWITCH, update_diff_keys_mode)
-events.connect(events.VIEW_AFTER_SWITCH, update_diff_keys_mode)
+modes.register('_tagit_log_diff', DIFF_MODE)
 
 -- Render one commit as a styled, clickable line.
 local function commit_at_cursor()

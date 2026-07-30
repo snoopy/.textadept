@@ -10,7 +10,9 @@ local transient = require('tagit.transient')
 
 local M = {}
 
+local modes = require('tagit.modes')
 local KEYS_MODE = 'tagit_commit'
+modes.register('_tagit_commit', KEYS_MODE)
 
 -- Build the commit buffer template, including a commented status summary.
 local function template(root, amend)
@@ -49,17 +51,6 @@ local function clean_message(text)
   return common.trim(message:gsub('^%s+', ''))
 end
 
--- Activate the commit keys mode only while a commit buffer is current.
-local function update_keys_mode()
-  if buffer._tagit_commit then
-    keys.mode = KEYS_MODE
-  elseif keys.mode == KEYS_MODE then
-    keys.mode = nil
-  end
-end
-events.connect(events.BUFFER_AFTER_SWITCH, update_keys_mode)
-events.connect(events.VIEW_AFTER_SWITCH, update_keys_mode)
-
 ---
 -- Opens a commit message buffer for the current repository.
 -- @param amend When true, the commit amends the previous commit.
@@ -82,7 +73,7 @@ function M.start(amend)
   buffer:add_text(template(root, amend))
   buffer:goto_pos(buffer:position_from_line(1))
   buffer:set_save_point()
-  keys.mode = KEYS_MODE
+  modes.update()
 end
 
 ---

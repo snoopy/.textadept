@@ -18,6 +18,7 @@ reduxstyle.tagit_blame_author = reduxstyle['function'] .. {}
 reduxstyle.tagit_blame_age = reduxstyle.number .. {}
 reduxstyle.tagit_blame_sep = reduxstyle.nothing .. {}
 
+local modes = require('tagit.modes')
 -- Keys mode for diff buffers opened from the blame buffer.
 local DIFF_MODE = 'tagit_blame_diff'
 keys[DIFF_MODE] = setmetatable({
@@ -28,16 +29,7 @@ keys[DIFF_MODE] = setmetatable({
     buffer:close(true)
   end,
 }, { __index = keys })
-
-local function update_diff_keys_mode()
-  if buffer._tagit_blame_diff then
-    keys.mode = DIFF_MODE
-  elseif keys.mode == DIFF_MODE then
-    keys.mode = nil
-  end
-end
-events.connect(events.BUFFER_AFTER_SWITCH, update_diff_keys_mode)
-events.connect(events.VIEW_AFTER_SWITCH, update_diff_keys_mode)
+modes.register('_tagit_blame_diff', DIFF_MODE)
 
 -- Format a Unix timestamp as a relative time string.
 local function relative_time(t)

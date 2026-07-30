@@ -25,6 +25,7 @@ local cherry_pick = require('tagit.cherry_pick')
 local stash = require('tagit.stash')
 local reset = require('tagit.reset')
 local console = require('tagit.console')
+local modes = require('tagit.modes')
 -- Keys mode for diff buffers opened from the status buffer.
 local STATUS_DIFF_MODE = 'tagit_status_diff'
 keys[STATUS_DIFF_MODE] = setmetatable({
@@ -38,16 +39,7 @@ keys[STATUS_DIFF_MODE] = setmetatable({
     diff.visit_file()
   end,
 }, { __index = keys })
-
-local function update_diff_keys_mode()
-  if buffer._tagit_status_diff then
-    keys.mode = STATUS_DIFF_MODE
-  elseif keys.mode == STATUS_DIFF_MODE then
-    keys.mode = nil
-  end
-end
-events.connect(events.BUFFER_AFTER_SWITCH, update_diff_keys_mode)
-events.connect(events.VIEW_AFTER_SWITCH, update_diff_keys_mode)
+modes.register('_tagit_status_diff', STATUS_DIFF_MODE)
 
 local M = {}
 
