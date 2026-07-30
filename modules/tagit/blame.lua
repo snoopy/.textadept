@@ -113,9 +113,12 @@ buf.on_refresh = function(b)
 end
 
 -- Refresh while preserving the focused line.
+-- Only the uncommitted (HEAD) blame can go stale from on-disk changes; history
+-- revisions are immutable, so their cache entries are kept across refreshes.
 local function refresh()
   if not buf:is_attached() then return end
   buf.data.want_line = buf:line_from_position(buf.current_pos)
+  if not buf.data.revision then buf.data.blame_cache[false] = nil end
   buf:refresh()
 end
 
