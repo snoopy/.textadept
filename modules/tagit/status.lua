@@ -508,6 +508,9 @@ refresh = function()
 end
 M.refresh = refresh
 
+-- Register the refresh callback so common.refresh_status() can find us without a lazy require.
+common.on_refresh_status = M.refresh
+
 -- Remember the caret line whenever leaving the status buffer, so it is restored when returning
 -- e.g. after visiting a file and switching back, which triggers a Textredux rebuild that would otherwise reset the caret.
 events.connect(events.BUFFER_BEFORE_SWITCH, function()

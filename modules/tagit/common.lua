@@ -38,10 +38,12 @@ function M.confirm(title, text, button1, icon)
   }) == 1
 end
 
+-- Callback slot, registered by status.lua to break the circular dependency.
+M.on_refresh_status = nil
+
 -- Refresh the status buffer if it is currently attached.
 function M.refresh_status()
-  local status = M.status_module()
-  if status.refresh then status.refresh() end
+  if M.on_refresh_status then M.on_refresh_status() end
 end
 
 -- Report a git.run result on the status bar when it failed.
@@ -94,11 +96,6 @@ function M.branches(root)
     if name ~= '' then list[#list + 1] = name end
   end
   return list
-end
-
--- Lazy loader for the status module (avoids circular dependency: status -> init -> status).
-function M.status_module()
-  return require('tagit.status')
 end
 
 -- Get project root for given origin buffer or use various fallbacks.
