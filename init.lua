@@ -278,6 +278,7 @@ keys['alt+y'] = function()
 end
 
 keys['ctrl+h'] = git.heatmap
+keys['ctrl+H'] = git.clear_heatmap
 
 keys['ctrl+r'] = function()
   local ok, err = pcall(buffer.reload, buffer)
@@ -1273,7 +1274,6 @@ local git_log_hydra = hydra.create({
 local git_hydra = hydra.create({
   { key = 't', help = 'diff only this line', action = git.line_diff },
   { key = 'v', help = 'show file at revision', action = git.show_rev },
-  { key = 'h', help = 'clear heat map', action = git.clear_heatmap },
   { key = 's', help = 'tagit: status', action = tagit.status },
   { key = 'l', help = 'tagit: log...', action = git_log_hydra },
   { key = 'b', help = 'tagit: list branches', action = tagit.branch_list },
