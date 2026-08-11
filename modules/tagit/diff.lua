@@ -201,7 +201,7 @@ function M.show_commit(sha, root, mode_id)
   local files = git.run('diff-tree --no-commit-id -c -r --name-status ' .. git.quote(sha), root)
   local out = git.run(
     'show --no-color --pretty='
-      .. git.quote('format:commit: %H%na: %ad %aN%nc: %cd %cN%n%s%n%n%b%n')
+      .. git.quote('format:commit: %H%na: %ad %aN (%aE)%nc: %cd %cN (%cE)%n%s%n%n%b%n')
       .. ' '
       .. git.quote(sha),
     root
