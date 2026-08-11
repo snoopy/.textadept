@@ -23,7 +23,7 @@ local function execute_line()
     return
   end
 
-  local root = common.root(buffer)
+  local root = buffer._tagit_root or common.root(buffer)
   if not root then
     buffer:add_text('Not a git repository\n\n')
     return
@@ -66,6 +66,7 @@ function M.show()
   local root = common.root(buffer)
   buffer.new()
   buffer._tagit_console = true
+  buffer._tagit_root = root
   buffer:set_lexer('bash')
   buffer.name = '*tagit: console*'
   clear_console()
