@@ -360,9 +360,7 @@ keys.f9 = function()
   buffer:drop_selection_n(buffer.selections)
   view:scroll_caret()
 end
-keys.f10 = function()
-  textadept.editing.select_word()
-end
+keys.f10 = textadept.editing.select_word
 
 keys['alt+left'] = function()
   util.goto_space(true)
@@ -385,12 +383,8 @@ end
 keys['alt+home'] = buffer.scroll_to_start
 keys['alt+end'] = buffer.scroll_to_end
 
-keys['ctrl+pgup'] = function()
-  buffer:page_up()
-end
-keys['ctrl+pgdn'] = function()
-  buffer:page_down()
-end
+keys['ctrl+pgup'] = buffer.page_up
+keys['ctrl+pgdn'] = buffer.page_down
 
 keys['pgup'] = function()
   view:stuttered_page_up()
@@ -885,9 +879,7 @@ local jump_hydra = hydra.create({
   {
     key = 't',
     help = 'top most',
-    action = function()
-      util.goto_definition()
-    end,
+    action = util.goto_definition,
   },
 
   {
