@@ -125,7 +125,7 @@ M.CPP_FLAGS = table.concat({
 
 M.PYTHON_FLAGS = table.concat({
   '--languages=Python',
-  '--langmap=Python:+.py',
+  '--langmap=Python:+.py(*[!.]*)',
   '--fields=+iaSK',
   '--extras=+fq',
   '--kinds-Python=+cfmvi',
