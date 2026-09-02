@@ -7,6 +7,7 @@
 local git = require('tagit.git')
 local common = require('tagit.common')
 local modes = require('tagit.modes')
+local word_diff = require('tagit.word_diff')
 
 local M = {}
 
@@ -232,6 +233,7 @@ function M.show_commit(sha, root, mode_id)
   end
   buffer:goto_pos(1)
   buffer:set_save_point()
+  word_diff.highlight_plain_buffer(buffer)
   buffer.read_only = true
   modes.update()
 end

@@ -7,6 +7,7 @@ local common = require('tagit.common')
 local git = require('tagit.git')
 local help = require('tagit.help')
 local transient = require('tagit.transient')
+local word_diff = require('tagit.word_diff')
 
 local M = {}
 
@@ -44,6 +45,7 @@ local function show_stash(ref)
   buffer:add_text(out)
   buffer:goto_pos(1)
   buffer:set_save_point()
+  word_diff.highlight_plain_buffer(buffer)
   modes.update()
 end
 

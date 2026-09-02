@@ -26,6 +26,7 @@ local stash = require('tagit.stash')
 local reset = require('tagit.reset')
 local console = require('tagit.console')
 local modes = require('tagit.modes')
+local word_diff = require('tagit.word_diff')
 -- Keys mode for diff buffers opened from the status buffer.
 local STATUS_DIFF_MODE = 'tagit_status_diff'
 keys[STATUS_DIFF_MODE] = setmetatable({
@@ -111,6 +112,7 @@ end
 -- Styling is deferred to pending_styles and applied in a second pass
 -- after the tagit lexer runs (in on_refresh), so the lexer cannot overwrite it.
 local pending_styles = {} -- reused across renders
+local pending_indicators = {} -- word-diff intra-line highlights (staged/unstaged hunks)
 local function status_line(b, short, path, meta, command)
   local start = b.target.length + 1
   local before = b.line_count
@@ -138,9 +140,50 @@ local function render_hunks(b, file, section, diff_text)
     }
     local hunk_meta = setmetatable({ level = L_HUNK, fold_header = true }, { __index = meta })
     line(b, hunk.lines[1], hunk_meta)
-    for i = 2, #hunk.lines do
-      line(b, hunk.lines[i], setmetatable({ level = L_HUNK_BODY }, { __index = meta }))
+    -- intra-line word diff: collect contiguous -/+ blocks inside this hunk
+    local del_lines, add_lines, del_starts, add_starts = {}, {}, {}, {}
+    local function flush_block()
+      if #del_lines == 0 and #add_lines == 0 then return end
+      local del_map, add_map = word_diff.ranges_for_block(del_lines, add_lines)
+      local pair_cnt = math.min(#del_lines, #add_lines)
+      for idx = 1, pair_cnt do
+        local dr = del_map[idx]
+        local ar = add_map[idx]
+        if dr and del_starts[idx] then
+          for _, r in ipairs(dr) do
+            pending_indicators[#pending_indicators + 1] =
+              { pos = del_starts[idx] + 1 + r.col - 1, len = r.len, kind = 'del' }
+          end
+        end
+        if ar and add_starts[idx] then
+          for _, r in ipairs(ar) do
+            pending_indicators[#pending_indicators + 1] =
+              { pos = add_starts[idx] + 1 + r.col - 1, len = r.len, kind = 'add' }
+          end
+        end
+      end
+      del_lines, add_lines, del_starts, add_starts = {}, {}, {}, {}
     end
+    for i = 2, #hunk.lines do
+      local raw = hunk.lines[i]
+      local start_pos = b.target.length + 1
+      line(b, raw, setmetatable({ level = L_HUNK_BODY }, { __index = meta }))
+      local first = raw:sub(1, 1)
+      if first == ' ' then
+        flush_block()
+      elseif first == '-' and not raw:match('^%-%-%- ') then
+        del_lines[#del_lines + 1] = raw:sub(2)
+        del_starts[#del_starts + 1] = start_pos
+      elseif first == '+' and not raw:match('^%+%+%+ ') then
+        add_lines[#add_lines + 1] = raw:sub(2)
+        add_starts[#add_starts + 1] = start_pos
+      elseif first == '\\' then
+        -- "\ No newline" - ignore
+      else
+        flush_block()
+      end
+    end
+    flush_block()
   end
   return true
 end
@@ -446,6 +489,7 @@ buf.on_refresh = function(b)
 
   b.data.operation = git.operation(root)
   pending_styles = {}
+  pending_indicators = {}
 
   -- Return up to MAX_DISPLAY_FILES items plus how many were left out,
   -- so large sections stay responsive and the count in the header stays accurate.
@@ -507,6 +551,20 @@ buf.on_refresh = function(b)
     local last = b.target.length
     b.target:start_styling(last, 0xff)
     b.target:set_styling(1, b.target.style_at[last])
+  end
+
+  -- Apply intra-line word-diff highlights (translucent ROUNDBOX, diff red/green).
+  -- Indicators are independent of lexer styling and folding.
+  if is_current then
+    -- clear first (buffer was just rebuilt, but stale indicators may persist on reused target)
+    b.target.indicator_current = word_diff.INDIC_ADD
+    b.target:indicator_clear_range(1, b.target.length)
+    b.target.indicator_current = word_diff.INDIC_DEL
+    b.target:indicator_clear_range(1, b.target.length)
+    for _, r in ipairs(pending_indicators) do
+      b.target.indicator_current = r.kind == 'add' and word_diff.INDIC_ADD or word_diff.INDIC_DEL
+      b.target:indicator_fill_range(r.pos, r.len)
+    end
   end
 
   -- Restore the caret to (approximately) the previously focused line, or the top of the buffer on first open.
