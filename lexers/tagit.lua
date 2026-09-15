@@ -19,7 +19,7 @@ lex:add_rule('deletion', lex:tag('deletion', to_eol(starts_line(P('-')))))
 -- tagit structural lines.
 local section_word = P('Files') + 'Untracked' + 'Unstaged' + 'Staged' + 'Unmerged' + 'Recent' + 'Stashes'
 lex:add_rule('section', lex:tag(lexer.HEADING, to_eol(starts_line(section_word))))
-lex:add_rule('head', lex:tag(lexer.KEYWORD, to_eol(starts_line(P('Head:') + 'Upstream:'))))
+lex:add_rule('head', lex:tag(lexer.KEYWORD, to_eol(starts_line(P('Head:') + 'Upstream:' + 'Project:'))))
 
 -- Dim footer hint.
 lex:add_rule('hint', lex:tag(lexer.COMMENT, to_eol(starts_line(P('Press ?')))))

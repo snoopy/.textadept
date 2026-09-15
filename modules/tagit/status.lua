@@ -398,14 +398,15 @@ local function render_recent_commits(b)
 end
 
 local function render_header(b, status)
+  line(b, 'Project:\t' .. common.root(b.origin_buffer))
   local br = status.branch
-  line(b, 'Head:     ' .. (br.head or '(detached)'))
+  line(b, 'Head:\t\t' .. (br.head or '(detached)'))
   if br.upstream then
     local ab = ''
     if br.ahead > 0 then ab = ab .. ' ahead ' .. br.ahead end
     if br.behind > 0 then ab = ab .. ' behind ' .. br.behind end
     local gone = br.gone and ' [gone]' or ''
-    line(b, 'Upstream: ' .. br.upstream .. ab .. gone)
+    line(b, 'Upstream:\t' .. br.upstream .. ab .. gone)
   end
   local op = buf.data.operation
   if op then
