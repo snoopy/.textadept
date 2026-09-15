@@ -222,9 +222,7 @@ local function render_file_section(b, title, id, files, section, diffs, truncate
     -- so consecutive file folds do not merge (Scintilla's "not a fold header" rule).
     if i < #files then line(b, '', { level = L_CHILD }) end
   end
-  if truncated then
-    line(b, '  [+ ' .. truncated .. ' more files]')
-  end
+  if truncated then line(b, '  [+ ' .. truncated .. ' more files]') end
   line(b, '', { level = L_SECTION })
 end
 
@@ -253,9 +251,7 @@ local function render_list_section(b, title, id, files, section, truncated)
       level = L_CHILD,
     }, visit_file)
   end
-  if truncated then
-    line(b, '  [+ ' .. truncated .. ' more files]')
-  end
+  if truncated then line(b, '  [+ ' .. truncated .. ' more files]') end
   line(b, '', { level = L_SECTION })
 end
 

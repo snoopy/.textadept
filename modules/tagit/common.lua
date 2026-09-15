@@ -124,9 +124,7 @@ function M.root(origin_buffer)
   end
 
   -- Fall back to the current buffer's file path
-  if buffer and buffer.filename then
-    return git.root(buffer.filename)
-  end
+  if buffer and buffer.filename then return git.root(buffer.filename) end
   return nil
 end
 

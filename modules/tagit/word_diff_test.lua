@@ -8,7 +8,9 @@ local word_diff = require('tagit.word_diff')
 -- helpers
 local function sorted_ranges(ranges)
   local t = {}
-  for _, r in ipairs(ranges) do t[#t + 1] = r.col .. ':' .. r.len end
+  for _, r in ipairs(ranges) do
+    t[#t + 1] = r.col .. ':' .. r.len
+  end
   table.sort(t)
   return t
 end
@@ -99,8 +101,8 @@ end)
 -- ranges_for_block ----------------------------------------------------------
 
 test('word_diff.ranges_for_block pairs lines by index', function()
-  local del = {'hello', 'world'}
-  local add = {'hallo', 'worlds'}
+  local del = { 'hello', 'world' }
+  local add = { 'hallo', 'worlds' }
   local dm, am = word_diff.ranges_for_block(del, add)
   test.assert_equal(1, dm[1] and #dm[1] or 0)
   test.assert_equal(1, am[1] and #am[1] or 0)
@@ -108,8 +110,8 @@ test('word_diff.ranges_for_block pairs lines by index', function()
 end)
 
 test('word_diff.ranges_for_block handles mismatched counts (only min pairs highlighted)', function()
-  local del = {'a', 'b', 'c'}
-  local add = {'A'}
+  local del = { 'a', 'b', 'c' }
+  local add = { 'A' }
   local dm, am = word_diff.ranges_for_block(del, add)
   test.assert(dm[1] and #dm[1] > 0, 'first pair should have diff')
   test.assert_equal(nil, dm[2])
@@ -118,33 +120,36 @@ test('word_diff.ranges_for_block handles mismatched counts (only min pairs highl
 end)
 
 test('word_diff.ranges_for_block skips empty identical lines', function()
-  local dm, am = word_diff.ranges_for_block({'same'}, {'same'})
+  local dm, am = word_diff.ranges_for_block({ 'same' }, { 'same' })
   test.assert_equal(nil, dm[1])
   test.assert_equal(nil, am[1])
 end)
 
 test('word_diff.ranges_for_block skips empty strings', function()
-  local dm, am = word_diff.ranges_for_block({''}, {'hello'})
+  local dm, am = word_diff.ranges_for_block({ '' }, { 'hello' })
   test.assert_equal(nil, dm[1])
 end)
 
 test('word_diff.ranges_for_block skips huge blocks (>50 lines)', function()
   local del, add = {}, {}
-  for i = 1, 51 do del[i] = 'a' .. i; add[i] = 'b' .. i end
+  for i = 1, 51 do
+    del[i] = 'a' .. i
+    add[i] = 'b' .. i
+  end
   local dm, am = word_diff.ranges_for_block(del, add)
   test.assert_equal(nil, dm[1])
 end)
 
 test('word_diff.ranges_for_block skips lines >800 bytes', function()
   local long = string.rep('x', 801)
-  local dm, am = word_diff.ranges_for_block({long}, {long .. 'y'})
+  local dm, am = word_diff.ranges_for_block({ long }, { long .. 'y' })
   test.assert_equal(nil, dm[1])
 end)
 
 test('word_diff.ranges_for_block skips product >200k', function()
   local s = string.rep('a', 500)
   local t = string.rep('b', 500)
-  local dm, am = word_diff.ranges_for_block({s}, {t})
+  local dm, am = word_diff.ranges_for_block({ s }, { t })
   test.assert_equal(nil, dm[1])
 end)
 
@@ -152,7 +157,7 @@ test('word_diff.ranges_for_block returns empty for empty input', function()
   local dm, am = word_diff.ranges_for_block({}, {})
   test.assert_equal(0, #dm)
   test.assert_equal(0, #am)
-  dm, am = word_diff.ranges_for_block({'a'}, {})
+  dm, am = word_diff.ranges_for_block({ 'a' }, {})
   test.assert_equal(0, #dm)
 end)
 
@@ -168,7 +173,7 @@ test('word_diff.highlight_plain_buffer highlights intra-line change in commit/st
     '@@ -1 +1 @@',
     '-hello',
     '+hallo',
-    ''
+    '',
   }, '\n')
   buffer:add_text(diff_text)
   word_diff.highlight_plain_buffer(buffer)
@@ -190,7 +195,7 @@ test('word_diff.highlight_plain_buffer respects hunk boundaries and ---/+++ head
     '-old',
     '+new',
     ' context2',
-    ''
+    '',
   }, '\n')
   buffer:add_text(diff_text)
   word_diff.highlight_plain_buffer(buffer)
@@ -212,7 +217,7 @@ test('word_diff.highlight_plain_buffer flushes on context lines (separate blocks
     ' keep',
     '-hello',
     '+hallo',
-    ''
+    '',
   }, '\n')
   buffer:add_text(diff_text)
   word_diff.highlight_plain_buffer(buffer)
@@ -232,7 +237,7 @@ test('word_diff.highlight_plain_buffer ignores \\ No newline marker', function()
     '-hello',
     '+hallo',
     '\\ No newline at end of file',
-    ''
+    '',
   }, '\n')
   buffer:add_text(diff_text)
   word_diff.highlight_plain_buffer(buffer)
@@ -260,7 +265,7 @@ test('word_diff.highlight_plain_buffer clears previous highlights when diff has 
     '@@ -1 +1 @@',
     '-hello',
     '+hallo',
-    ''
+    '',
   }, '\n'))
   word_diff.highlight_plain_buffer(buffer)
   test.assert(#test.get_indicated_text(word_diff.INDIC_DEL) > 0, 'setup: expected highlight')
@@ -272,7 +277,7 @@ test('word_diff.highlight_plain_buffer clears previous highlights when diff has 
     '@@ -1 +1 @@',
     ' same',
     ' same2',
-    ''
+    '',
   }, '\n'))
   word_diff.highlight_plain_buffer(buffer)
   test.assert_equal(0, #test.get_indicated_text(word_diff.INDIC_DEL))
@@ -295,7 +300,7 @@ test('word_diff.highlight_plain_buffer handles multiple diff --git sections', fu
     '@@ -1 +1 @@',
     '-hello',
     '+hallo',
-    ''
+    '',
   }, '\n')
   buffer:add_text(diff_text)
   word_diff.highlight_plain_buffer(buffer)
