@@ -239,6 +239,7 @@ end
 keys['ctrl+alt+\\'] = nil
 keys['ctrl+alt+|'] = nil
 keys['ctrl+u'] = nil
+keys['ctrl+p'] = nil
 
 keys.f4 = cpp.toggle_header
 keys.f6 = util.goto_last_buffer
@@ -288,6 +289,14 @@ keys['ctrl+b'] = function()
   if not buffer.filename then return end
   buffer:copy_text(buffer.filename)
   ui.statusbar_text = 'Copied buffer name to clipboard.'
+end
+keys['ctrl+p'] = function()
+  if not buffer.filename then return end
+  local project = util.get_project_root()
+  if project then
+    buffer:copy_text(project)
+    ui.statusbar_text = 'Copied project name to clipboard.'
+  end
 end
 
 keys['ctrl+t'] = function()
