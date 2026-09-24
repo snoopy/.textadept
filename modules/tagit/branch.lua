@@ -434,7 +434,7 @@ local function bind(key, group, help_text, fn)
   keymap[#keymap + 1] = { key = key, group = group, help = help_text }
 end
 
-bind('\n', 'Navigate', 'switch to branch', function()
+bind('s', 'Navigate', 'switch to branch', function()
   local name = branch_at_cursor()
   if name then switch_to_branch(name) end
 end)
@@ -461,7 +461,7 @@ end)
 bind('u', 'Branch', 'set upstream', set_upstream_at_cursor)
 bind('U', 'Branch', 'unset upstream', unset_upstream_at_cursor)
 bind('m', 'Branch', 'rename', rename_branch_at_cursor)
-bind('l', 'Branch', 'show log', show_log_at_cursor)
+bind('\n', 'Branch', 'show log', show_log_at_cursor)
 
 ---
 -- The branch list buffer instance.
