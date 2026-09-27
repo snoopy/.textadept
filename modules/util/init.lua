@@ -33,6 +33,7 @@ function M.get_project_root()
     ui.statusbar_text = 'Not a project'
     return nil
   end
+  rootpath = rootpath:gsub('[/\\]+$', '')
   return rootpath
 end
 
@@ -266,20 +267,17 @@ function M.goto_definition()
 end
 
 function M.show_project_buffers()
-  local rootpath = io.get_project_root(true)
-  if not rootpath then
-    ui.statusbar_text = 'not a project'
-    return
-  end
-  rootpath = rootpath:gsub('%-', '%%-')
+  local rootpath = M.get_project_root()
+  if not rootpath then return end
 
   local buffers = {}
-  for i = #_G._BUFFERS, 1, -1 do
-    if _G._BUFFERS[i].filename then
-      if _G._BUFFERS[i].filename:match(rootpath .. '[/\\]') then
-        local buffer_name = _G._BUFFERS[i].filename:match('[^/\\]+$')
-        buffers[#buffers + 1] = (_G._BUFFERS[i].modify and '*' or '') .. buffer_name
-        buffers[#buffers + 1] = _G._BUFFERS[i].filename
+  for i = #_BUFFERS, 1, -1 do
+    local filename = _BUFFERS[i].filename
+    if filename then
+      if filename:sub(1, #rootpath) == rootpath and filename:sub(#rootpath + 1, #rootpath + 1):match('[/\\]') then
+        local buffer_name = filename:match('[^/\\]+$')
+        buffers[#buffers + 1] = (_BUFFERS[i].modify and '*' or '') .. buffer_name
+        buffers[#buffers + 1] = filename
       end
     end
   end
