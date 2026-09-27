@@ -1240,26 +1240,17 @@ local project_hydra = hydra.create({
     end,
   },
   {
+    key = 'c',
+    help = 'crop to current',
+    action = function()
+      util.close_project_buffers(true)
+    end,
+  },
+  {
     key = 'k',
     help = 'close all',
     action = function()
-      local rootpath = util.get_project_root()
-      if not rootpath then return end
-
-      local button = ui.dialogs.message({
-        title = 'Close all project buffers?',
-        text = 'Do you want to close ALL project buffers?',
-        icon = 'dialog-question',
-        button1 = 'Yes',
-        button2 = 'No',
-      })
-      if button == 2 then return end
-
-      for i = #_BUFFERS, 1, -1 do
-        if _BUFFERS[i].filename then
-          if _BUFFERS[i].filename:find(rootpath, 1, true) then _BUFFERS[i]:close() end
-        end
-      end
+      util.close_project_buffers(false)
     end,
   },
 })

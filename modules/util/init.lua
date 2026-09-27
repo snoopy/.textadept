@@ -316,4 +316,32 @@ function M.get_path()
   return PATH
 end
 
+function M.close_project_buffers(keep_current)
+  local rootpath = M.get_project_root()
+  if not rootpath then return end
+  local current = buffer
+
+  local button = ui.dialogs.message({
+    title = 'Close project buffers?',
+    text = 'Do you want to ' .. (keep_current and 'CROP' or 'CLOSE') .. ' project buffers?',
+    icon = 'dialog-question',
+    button1 = 'Yes',
+    button2 = 'No',
+  })
+  if button ~= 1 then return end
+
+  for i = #_BUFFERS, 1, -1 do
+    if keep_current and _BUFFERS[i] == current then goto continue end
+    local filename = _BUFFERS[i].filename
+    if filename then
+      if filename:sub(1, #rootpath) == rootpath and filename:sub(#rootpath + 1, #rootpath + 1):match('[/\\]') then
+        _BUFFERS[i]:close()
+      end
+    end
+    ::continue::
+  end
+
+  if keep_current and _BUFFERS[current] and buffer ~= current then view:goto_buffer(_BUFFERS[current]) end
+end
+
 return M
