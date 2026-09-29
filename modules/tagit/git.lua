@@ -103,13 +103,14 @@ local safe_prefixes = {
 local function guard(args, root)
   local cmd = args:match('^(%S+)')
   if not cmd or not dangerous_commands[cmd] then return nil end
+  local rest = args:sub(#cmd + 1):match('^%s+(.*)$')
   local safe_list = safe_prefixes[cmd]
-  if safe_list then
+  if safe_list and rest then
     for _, prefix in ipairs(safe_list) do
-      if args:match('^' .. cmd .. '%s+' .. prefix) then return nil end
+      if rest:sub(1, #prefix) == prefix then return nil end
     end
   end
-  if cmd == 'reset' and not args:match('^reset%s+--hard') then return nil end
+  if cmd == 'reset' and (not rest or rest:sub(1, 6) ~= '--hard') then return nil end
   local op = M.operation(root)
   if not op then return nil end
   return 'cannot ' .. cmd .. ' while ' .. op.type .. ' is in progress'
