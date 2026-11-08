@@ -331,7 +331,7 @@ function M.status(root)
       status.files[#status.files + 1] = { path = path, status = xy, orig = orig }
       if xy == '??' then
         status.untracked[#status.untracked + 1] = { path = path }
-      elseif x == 'U' or y == 'U' then
+      elseif x == 'U' or y == 'U' or xy == 'AA' or xy == 'DD' then
         status.unmerged[#status.unmerged + 1] = { path = path, status = 'U' }
       else
         if x ~= ' ' then status.staged[#status.staged + 1] = { path = path, orig = orig, status = x } end
