@@ -87,8 +87,9 @@ end
 -- Open the file referenced by a status entry in a normal buffer.
 local function visit_file(entry)
   if not entry or not entry.path then return end
-  local root = buf.data.root:gsub('[/\\]+$', '')
+  local root = buf.data.root
   if not root then return end
+  root = root:gsub('[/\\]+$', '')
   local full = root .. '/' .. entry.path
   local attr = lfs.attributes(full)
   if not attr then
@@ -214,7 +215,7 @@ local function render_file_section(b, title, id, files, section, diffs, truncate
       fold_id = 'file:' .. section .. ':' .. file.path,
       fold_default = 'collapsed',
     }
-    local lnum = status_line(b, short, display_path, meta, visit_file)
+    local lnum = status_line(b, short, display_path, meta, { visit_file, meta })
     local has_hunks = render_hunks(b, file, section, diffs and diffs[file.path])
     meta.fold_header = has_hunks
     b.data.lines[lnum] = meta
@@ -242,14 +243,15 @@ local function render_list_section(b, title, id, files, section, truncated)
   for _, file in ipairs(files) do
     local short = section == 'files' and file.status or (section == 'untracked' and '??' or 'UU')
     local path = (file.orig and (file.orig .. ' -> ') or '') .. file.path
-    status_line(b, short, path, {
+    local meta = {
       kind = 'file',
       section = section,
       path = file.path,
       status = file.status,
       orig = file.orig,
       level = L_CHILD,
-    }, visit_file)
+    }
+    status_line(b, short, path, meta, { visit_file, meta })
   end
   if truncated then line(b, '  [+ ' .. truncated .. ' more files]') end
   line(b, '', { level = L_SECTION })
@@ -288,7 +290,7 @@ local function render_unmerged_section(b, files)
         local conflicts = text and diff.parse_conflicts(text) or {}
         if #conflicts > 0 then
           meta.fold_header = true
-          lnum = status_line(b, 'UU', file.path, meta, visit_file)
+          lnum = status_line(b, 'UU', file.path, meta, { visit_file, meta })
           for _, c in ipairs(conflicts) do
             local cmeta = setmetatable(
               { kind = 'conflict', level = L_HUNK, fold_header = true, fold_id = false },
@@ -306,13 +308,13 @@ local function render_unmerged_section(b, files)
             end
           end
         else
-          lnum = status_line(b, 'UU', file.path, meta, visit_file)
+          lnum = status_line(b, 'UU', file.path, meta, { visit_file, meta })
         end
       else
-        lnum = status_line(b, 'UU', file.path, meta, visit_file)
+        lnum = status_line(b, 'UU', file.path, meta, { visit_file, meta })
       end
     else
-      lnum = status_line(b, 'UU', file.path, meta, visit_file)
+      lnum = status_line(b, 'UU', file.path, meta, { visit_file, meta })
     end
     if lnum then b.data.lines[lnum] = meta end
     if i < #files then line(b, '', { level = L_CHILD }) end
