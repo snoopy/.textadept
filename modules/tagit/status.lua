@@ -109,6 +109,11 @@ local function status_style_name(code)
   if code:match('^ %S$') then return 'keyword' end
 end
 
+-- True when a two-character porcelain status represents an unresolved conflict.
+local function is_unmerged_status(code)
+  return code ~= nil and (code == 'AA' or code == 'DD' or code:sub(1, 1) == 'U' or code:sub(2, 2) == 'U')
+end
+
 -- Add a file status line with a colored status-code portion.
 -- Styling is deferred to pending_styles and applied in a second pass
 -- after the tagit lexer runs (in on_refresh), so the lexer cannot overwrite it.
@@ -657,6 +662,10 @@ local function stage()
       end
     end
   elseif entry.kind == 'file' and entry.section ~= 'staged' then
+    if entry.section == 'files' and is_unmerged_status(entry.status) then
+      ui.statusbar_text = 'Resolve this conflict from the Unmerged section'
+      return
+    end
     common.report_git(git.stage(entry.path, buf.data.root))
   elseif entry.kind == 'hunk' and entry.section == 'unstaged' then
     common.report_git(diff.stage_hunk(entry.header, entry.hunk, buf.data.root))
