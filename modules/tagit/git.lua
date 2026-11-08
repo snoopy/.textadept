@@ -67,7 +67,11 @@ end
 -- falls back to the current buffer's directory and is deprecated.
 -- @param path Optional file/directory path to find the root for.
 function M.root(path)
-  return io.get_project_root(path, true)
+  local root = io.get_project_root(path, true)
+  -- io.get_project_root also recognizes Mercurial, SVN, Bazaar, and Fossil.
+  -- Require a git work tree marker: a .git directory, or a .git file in
+  -- worktrees and submodules.
+  if root and lfs.attributes(root .. '/.git') then return root end
 end
 
 -- Check whether a file exists using lfs, without opening a handle.
