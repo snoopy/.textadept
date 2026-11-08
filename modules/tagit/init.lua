@@ -99,8 +99,8 @@ function M.branch_list(mode)
 end
 
 ---
--- Asks the user to confirm, then fetches from origin for the current branch
--- and hard resets to @{upstream}. Both operations run asynchronously.
+-- Asks the user to confirm, then fetches the current branch's upstream remote
+-- and hard resets to its upstream. Both operations run asynchronously.
 function M.reload()
   local root = common.root(buffer)
   if not root then
@@ -113,24 +113,36 @@ function M.reload()
     return
   end
   local branch_name = common.trim(branch_out)
+  local upstream_out, upstream_code = git.run('rev-parse --abbrev-ref --symbolic-full-name @{upstream}', root)
+  if not upstream_out or upstream_code ~= 0 then
+    ui.statusbar_text = 'No upstream configured for ' .. branch_name
+    return
+  end
+  local upstream = common.trim(upstream_out)
+  local remote, remote_branch = upstream:match('^([^/]+)/(.+)$')
+  if not remote then
+    ui.statusbar_text = 'Upstream ' .. upstream .. ' is not a remote branch'
+    return
+  end
   if
     not common.confirm(
       'Reload ' .. branch_name .. '?',
-      'Fetch from origin and hard reset ' .. branch_name .. ' to @{upstream}?\n\nThis will discard all local changes.',
+      'Fetch from ' .. remote .. ' and hard reset ' .. branch_name .. ' to ' .. upstream
+        .. '?\n\nThis will discard all local changes.',
       'Reload'
     )
   then
     return
   end
-  ui.statusbar_text = 'Fetching ' .. branch_name .. '...'
-  git.run_async('fetch --no-tags origin ' .. git.quote(branch_name), root, function(out, code)
+  ui.statusbar_text = 'Fetching ' .. upstream .. '...'
+  git.run_async('fetch --no-tags ' .. git.quote(remote) .. ' ' .. git.quote(remote_branch), root, function(out, code)
     if code ~= 0 then
       ui.statusbar_text = 'Fetch failed: ' .. common.trim(out)
       common.refresh_status()
       return
     end
     ui.statusbar_text = 'Resetting ' .. branch_name .. '...'
-    git.run_async('reset --hard @{upstream}', root, function(out2, code2)
+    git.run_async('reset --hard ' .. git.quote(upstream), root, function(out2, code2)
       if code2 == 0 then
         ui.statusbar_text = 'Reloaded ' .. branch_name
       else
