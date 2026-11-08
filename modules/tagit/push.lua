@@ -16,10 +16,10 @@ function M.menu()
     },
     {
       key = 'f',
-      help = 'force push',
+      help = 'force push (with lease)',
       action = function()
         if common.confirm('Force push?', 'Force push may overwrite remote history. Proceed?', 'Force Push') then
-          common.run_async('push --force', 'force push')
+          common.run_async('push --force-with-lease', 'force push')
         end
       end,
     },
