@@ -258,9 +258,10 @@ local function render_list_section(b, title, id, files, section, truncated)
 end
 
 -- Render unmerged files with conflict hunks (ours/base/theirs regions).
-local function render_unmerged_section(b, files)
+local function render_unmerged_section(b, files, truncated)
   if #files == 0 then return end
-  line(b, 'Unmerged (' .. #files .. ')', {
+  local count = #files + (truncated or 0)
+  line(b, 'Unmerged (' .. count .. ')', {
     kind = 'section',
     id = 'unmerged',
     section = 'unmerged',
@@ -319,6 +320,7 @@ local function render_unmerged_section(b, files)
     if lnum then b.data.lines[lnum] = meta end
     if i < #files then line(b, '', { level = L_CHILD }) end
   end
+  if truncated then line(b, '  [+ ' .. truncated .. ' more files]') end
   line(b, '', { level = L_SECTION })
 end
 
@@ -513,7 +515,8 @@ buf.on_refresh = function(b)
   render_list_section(b, 'Files', 'files', tracked, 'files', tracked_trunc)
   local ut, ut_trunc = check_truncate(status.untracked)
   render_list_section(b, 'Untracked', 'untracked', ut, 'untracked', ut_trunc)
-  render_unmerged_section(b, status.unmerged)
+  local um, um_trunc = check_truncate(status.unmerged)
+  render_unmerged_section(b, um, um_trunc)
   local unstaged_diffs = git.file_diffs(false, root)
   local staged_diffs = git.file_diffs(true, root)
   local us, us_trunc = check_truncate(status.unstaged)
