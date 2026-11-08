@@ -50,6 +50,7 @@ buf.data.revision_stack = {}
 buf.data.blame_cache = {}
 
 buf.on_refresh = function(b)
+  b.data.lines = {}
   b.data.root = b.data.root or common.root(b.origin_buffer)
   if not b.data.root then
     b:add_text('Not in a git repository.\n', reduxstyle.tagit_blame_sep)
@@ -78,7 +79,6 @@ buf.on_refresh = function(b)
     b:add_text('No blame data for ' .. filepath .. '\n', reduxstyle.tagit_blame_sep)
     return
   end
-  b.data.lines = {}
   for _, entry in ipairs(blame_data) do
     local sha = entry.sha
     local author = entry.author
@@ -160,7 +160,7 @@ local function blame_parent()
   end
   local out, code =
     git.run('ls-tree -r --name-only ' .. git.quote(parent) .. ' -- ' .. git.quote(buf.data.filepath), buf.data.root)
-  if code ~= 0 or not out:match('%S') then
+  if not out or code ~= 0 or not out:match('%S') then
     ui.statusbar_text = 'File not found at ' .. parent:sub(1, 9)
     return
   end
