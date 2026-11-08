@@ -41,7 +41,7 @@ local function template(root, amend)
   return table.concat(lines, '\n')
 end
 
--- Strip comment and trailing-whitespace lines, returning the message body.
+-- Strip comment lines and surrounding whitespace, returning the message body.
 local function clean_message(text)
   local out = {}
   for l in (text .. '\n'):gmatch('(.-)\n') do
