@@ -19,6 +19,8 @@ local M = {}
 -- Returns nil when no hunks are present (binary/empty diff).
 function M.parse(text)
   if not text or text == '' then return nil end
+  -- Drop the single trailing newline so it does not become an empty hunk line.
+  if text:sub(-1) == '\n' then text = text:sub(1, -2) end
   local lines = {}
   for line in (text .. '\n'):gmatch('(.-)\n') do
     lines[#lines + 1] = line

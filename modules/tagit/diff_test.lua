@@ -53,7 +53,7 @@ test('diff.parse returns header and hunks for single-hunk diff', function()
   test.assert(str_contains(result.header, '+++ b/f'), 'header missing +++ line')
   test.assert_equal(1, #result.hunks)
   test.assert_equal('@@ -1,1 +1,2 @@', result.hunks[1].header)
-  test.assert_equal(4, #result.hunks[1].lines) -- @@ + ' a' + '+b' + '' (trailing empty)
+  test.assert_equal(3, #result.hunks[1].lines) -- @@ + ' a' + '+b'
   test.assert(str_contains(result.hunks[1].text, '@@ -1,1 +1,2 @@'), 'hunk text missing @@')
   test.assert(str_contains(result.hunks[1].text, '+b'), 'hunk text missing +b')
 end)
@@ -79,7 +79,7 @@ test('diff.parse handles multi-hunk diff', function()
   test.assert_equal('@@ -1,3 +1,4 @@', result.hunks[1].header)
   test.assert_equal(4, #result.hunks[1].lines) -- @@ + ' a' + '+b' + ' c' (no trailing empty)
   test.assert_equal('@@ -10,5 +11,6 @@', result.hunks[2].header)
-  test.assert_equal(5, #result.hunks[2].lines) -- @@ + ' x' + '+y' + ' z' + '' (trailing empty)
+  test.assert_equal(4, #result.hunks[2].lines) -- @@ + ' x' + '+y' + ' z'
 end)
 
 test('diff.parse handles hunks with various line types', function()
@@ -97,7 +97,7 @@ test('diff.parse handles hunks with various line types', function()
   local result = diff.parse(text)
   test.assert(result, 'expected parse result')
   test.assert_equal(1, #result.hunks)
-  test.assert_equal(6, #result.hunks[1].lines) -- @@ + ' line1' + '-old' + '+new' + ' line3' + '' (trailing empty)
+  test.assert_equal(5, #result.hunks[1].lines) -- @@ + ' line1' + '-old' + '+new' + ' line3'
   test.assert_equal(' line1', result.hunks[1].lines[2])
   test.assert_equal('-old', result.hunks[1].lines[3])
   test.assert_equal('+new', result.hunks[1].lines[4])
@@ -139,7 +139,7 @@ test('diff.parse handles empty hunk body', function()
   local result = diff.parse(text)
   test.assert(result, 'expected parse result')
   test.assert_equal(1, #result.hunks)
-  test.assert_equal(2, #result.hunks[1].lines) -- @@ line + trailing empty
+  test.assert_equal(1, #result.hunks[1].lines) -- @@ line
 end)
 
 -- diff.parse_conflicts ----------------------------------------------------
