@@ -113,7 +113,8 @@ function M.reload()
     return
   end
   local branch_name = common.trim(branch_out)
-  local upstream_out, upstream_code = git.run('rev-parse --abbrev-ref --symbolic-full-name @{upstream}', root)
+  local upstream_out, upstream_code =
+    git.run('rev-parse --abbrev-ref --symbolic-full-name ' .. git.quote('@{upstream}'), root)
   if not upstream_out or upstream_code ~= 0 then
     ui.statusbar_text = 'No upstream configured for ' .. branch_name
     return
