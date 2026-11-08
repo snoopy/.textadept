@@ -205,9 +205,10 @@ function M.run_async(argv, root, on_done)
     chunks[#chunks + 1] = chunk
   end
   -- Use `git -C <root>` for parity with M.run (rather than relying on the spawn cwd).
-  os.spawn('git -C ' .. shquote(root) .. ' ' .. argv, root, collect, collect, function(code)
+  local proc = os.spawn('git -C ' .. shquote(root) .. ' ' .. argv, root, collect, collect, function(code)
     on_done(table.concat(chunks), code)
   end)
+  if not proc then on_done('failed to spawn git', -1) end
 end
 
 -- Base environment for spawned processes, captured once and reused.
@@ -281,13 +282,15 @@ function M.run_interactive(args, root, env, on_done)
       parts[#parts + 1] = 'set "' .. k .. '=' .. val .. '"'
     end
     parts[#parts + 1] = cmd
-    os.spawn(table.concat(parts, ' && '), root, collect, collect, function(code)
+    local proc = os.spawn(table.concat(parts, ' && '), root, collect, collect, function(code)
       on_done(table.concat(chunks), code)
     end)
+    if not proc then on_done('failed to spawn git', -1) end
   else
-    os.spawn(cmd, root, build_env(op_env), collect, collect, function(code)
+    local proc = os.spawn(cmd, root, build_env(op_env), collect, collect, function(code)
       on_done(table.concat(chunks), code)
     end)
+    if not proc then on_done('failed to spawn git', -1) end
   end
 end
 
