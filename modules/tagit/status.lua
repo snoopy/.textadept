@@ -733,7 +733,11 @@ end
 local function use_ours()
   local entry = entry_at_point()
   if not entry or entry.section ~= 'unmerged' then return end
-  common.report_git(git.checkout_ours(entry.path, buf.data.root))
+  local out, code = git.checkout_ours(entry.path, buf.data.root)
+  if code ~= 0 then
+    ui.statusbar_text = 'checkout --ours failed: ' .. common.trim(out or '')
+    return
+  end
   local _, sc = git.stage(entry.path, buf.data.root)
   if sc == 0 then ui.statusbar_text = 'Resolved ' .. entry.path .. ' using ours' end
   refresh()
@@ -743,7 +747,11 @@ end
 local function use_theirs()
   local entry = entry_at_point()
   if not entry or entry.section ~= 'unmerged' then return end
-  common.report_git(git.checkout_theirs(entry.path, buf.data.root))
+  local out, code = git.checkout_theirs(entry.path, buf.data.root)
+  if code ~= 0 then
+    ui.statusbar_text = 'checkout --theirs failed: ' .. common.trim(out or '')
+    return
+  end
   local _, sc = git.stage(entry.path, buf.data.root)
   if sc == 0 then ui.statusbar_text = 'Resolved ' .. entry.path .. ' using theirs' end
   refresh()
