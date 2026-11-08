@@ -7,33 +7,38 @@ M.INDIC_ADD = view.new_indic_number()
 M.INDIC_DEL = view.new_indic_number()
 
 -- Fore colors are taken from diff's default red/green (view.colors) so theme changes stay in sync.
-local function setup_indicators()
+local function setup_indicators(v)
+  v = v or view
   local is_terminal = UI == 'terminal'
   if is_terminal then
-    view.indic_style[M.INDIC_ADD] = view.INDIC_SQUIGGLELOW
-    view.indic_style[M.INDIC_DEL] = view.INDIC_SQUIGGLELOW
+    v.indic_style[M.INDIC_ADD] = v.INDIC_SQUIGGLELOW
+    v.indic_style[M.INDIC_DEL] = v.INDIC_SQUIGGLELOW
   else
-    view.indic_style[M.INDIC_ADD] = view.INDIC_ROUNDBOX
-    view.indic_style[M.INDIC_DEL] = view.INDIC_ROUNDBOX
+    v.indic_style[M.INDIC_ADD] = v.INDIC_ROUNDBOX
+    v.indic_style[M.INDIC_DEL] = v.INDIC_ROUNDBOX
   end
-  view.indic_under[M.INDIC_ADD] = true
-  view.indic_under[M.INDIC_DEL] = true
-  view.indic_alpha[M.INDIC_ADD] = 48
-  view.indic_alpha[M.INDIC_DEL] = 48
-  view.indic_outline_alpha[M.INDIC_ADD] = 96
-  view.indic_outline_alpha[M.INDIC_DEL] = 96
+  v.indic_under[M.INDIC_ADD] = true
+  v.indic_under[M.INDIC_DEL] = true
+  v.indic_alpha[M.INDIC_ADD] = 48
+  v.indic_alpha[M.INDIC_DEL] = 48
+  v.indic_outline_alpha[M.INDIC_ADD] = 96
+  v.indic_outline_alpha[M.INDIC_DEL] = 96
   -- Diff default green/red: (rgb), stored BGR via color.rgb2bgr.
   -- view.colors.green/red are BGR ints. Fallback to hard-coded BGR.
   -- Hard-coded BGR fallbacks: green 8da101 -> BGR 0x01A18D, red f85552 -> BGR 0x5255F8.
-  local green = view.colors.green or view.colors.lime or 0x01A18D
-  local red = view.colors.red or 0x5255F8
-  view.indic_fore[M.INDIC_ADD] = green
-  view.indic_fore[M.INDIC_DEL] = red
+  local green = v.colors.green or v.colors.lime or 0x01A18D
+  local red = v.colors.red or 0x5255F8
+  v.indic_fore[M.INDIC_ADD] = green
+  v.indic_fore[M.INDIC_DEL] = red
 end
 
-events.connect(events.VIEW_NEW, setup_indicators)
--- Also setup for the current view at load time (VIEW_NEW not yet fired for it).
-pcall(setup_indicators)
+events.connect(events.VIEW_NEW, function()
+  setup_indicators(view)
+end)
+-- Configure every view that already exists at load time, not just the focused one.
+pcall(function()
+  for _, v in pairs(_VIEWS) do setup_indicators(v) end
+end)
 
 -- Helpers --------------------------------------------------------------------
 
