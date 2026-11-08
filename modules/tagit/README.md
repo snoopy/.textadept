@@ -24,7 +24,7 @@ keys['ctrl+alt+l'] = tagit.log
 Run all tagit tests from a terminal:
 
 ```sh
-textadept -f -t "modules/tagit/diff,modules/tagit/git_parse,modules/tagit/common"
+textadept -f -t "modules/tagit/diff,modules/tagit/git_parse,modules/tagit/common,modules/tagit/word_diff"
 ```
 
 Or select a single suite:
