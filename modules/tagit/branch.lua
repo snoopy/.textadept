@@ -65,7 +65,8 @@ end
 
 -- Return remote branch names from 'origin' without the remote prefix.
 local function origin_branch_names(root)
-  local out = git.run("for-each-ref --format='%(refname:lstrip=3)' refs/remotes/origin", root) or ''
+  local out = git.run('for-each-ref --format=' .. git.quote('%(refname:lstrip=3)') .. ' refs/remotes/origin', root)
+    or ''
   local list = {}
   for name in out:gmatch('[^\n]+') do
     if name ~= '' then list[#list + 1] = name end
