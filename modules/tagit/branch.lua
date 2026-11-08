@@ -278,8 +278,8 @@ buf.on_refresh = function(b)
   local is_remote = b.data.mode == 'remote'
   b.name = is_remote and '*tagit: branches (remote)*' or '*tagit: branches*'
   local cmd = is_remote and 'branch --remotes ' or 'branch '
-  local out = git.run(cmd .. BRANCH_ARGS, b.data.root)
-  if not out then
+  local out, code = git.run(cmd .. BRANCH_ARGS, b.data.root)
+  if not out or code ~= 0 then
     b:add_text('git branch failed\n', reduxstyle.tagit_branch_error)
     return
   end

@@ -107,7 +107,7 @@ buf.on_refresh = function(b)
   local ref_arg = ref and ' ' .. git.quote(ref) or ''
   local extra_arg_str = extra_args and ' ' .. extra_args or ''
   local file_arg = file_path and ' --follow -- ' .. git.quote(file_path) or ''
-  local out = git.run(
+  local out, code = git.run(
       'log --date-order --date='
       .. git.quote('format:%Y-%m-%d %H:%M')
       .. ' --pretty='
@@ -119,7 +119,7 @@ buf.on_refresh = function(b)
       b.data.root
   )
   -- stylua: ignore end
-  if not out then
+  if not out or code ~= 0 then
     b:add_text('git log failed\n', reduxstyle.tagit_log_error)
     return
   end

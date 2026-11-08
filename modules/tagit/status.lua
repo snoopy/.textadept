@@ -363,7 +363,7 @@ local function render_recent_commits(b)
     .. SEP .. '%cn'
     .. SEP .. '%s'
     .. SEP .. '%d'
-  local out = git.run(
+  local out, code = git.run(
     'log --date-order --date='
     .. git.quote('format:%Y-%m-%d %H:%M')
     .. ' --pretty='
@@ -372,7 +372,7 @@ local function render_recent_commits(b)
     root
   )
   -- stylua: ignore end
-  if not out then return end
+  if not out or code ~= 0 then return end
 
   line(b, 'Recent commits (5)', {
     kind = 'section',
