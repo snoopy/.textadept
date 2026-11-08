@@ -19,24 +19,24 @@ local function execute_line()
   -- underlying spawn goes through cmd.exe on Windows and the shell on POSIX.
   -- '%' stays allowed so commands like `git log --format=%s` keep working.
   if text:match('[;&|`$(){}<>]') then
-    buffer:add_text('Invalid characters in command\n')
+    buffer:append_text('Invalid characters in command\n')
     return
   end
 
   local root = buffer._tagit_root or common.root(buffer)
   if not root then
-    buffer:add_text('Not a git repository\n\n')
+    buffer:append_text('Not a git repository\n\n')
     return
   end
 
   local out, code = git.run(text, root)
-  buffer:add_text('$ ' .. text .. '\n')
+  buffer:append_text('\n$ ' .. text .. '\n')
   if out and out ~= '' then
-    buffer:add_text(out)
-    if out:sub(-1) ~= '\n' then buffer:add_text('\n') end
+    buffer:append_text(out)
+    if out:sub(-1) ~= '\n' then buffer:append_text('\n') end
   end
-  if code ~= 0 then buffer:add_text('exit code: ' .. code .. '\n') end
-  buffer:add_text('\n')
+  if code ~= 0 then buffer:append_text('exit code: ' .. code .. '\n') end
+  buffer:append_text('\n')
   buffer:set_save_point()
   buffer:goto_pos(buffer.length)
   common.refresh_status()
