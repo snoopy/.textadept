@@ -199,7 +199,7 @@ end
 -- @param mode_id Short id used in buffer flags and keys mode (`'log'` or `'status'`).
 function M.show_commit(sha, root, mode_id)
   if not root then return end
-  local files = git.run('diff-tree --no-commit-id -c -r --name-status ' .. git.quote(sha), root)
+  local files = git.run('diff-tree --root --no-commit-id -c -r --name-status ' .. git.quote(sha), root)
   local out = git.run(
     'show --no-color --pretty='
       .. git.quote('format:commit: %H%na: %ad %aN (%aE)%nc: %cd %cN (%cE)%n%s%n%n%b%n')
@@ -248,7 +248,7 @@ function M.visit_file(sha, root)
     ui.statusbar_text = 'Not a commit diff buffer'
     return
   end
-  local out = git.run('diff-tree --no-commit-id -c -r --name-only ' .. git.quote(sha), root)
+  local out = git.run('diff-tree --root --no-commit-id -c -r --name-only ' .. git.quote(sha), root)
   if not out then return end
   local files = {}
   for f in out:gmatch('[^\n]+') do
