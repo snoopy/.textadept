@@ -62,6 +62,8 @@ Each test file prepends the real `_USERHOME/modules/` path to `package.path` so 
 |---|---|
 | `tagit.git` | The full git module — access `git.run()`, `git.run_async()`, `git.quote()`, etc. |
 | `tagit.git.commit_date` | Date string/function for commits (see Configuration below) |
+| `tagit.git.editor` | Editor command for commands that open an editor (see Configuration below) |
+| `tagit.git.sequence_editor` | Editor command for interactive rebase todo lists (see Configuration below) |
 | `tagit.log_module.max_commits` | Max commits shown in log buffer (default 200) |
 | `tagit.status_module.refresh()` | Refresh the status buffer programmatically |
 
@@ -121,3 +123,14 @@ require('tagit').git.commit_date = function()
   return os.date('!%Y-%m-%d %H:%M:%S ', now) .. sign .. string.format('%02d%02d', hours, mins)
 end
 ```
+
+### Editors for git commands
+
+Commands that normally open an editor (notably `rebase --interactive` and `rebase --continue`) run asynchronously without a controlling terminal, so a terminal editor such as `vim` would either fail or wait forever. Set an editor that blocks until editing is finished:
+
+```lua
+require('tagit').git.editor = 'gvim -f'
+require('tagit').git.sequence_editor = 'gvim -f'
+```
+
+`sequence_editor` is used for interactive rebase todo lists and defaults to `editor` when unset. When neither is configured, tagit uses `GIT_EDITOR`/`GIT_SEQUENCE_EDITOR` from the environment if present, and otherwise a no-op so the command completes with the generated content unchanged.
