@@ -22,6 +22,14 @@ M.commit_date = function()
   return os.date('!%Y-%m-%d %H:%M:%S +0000')
 end
 
+-- Editor commands for git operations that normally open an editor (notably
+-- `rebase --interactive` and `rebase --continue`). Set these to a command that
+-- blocks until editing is complete, e.g. 'gvim -f' or 'code --wait'.
+-- When nil, an editor from the ambient environment is used if present; otherwise a
+-- no-op is used because os.spawn has no controlling terminal for terminal editors.
+M.editor = nil
+M.sequence_editor = nil
+
 -- Shell-quote a single argument for POSIX shells.
 -- Wraps in single quotes and escapes embedded single quotes the usual `'\''` way.
 -- As usual, windows needs special care.
@@ -257,20 +265,27 @@ function M.run_interactive(args, root, env, on_done)
   local function collect(chunk)
     chunks[#chunks + 1] = chunk
   end
+  -- os.spawn has no controlling terminal, so a terminal editor would hang or fail.
+  -- Respect explicit configuration/ambient editors and otherwise use a no-op.
+  local op_env = {
+    GIT_EDITOR = M.editor or os.getenv('GIT_EDITOR') or 'true',
+    GIT_SEQUENCE_EDITOR = M.sequence_editor or os.getenv('GIT_SEQUENCE_EDITOR') or 'true',
+  }
+  if env then
+    for k, v in pairs(env) do op_env[k] = tostring(v) end
+  end
   if OS == 'windows' then
     local parts = {}
-    if env then
-      for k, v in pairs(env) do
-        local val = tostring(v):gsub('"', '""')
-        parts[#parts + 1] = 'set "' .. k .. '=' .. val .. '"'
-      end
+    for k, v in pairs(op_env) do
+      local val = tostring(v):gsub('"', '""')
+      parts[#parts + 1] = 'set "' .. k .. '=' .. val .. '"'
     end
     parts[#parts + 1] = cmd
     os.spawn(table.concat(parts, ' && '), root, collect, collect, function(code)
       on_done(table.concat(chunks), code)
     end)
   else
-    os.spawn(cmd, root, build_env(env), collect, collect, function(code)
+    os.spawn(cmd, root, build_env(op_env), collect, collect, function(code)
       on_done(table.concat(chunks), code)
     end)
   end
