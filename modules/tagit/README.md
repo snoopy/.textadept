@@ -42,7 +42,13 @@ Each test file prepends the real `_USERHOME/modules/` path to `package.path` so 
 | Function | Description |
 |---|---|
 | `tagit.status()` | Open the status buffer |
+| `tagit.blame()` | Open a blame buffer for the current file |
 | `tagit.log([ref])` | Open the log buffer (optionally for a branch/ref) |
+| `tagit.log_by_author()` | Open the log filtered by author |
+| `tagit.log_by_pickaxe()` | Open the log filtered by diff content (`-G`) |
+| `tagit.log_by_grep()` | Open the log filtered by commit message |
+| `tagit.log_by_file()` | Open the log filtered by file |
+| `tagit.log_menu()` | Open the log filtering menu |
 | `tagit.commit([amend])` | Start a commit (pass `true` to amend) |
 | `tagit.stash_list()` | Open the stash list buffer |
 | `tagit.branch_list([mode])` | Open the branch list buffer (`'local'` or `'remote'`) |
