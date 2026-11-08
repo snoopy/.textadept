@@ -10,11 +10,20 @@ local M = {}
 function M.fit(s, width)
   s = s or ''
   if #s > width then
-    s = s:sub(1, width)
-    while #s > 0 and s:byte(#s) >= 0x80 and s:byte(#s) < 0xC0 do
-      s = s:sub(1, #s - 1)
+    -- Only back off when the truncation boundary actually splits a UTF-8
+    -- sequence, i.e. the first excluded byte is a continuation byte.
+    local next_byte = s:byte(width + 1)
+    if next_byte and next_byte >= 0x80 and next_byte < 0xC0 then
+      -- Walk back over the continuation bytes to the lead byte of the split
+      -- sequence and drop the partial character.
+      local cut = width
+      while cut > 0 and s:byte(cut) >= 0x80 and s:byte(cut) < 0xC0 do
+        cut = cut - 1
+      end
+      s = cut > 0 and s:sub(1, cut - 1) or ''
+    else
+      s = s:sub(1, width)
     end
-    if #s > 0 and s:byte(#s) >= 0xC0 then s = s:sub(1, #s - 1) end
   end
   return s .. string.rep(' ', math.max(0, width - #s))
 end

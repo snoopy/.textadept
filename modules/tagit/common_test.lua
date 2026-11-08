@@ -42,10 +42,11 @@ test('common.fit keeps exact multi-byte sequence at boundary', function()
   test.assert_equal('caf\u{00E9}', common.fit(s, 5))
 end)
 
-test('common.fit backs off multi-byte sequence straddling the truncation boundary', function()
-  -- 'caf\u{00E9}s' = 6 bytes. Width 5 truncates to byte 5 = 0xA9 (continuation byte)
+test('common.fit keeps a complete multi-byte sequence at the truncation boundary', function()
+  -- 'caf\u{00E9}s' = 6 bytes. Width 5 ends exactly after the complete 2-byte é,
+  -- so the result is 'café' with no padding.
   local s = 'caf\u{00E9}s'
-  test.assert_equal('caf  ', common.fit(s, 5)) -- 'caf' + 2 spaces = 5
+  test.assert_equal('caf\u{00E9}', common.fit(s, 5))
   test.assert_equal('caf\u{00E9}s', common.fit(s, 6)) -- exact = 6 bytes (no pad needed)
   test.assert_equal('caf\u{00E9}s ', common.fit(s, 7)) -- 6 bytes + 1 space = 7
 end)
