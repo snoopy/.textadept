@@ -506,7 +506,10 @@ end
 -- @param staged When true, returns the staged (index) diff; otherwise the working-tree diff.
 -- @param root Optional repository root.
 function M.file_diff(path, staged, root)
-  local args = 'diff --no-color' .. (staged and ' --cached' or '') .. ' -- ' .. shquote(path)
+  local args = '-c core.quotePath=false diff --no-color'
+    .. (staged and ' --cached' or '')
+    .. ' -- '
+    .. shquote(path)
   local out = M.run(args, root)
   return out or ''
 end
@@ -517,22 +520,34 @@ end
 -- @param root Repository root.
 -- @return { [path] = raw_diff_text } or {}.
 function M.file_diffs(staged, root)
-  local args = 'diff --no-color' .. (staged and ' --cached' or '')
+  local args = '-c core.quotePath=false diff --no-color'
+    .. (staged and ' --cached' or '')
+    .. ' --src-prefix=a/ --dst-prefix=b/'
   local out, code = M.run(args, root)
   if code ~= 0 or not out then return {} end
   local result = {}
-  local path, text
+  local text, path
+  local function flush()
+    if text and path then result[path] = (result[path] or '') .. text end
+    text, path = nil, nil
+  end
   for line in out:gmatch('[^\n]+') do
-    local p = line:match('^diff %-%-git a/.+ b/(.+)$')
-    if p then
-      if path then result[path] = text end
-      path = p
+    if line:match('^diff %-%-git ') then
+      flush()
       text = line .. '\n'
-    elseif path then
+    elseif text then
       text = text .. line .. '\n'
+      -- Use the post-image path; `rename to` covers header-only renames, and
+      -- `--- a/...` covers deletions (whose `+++` is /dev/null).
+      local dst = line:match('^%+%+%+ b/(.+)$') or line:match('^rename to (.+)$')
+      if dst then
+        path = dst
+      elseif not path then
+        path = line:match('^%-%-%- a/(.+)$')
+      end
     end
   end
-  if path then result[path] = text end
+  flush()
   return result
 end
 
