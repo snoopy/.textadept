@@ -608,7 +608,7 @@ end
 ---
 -- Removes an untracked file from disk.
 function M.remove_untracked(path, root)
-  return M.run('clean --force -- ' .. shquote(path), root)
+  return M.run('clean -d --force -- ' .. shquote(path), root)
 end
 
 ---
