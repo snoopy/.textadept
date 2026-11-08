@@ -41,6 +41,7 @@ local function show_stash(ref)
   end
   buffer.new()
   buffer._tagit_stash_diff = true
+  buffer._type = '*tagit: stash ' .. ref .. '*'
   buffer:set_lexer('diff')
   buffer:add_text(out)
   buffer:goto_pos(1)

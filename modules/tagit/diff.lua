@@ -210,6 +210,7 @@ function M.show_commit(sha, root, mode_id)
   if not out then return end
   buffer.new()
   buffer['_tagit_' .. mode_id .. '_diff'] = true
+  buffer._type = '*tagit: commit ' .. sha:sub(1, 9) .. '*'
   buffer['_tagit_sha'] = sha
   buffer['_tagit_root'] = root
   buffer:set_lexer('diff')

@@ -68,7 +68,7 @@ function M.show()
   buffer._tagit_console = true
   buffer._tagit_root = root
   buffer:set_lexer('bash')
-  buffer.name = '*tagit: console*'
+  buffer._type = '*tagit: console*'
   clear_console()
   modes.update()
 end

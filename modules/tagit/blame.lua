@@ -61,8 +61,8 @@ buf.on_refresh = function(b)
     return
   end
   local revision = b.data.revision
-  b.name = revision and '*tagit: blame (' .. filepath .. ' @ ' .. revision .. ')*'
-    or '*tagit: blame (' .. filepath .. ')*'
+  b:set_title(revision and '*tagit: blame (' .. filepath .. ' @ ' .. revision .. ')*'
+    or '*tagit: blame (' .. filepath .. ')*')
   local cache_key = revision or false
   local blame_data = b.data.blame_cache[cache_key]
   local err

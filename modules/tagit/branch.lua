@@ -277,7 +277,7 @@ buf.on_refresh = function(b)
     return
   end
   local is_remote = b.data.mode == 'remote'
-  b.name = is_remote and '*tagit: branches (remote)*' or '*tagit: branches*'
+  b:set_title(is_remote and '*tagit: branches (remote)*' or '*tagit: branches*')
   local cmd = is_remote and 'branch --remotes ' or 'branch '
   local out, code = git.run(cmd .. BRANCH_ARGS, b.data.root)
   if not out or code ~= 0 then

@@ -92,11 +92,13 @@ buf.on_refresh = function(b)
   local ref = b.data.ref
   local extra_args = b.data.extra_args
   local file_path = b.data.file_path
-  b.name = ref and '*tagit: log (' .. ref .. ')*' or '*tagit: log*'
+  local title
+  if ref then title = '*tagit: log (' .. ref .. ')*' else title = '*tagit: log*' end
   if file_path then
     local leaf = file_path:match('[^/\\]+$') or file_path
-    b.name = b.name:gsub('%*$', '') .. (ref and ', ' or '') .. leaf .. ')*'
+    title = '*tagit: log (' .. (ref and ref .. ', ' or '') .. leaf .. ')*'
   end
+  b:set_title(title)
   -- stylua: ignore start
   local fmt = 'format:%H'
       .. SEP .. '%cd'
