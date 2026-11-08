@@ -272,9 +272,13 @@ function M.run_interactive(args, root, env, on_done)
   end
   -- os.spawn has no controlling terminal, so a terminal editor would hang or fail.
   -- Respect explicit configuration/ambient editors and otherwise use a no-op.
+  -- A sequence editor falls back to the regular editor when only that is configured.
+  local editor = M.editor or os.getenv('GIT_EDITOR')
+  local sequence_editor =
+    M.sequence_editor or os.getenv('GIT_SEQUENCE_EDITOR') or editor
   local op_env = {
-    GIT_EDITOR = M.editor or os.getenv('GIT_EDITOR') or 'true',
-    GIT_SEQUENCE_EDITOR = M.sequence_editor or os.getenv('GIT_SEQUENCE_EDITOR') or 'true',
+    GIT_EDITOR = editor or 'true',
+    GIT_SEQUENCE_EDITOR = sequence_editor or 'true',
   }
   if env then
     for k, v in pairs(env) do op_env[k] = tostring(v) end
