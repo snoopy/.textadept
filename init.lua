@@ -10,8 +10,11 @@ local cpp = require('cpp')
 local ctags = require('ctags')
 local clippy = require('clippy')
 local tagit = require('tagit')
-
 local format = require('format')
+
+tagit.git.editor = 'textadept -f'
+tagit.git.sequence_editor = 'textadept -f'
+
 format.commands.lua = util.get_path()
   .. 'stylua --syntax lua54 --indent-width 2 --indent-type Spaces --quote-style AutoPreferSingle --collapse-simple-statement ConditionalOnly -'
 format.commands.cpp = function()
